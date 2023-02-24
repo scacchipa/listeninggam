@@ -44,11 +44,12 @@ class DictationGame @Inject constructor(
                         start = selectedLetterPos,
                         end = selectedLetterPos + 1
                     )
+
                 }
             }
 
-    fun speakOutAll() {
-        readerEngine.speakOut(dictationProgress.getAllText())
+    fun speakOut(offset: Int = 0) {
+        readerEngine.speakOut(dictationProgress.getAllText(), findPreviousSpace(offset))
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -59,11 +60,11 @@ class DictationGame @Inject constructor(
                     if (selectedLetterPos < dictationProgress.getAllText().length) {
                         selectedLetterPos += 1
                     }
-                    moveNextBlankSpace()
+                    moveNextBlank()
                 }
                 Key.DirectionLeft -> {
                     if (selectedLetterPos > 0) selectedLetterPos -= 1
-                    movePreviousBlankSpace()
+                    movePreviousBlank()
                 }
                 Key.A,
                 Key.B,
@@ -91,22 +92,18 @@ class DictationGame @Inject constructor(
                 Key.X,
                 Key.Y,
                 Key.Z -> checkLetterReveal(keyEvent.key, selectedLetterPos)
-                }
             }
-        }
-
-
-    private fun checkLetterReveal(key: Key, pos: Int) {
-        println("***** " + dictationProgress.getAllText()[pos].uppercaseChar())
-        println("***** " + keyboard.toChar(key))
-
-        if (dictationProgress.getAllText()[pos].uppercaseChar() == keyboard.toChar(key)) {
-            dictationProgress.setLetterProgress(pos)
-            moveNextBlankSpace()
         }
     }
 
-    private fun moveNextBlankSpace() {
+    private fun checkLetterReveal(key: Key, pos: Int) {
+        if (dictationProgress.getAllText()[pos].uppercaseChar() == keyboard.toChar(key)) {
+            dictationProgress.setLetterProgress(pos)
+            moveNextBlank()
+        }
+    }
+
+    private fun moveNextBlank() {
         while (
             selectedLetterPos < dictationProgress.getAllText().length
             && dictationProgress.getProgress()[selectedLetterPos] != '_'
@@ -115,12 +112,25 @@ class DictationGame @Inject constructor(
         }
     }
 
-    private fun movePreviousBlankSpace() {
+    private fun movePreviousBlank() {
         while (
             selectedLetterPos > 0
             && dictationProgress.getProgress()[selectedLetterPos] != '_'
         ) {
             selectedLetterPos -= 1
         }
+    }
+
+    private fun findPreviousSpace(letterPos: Int): Int {
+        println(letterPos)
+        var idx = letterPos
+        while (
+            idx > 0
+            && dictationProgress.getProgress()[idx] != ' '
+        ) {
+            idx -= 1
+        }
+        println(idx)
+        return idx
     }
 }

@@ -34,6 +34,10 @@ class DictationViewModel @Inject constructor(
         speakOutUseCase()
     }
 
+    fun onLetterClicked(offset: Int) {
+        speakOutUseCase(offset = offset)
+    }
+
     fun onKeyEvent(keyEvent: KeyEvent) {
         keyEventUseCase(keyEvent)
     }

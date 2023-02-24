@@ -6,7 +6,7 @@ import javax.inject.Inject
 class SpeakOutUseCase @Inject constructor(
     private val dictationGame: DictationGame
 ) {
-    operator fun invoke() {
-        dictationGame.speakOutAll()
+    operator fun invoke(offset: Int = 0) {
+        dictationGame.speakOut(offset)
     }
 }
