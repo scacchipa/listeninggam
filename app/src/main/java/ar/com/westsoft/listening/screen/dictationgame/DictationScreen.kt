@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening
+package ar.com.westsoft.listening.screen.dictationgame
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -17,17 +17,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import ar.com.westsoft.listening.screen.DictationViewModel
 
 @Composable
 fun DictationScreen() {
     val viewModel = hiltViewModel<DictationViewModel>()
-    Surface() {
+    Surface {
         val requester = remember { FocusRequester() }
         Column(
             modifier = Modifier

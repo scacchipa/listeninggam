@@ -1,6 +1,6 @@
-package ar.com.westsoft.listening.domain
+package ar.com.westsoft.listening.domain.dictationgame
 
-import ar.com.westsoft.listening.service.DictationGame
+import ar.com.westsoft.listening.data.engine.DictationGame
 import javax.inject.Inject
 
 class InitializeDictationUseCase @Inject constructor(

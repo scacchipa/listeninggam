@@ -6,13 +6,17 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class Providers {
-
     @Singleton
     @Provides
     fun provideContext(@ApplicationContext context: Context) = context
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient() = OkHttpClient()
 }

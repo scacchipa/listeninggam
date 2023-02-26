@@ -3,6 +3,7 @@ package ar.com.westsoft.listening
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import ar.com.westsoft.listening.screen.menu.NavigationScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -12,7 +13,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ListeningTheme {
-                DictationScreen()
+                NavigationScreen()
             }
         }
     }
