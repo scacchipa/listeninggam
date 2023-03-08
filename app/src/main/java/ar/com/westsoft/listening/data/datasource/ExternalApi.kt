@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ExternalApi @Inject constructor(
-    val externalApi: OkHttpClient,
+    private val externalApi: OkHttpClient,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend fun downloadFile(url: String): String? = withContext(ioDispatcher) {

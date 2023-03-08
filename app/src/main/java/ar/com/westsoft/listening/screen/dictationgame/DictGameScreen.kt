@@ -23,14 +23,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun DictationScreen() {
+fun DictGameScreen() {
     val viewModel = hiltViewModel<DictationViewModel>()
     Surface {
         val requester = remember { FocusRequester() }
         Column(
             modifier = Modifier
                 .onKeyEvent { keyEvent ->
-                    println("**** " + keyEvent)
                     viewModel.onKeyEvent(keyEvent)
                     true
                 }
@@ -38,17 +37,12 @@ fun DictationScreen() {
                 .focusable(),
         ) {
             Button(
-                onClick = { viewModel.onInitializeProgress() }
-            ) {
-                Text(text = "Initialize progress")
-            }
-            Button(
                 onClick = { viewModel.onButtonClicked() },
             ) {
                 Text("Speak Out")
             }
             val textToShowState = viewModel.annotatedStringStateFlow.collectAsState()
-            textToShowState.value.split(' ')
+            //textToShowState.value.split(' ')
             ClickableText(
                 modifier = Modifier
                     .fillMaxSize(1f)

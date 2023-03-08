@@ -4,11 +4,13 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.domain.dictationgame.AnnotationStringFlowUseCase
-import ar.com.westsoft.listening.domain.dictationgame.InitializeDictationUseCase
 import ar.com.westsoft.listening.domain.dictationgame.KeyEventUseCase
+import ar.com.westsoft.listening.domain.dictationgame.SetupDictationUseCase
 import ar.com.westsoft.listening.domain.dictationgame.SpeakOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -17,24 +19,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DictationViewModel @Inject constructor(
-    private val initializeDictationGameUseCase: InitializeDictationUseCase,
-    private val annotatedStringFlowUseCase: AnnotationStringFlowUseCase,
+    private val setupDictationGameUseCase: SetupDictationUseCase,
+    annotatedStringFlowUseCase: AnnotationStringFlowUseCase,
     private val keyEventUseCase: KeyEventUseCase,
-    private val speakOutUseCase: SpeakOutUseCase
+    private val speakOutUseCase: SpeakOutUseCase,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     val annotatedStringStateFlow: StateFlow<AnnotatedString> =
         annotatedStringFlowUseCase()
             .stateIn(viewModelScope, SharingStarted.Eagerly, AnnotatedString(""))
 
-    fun onInitializeProgress() {
-        viewModelScope.launch {
-            initializeDictationGameUseCase()
+    fun onInitializeProgress(gui: Long) {
+        viewModelScope.launch(defaultDispatcher) {
+            setupDictationGameUseCase(gui)
         }
     }
 
     fun onButtonClicked() {
-        speakOutUseCase()
+        viewModelScope.launch {
+            speakOutUseCase()
+        }
     }
 
     fun onLetterClicked(offset: Int) {

@@ -7,8 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ar.com.westsoft.listening.screen.RoundedFrame
-import ar.com.westsoft.listening.screen.dictationgame.CreateDictationGame
-import ar.com.westsoft.listening.screen.dictationgame.StartANewGameScreen
+import ar.com.westsoft.listening.screen.dictationgame.NavDictationGameScreen
+import ar.com.westsoft.listening.screen.dictationgame.SelectGameScreen
 
 @Composable
 fun NavigationScreen() {
@@ -18,40 +18,21 @@ fun NavigationScreen() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = Routes.MainMenu.name
+            startDestination = Routes.SelectGame.name
         ) {
-            composable(route = Routes.MainMenu.name) {
-                MainMenuScreen(
-                    navStartANewGame = { navController.navigate(Routes.StartANewGame.name) },
-                    navLoadAGame = { navController.navigate(Routes.LoadANewGame.name) }
+            composable(route = Routes.SelectGame.name) {
+                SelectGameScreen(
+                    navDictationGame = { navController.navigate(Routes.DictationGame.name) }
                 )
             }
-            composable(route = Routes.StartANewGame.name) {
-                StartANewGameScreen(
-                    navCreateDictationGame = { navController.navigate(Routes.CreateDictationGame.name) }
-                )
+            composable(route = Routes.DictationGame.name) {
+                NavDictationGameScreen()
             }
-            composable(route = Routes.LoadANewGame.name) {
-                LoadANewGameScreen()
-            }
-            composable(route = Routes.CreateDictationGame.name) {
-                CreateDictationGame()
-            }
-
         }
     }
 }
 
 enum class Routes {
-    MainMenu,
-    StartANewGame,
-    CreateDictationGame,
-    LoadANewGame
+    SelectGame,
+    DictationGame,
 }
-
-@Composable
-fun LoadANewGameScreen() {
-
-}
-
-

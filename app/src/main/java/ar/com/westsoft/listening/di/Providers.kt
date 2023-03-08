@@ -1,6 +1,8 @@
 package ar.com.westsoft.listening.di
 
 import android.content.Context
+import androidx.room.Room
+import ar.com.westsoft.listening.data.datasource.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,4 +21,13 @@ class Providers {
     @Singleton
     @Provides
     fun provideOkHttpClient() = OkHttpClient()
+
+    @Singleton
+    @Provides
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(
+            context = context,
+            klass = AppDatabase::class.java,
+            name = "GAMES_DATABASE"
+        ).build()
 }

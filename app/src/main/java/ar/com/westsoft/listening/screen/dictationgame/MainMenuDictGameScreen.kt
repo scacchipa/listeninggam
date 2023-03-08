@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.menu
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Divider
@@ -14,8 +14,9 @@ import ar.com.westsoft.listening.screen.MenuButton
     heightDp = 600
 )
 @Composable
-fun StartANewGameScreen(
-    navCreateDictationGame: () -> Unit = { }
+fun MainMenuDictGameScreen(
+    navStartANewGame: () -> Unit = { },
+    navLoadAGame: () -> Unit = { },
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -26,8 +27,17 @@ fun StartANewGameScreen(
         )
         MenuButton(
             modifier = Modifier.weight(1f),
-            text = "Dictation",
-            action = navCreateDictationGame
+            text = "Start A New Game",
+            action = navStartANewGame
+        )
+        Divider(
+            modifier = Modifier.weight(0.5f),
+            color = Color.Transparent
+        )
+        MenuButton(
+            modifier = Modifier.weight(1f),
+            text = "Load A Game",
+            action = navLoadAGame
         )
         Divider(
             modifier = Modifier.weight(0.5f),

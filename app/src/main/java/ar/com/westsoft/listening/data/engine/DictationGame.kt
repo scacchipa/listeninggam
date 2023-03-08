@@ -6,26 +6,39 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import ar.com.westsoft.listening.data.DictationProgress
 import ar.com.westsoft.listening.data.Keyboard
 import ar.com.westsoft.listening.data.ReaderEngine
-import ar.com.westsoft.listening.data.SpeechProvider
+import ar.com.westsoft.listening.data.datasource.AppDatabase
+import ar.com.westsoft.listening.di.DefaultDispatcher
+import ar.com.westsoft.listening.di.IoDispatcher
+import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DictationGame @Inject constructor(
     private val readerEngine: ReaderEngine,
-    private val dictationProgress: DictationProgress,
-    private val speechProvider: SpeechProvider,
-    private val keyboard: Keyboard
+    private val appDatabase: AppDatabase,
+    private val keyboard: Keyboard,
+    private val savedListeningGameMapper: SavedDictationGameMapper,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) {
+    private var game = GameEntity()
 
     var selectedLetterPos: Int = 0
-    fun initialize() {
-        dictationProgress.initProgress(speechProvider.getSpeech())
+    suspend fun setup(gui: Long) {
+        game = getGame(gui)
+    }
+
+    suspend private fun getGame(gui: Long): GameEntity = withContext(ioDispatcher) {
+        savedListeningGameMapper.toEngine(
+            appDatabase.getSavedListeningGameDao().getSavedListeningGame(gui)
+        )
     }
 
     fun getAnnotatedStringFlow() =
@@ -33,7 +46,7 @@ class DictationGame @Inject constructor(
             .filterNotNull()
             .map { utterance ->
                 buildAnnotatedString {
-                    append(String(dictationProgress.getProgress()))
+                    append(String(game.dictationProgressEntity.getProgress()))
                     addStyle(
                         style = SpanStyle(fontWeight = FontWeight.Bold),
                         start = utterance.start,
@@ -49,7 +62,10 @@ class DictationGame @Inject constructor(
             }
 
     fun speakOut(offset: Int = 0) {
-        readerEngine.speakOut(dictationProgress.getAllText(), findPreviousSpace(offset))
+        readerEngine.speakOut(
+            message = game.dictationProgressEntity.getAllText(),
+            offset = findPreviousSpace(offset)
+        )
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -57,7 +73,7 @@ class DictationGame @Inject constructor(
         if (keyEvent.type == KeyEventType.KeyDown) {
             when (keyEvent.key) {
                 Key.DirectionRight -> {
-                    if (selectedLetterPos < dictationProgress.getAllText().length) {
+                    if (selectedLetterPos < game.dictationProgressEntity.getAllText().length) {
                         selectedLetterPos += 1
                     }
                     moveNextBlank()
@@ -97,16 +113,16 @@ class DictationGame @Inject constructor(
     }
 
     private fun checkLetterReveal(key: Key, pos: Int) {
-        if (dictationProgress.getAllText()[pos].uppercaseChar() == keyboard.toChar(key)) {
-            dictationProgress.setLetterProgress(pos)
+        if (game.dictationProgressEntity.getAllText()[pos].uppercaseChar() == keyboard.toChar(key)) {
+            game.dictationProgressEntity.setLetterProgress(pos)
             moveNextBlank()
         }
     }
 
     private fun moveNextBlank() {
         while (
-            selectedLetterPos < dictationProgress.getAllText().length
-            && dictationProgress.getProgress()[selectedLetterPos] != '_'
+            selectedLetterPos < game.dictationProgressEntity.getAllText().length
+            && game.dictationProgressEntity.getProgress()[selectedLetterPos] != '_'
         ) {
             selectedLetterPos += 1
         }
@@ -115,7 +131,7 @@ class DictationGame @Inject constructor(
     private fun movePreviousBlank() {
         while (
             selectedLetterPos > 0
-            && dictationProgress.getProgress()[selectedLetterPos] != '_'
+            && game.dictationProgressEntity.getProgress()[selectedLetterPos] != '_'
         ) {
             selectedLetterPos -= 1
         }
@@ -126,7 +142,7 @@ class DictationGame @Inject constructor(
         var idx = letterPos
         while (
             idx > 0
-            && dictationProgress.getProgress()[idx] != ' '
+            && game.dictationProgressEntity.getProgress()[idx] != ' '
         ) {
             idx -= 1
         }
