@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import ar.com.westsoft.listening.BuildConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(
@@ -79,10 +80,15 @@ fun ConfigNewDictationGameScreen(
                             viewModel.onStartButton(title, txtAddress)
                         } else {
                             viewModel.onStartButton(
-                                title = "The adventure of Tom Sawyer",
+                                title = BuildConfig.DEBUG_DICTATION_TEXT_TITLE
+                                    ?: title,
+                                address = BuildConfig.DEBUG_DICTATION_TEXT_ADDRESS
+                                    ?:txtAddress
+
+                                // title = "The adventure of Tom Sawyer",
                                 // address = "http://medicamentosrothlin.com.ar/app/mac/"
                                 // address = "https://www.gutenberg.org/files/74/74-0.txt"
-                                address = "http://d-scholarship.pitt.edu/5725/6/licence.txt"
+                                //address = "http://d-scholarship.pitt.edu/5725/6/licence.txt"
                             )
                         }
                     }
@@ -106,5 +112,3 @@ fun ConfigNewDictationGameScreen(
         }
     }
 }
-
-

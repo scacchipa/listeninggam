@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen
+package ar.com.westsoft.listening.screen.menu
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Row

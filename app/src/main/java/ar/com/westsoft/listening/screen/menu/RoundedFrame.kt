@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen
+package ar.com.westsoft.listening.screen.menu
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -49,5 +49,4 @@ fun RoundedFrame(
     ) {
         content()
     }
-
 }

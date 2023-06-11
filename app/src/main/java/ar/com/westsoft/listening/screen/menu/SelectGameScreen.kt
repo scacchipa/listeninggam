@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.menu
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Divider
@@ -7,7 +7,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import ar.com.westsoft.listening.screen.MenuButton
 
 @Preview(
     widthDp = 400,
