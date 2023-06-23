@@ -28,6 +28,7 @@ class ReaderEngine @Inject constructor(
     private var offset: Int = 0
 
     fun getUtteranceFlow() = flow {
+        emit(Utterance())
         while (true) {
             emit(tts.awaitUtterance(offset))
         }

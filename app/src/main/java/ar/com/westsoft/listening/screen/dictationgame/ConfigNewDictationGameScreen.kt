@@ -28,9 +28,9 @@ fun ConfigNewDictationGameScreen(
 ) {
     val viewModel = hiltViewModel<ConfigNewDictationGameViewModel>()
 
-    val gameCreationGameStatus = viewModel.gameCreationGameStatus.collectAsState().value
-
-    when (gameCreationGameStatus) {
+    when (
+        val gameCreationGameStatus = viewModel.gameCreationGameStatus.collectAsState().value
+    ) {
         is GameCreationGameStatus.Uninitialized -> {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally

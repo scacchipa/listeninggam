@@ -3,6 +3,7 @@ package ar.com.westsoft.listening.data.engine
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +36,7 @@ class DictationGame @Inject constructor(
         game = getGame(gui)
     }
 
-    suspend private fun getGame(gui: Long): GameEntity = withContext(ioDispatcher) {
+    private suspend fun getGame(gui: Long): GameEntity = withContext(ioDispatcher) {
         savedListeningGameMapper.toEngine(
             appDatabase.getSavedListeningGameDao().getSavedListeningGame(gui)
         )
@@ -60,6 +61,12 @@ class DictationGame @Inject constructor(
 
                 }
             }
+
+    fun getFirstAnnotatedString(): AnnotatedString {
+        return buildAnnotatedString {
+            game.dictationProgressEntity.getProgress()
+        }
+    }
 
     fun speakOut(offset: Int = 0) {
         readerEngine.speakOut(

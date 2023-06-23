@@ -4,9 +4,11 @@ import ar.com.westsoft.listening.data.engine.DictationGame
 import javax.inject.Inject
 
 class SetupDictationUseCase @Inject constructor(
-    private val dictationGame: DictationGame,
+    private val dictationGame: DictationGame
 ) {
-    suspend operator fun invoke(gui: Long) {
+    suspend operator fun invoke(
+        gui: Long
+    ) {
         dictationGame.setup(gui)
     }
 }

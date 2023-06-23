@@ -11,8 +11,9 @@ class CreateNewDictationGameUseCase @Inject constructor(
     private val dictationRepository: DictationRepository
 ) {
     suspend operator fun invoke(title: String, url: String): GameCreationGameStatus {
-        val response = dictationRepository.createADictationGame(title, url)
-        return when(response) {
+        return when(
+            val response = dictationRepository.createADictationGame(title, url)
+        ) {
             is RepoTaskResponse.Completed -> Completed(response.gui)
             is RepoTaskResponse.Uncompleted -> Error
         }
