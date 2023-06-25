@@ -29,16 +29,16 @@ class DictationGame @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) {
-    private var game = GameEntity()
+    private var game = Game()
 
     var selectedLetterPos: Int = 0
     suspend fun setup(gui: Long) {
         game = getGame(gui)
     }
 
-    private suspend fun getGame(gui: Long): GameEntity = withContext(ioDispatcher) {
+    private suspend fun getGame(gui: Long): Game = withContext(ioDispatcher) {
         savedListeningGameMapper.toEngine(
-            appDatabase.getSavedListeningGameDao().getSavedListeningGame(gui)
+            appDatabase.getSavedListeningGameDao().getSavedDictationGameDtoList()[gui.toInt()]
         )
     }
 
@@ -47,7 +47,7 @@ class DictationGame @Inject constructor(
             .filterNotNull()
             .map { utterance ->
                 buildAnnotatedString {
-                    append(String(game.dictationProgressEntity.getProgress()))
+                    append(String(game.dictationProgressList[0].getProgress()))
                     addStyle(
                         style = SpanStyle(fontWeight = FontWeight.Bold),
                         start = utterance.start,
@@ -64,13 +64,13 @@ class DictationGame @Inject constructor(
 
     fun getFirstAnnotatedString(): AnnotatedString {
         return buildAnnotatedString {
-            game.dictationProgressEntity.getProgress()
+            game.dictationProgressList[0].getProgress()
         }
     }
 
     fun speakOut(offset: Int = 0) {
         readerEngine.speakOut(
-            message = game.dictationProgressEntity.getAllText(),
+            message = game.dictationProgressList[0].getAllText(),
             offset = findPreviousSpace(offset)
         )
     }
@@ -80,7 +80,7 @@ class DictationGame @Inject constructor(
         if (keyEvent.type == KeyEventType.KeyDown) {
             when (keyEvent.key) {
                 Key.DirectionRight -> {
-                    if (selectedLetterPos < game.dictationProgressEntity.getAllText().length) {
+                    if (selectedLetterPos < game.dictationProgressList[0].getAllText().length) {
                         selectedLetterPos += 1
                     }
                     moveNextBlank()
@@ -120,16 +120,16 @@ class DictationGame @Inject constructor(
     }
 
     private fun checkLetterReveal(key: Key, pos: Int) {
-        if (game.dictationProgressEntity.getAllText()[pos].uppercaseChar() == keyboard.toChar(key)) {
-            game.dictationProgressEntity.setLetterProgress(pos)
+        if (game.dictationProgressList[0].getAllText()[pos].uppercaseChar() == keyboard.toChar(key)) {
+            game.dictationProgressList[0].setLetterProgress(pos)
             moveNextBlank()
         }
     }
 
     private fun moveNextBlank() {
         while (
-            selectedLetterPos < game.dictationProgressEntity.getAllText().length
-            && game.dictationProgressEntity.getProgress()[selectedLetterPos] != '_'
+            selectedLetterPos < game.dictationProgressList[0].getAllText().length
+            && game.dictationProgressList[0].getProgress()[selectedLetterPos] != '_'
         ) {
             selectedLetterPos += 1
         }
@@ -138,7 +138,7 @@ class DictationGame @Inject constructor(
     private fun movePreviousBlank() {
         while (
             selectedLetterPos > 0
-            && game.dictationProgressEntity.getProgress()[selectedLetterPos] != '_'
+            && game.dictationProgressList[0].getProgress()[selectedLetterPos] != '_'
         ) {
             selectedLetterPos -= 1
         }
@@ -149,7 +149,7 @@ class DictationGame @Inject constructor(
         var idx = letterPos
         while (
             idx > 0
-            && game.dictationProgressEntity.getProgress()[idx] != ' '
+            && game.dictationProgressList[0].getProgress()[idx] != ' '
         ) {
             idx -= 1
         }

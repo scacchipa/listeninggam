@@ -22,13 +22,20 @@ class DictationRepository @Inject constructor(
             ?: return RepoTaskResponse.Uncompleted
 
         val gui = runBlocking(ioDispatcher) {
-            appDatabase.getSavedListeningGameDao().insert(
+
+            val gameHeader = GameHeader(0, title, url)
+
+            appDatabase.getSavedListeningGameDao().insertGameDto(
                 savedDictationGameMapper.toDataSource(
-                    GameEntity(
-                        gui = 0,
-                        title = title,
-                        txtAddress = url,
-                        dictationProgressEntity = DictationProgressEntity(originalText)
+                    Game(
+                        gameHeader = gameHeader,
+                        dictationProgressList = originalText
+                            .lines()
+                            .map {
+                                DictationProgress(
+                                    progressId = null,
+                                    originalTxt = it)
+                            }
                     )
                 )
             )
@@ -36,12 +43,12 @@ class DictationRepository @Inject constructor(
         return RepoTaskResponse.Completed(gui)
     }
 
-    fun getAllDictationGameLabel(): List<DictationGameLabel> =
+    fun getAllDictationGameLabel(): List<DictationGameHeader> =
         runBlocking(ioDispatcher) {
-            appDatabase.getSavedListeningGameDao().getAllSavedListeningGame().map { game ->
-                DictationGameLabel(
-                    gui = game.gui,
-                    title = game.title,
+            appDatabase.getSavedListeningGameDao().getSavedDictationGameDtoList().map { game ->
+                DictationGameHeader(
+                    gui = game.gameHeaderEntity.gui,
+                    title = game.gameHeaderEntity.title,
                     progressPercent = 0.0
                 )
             }

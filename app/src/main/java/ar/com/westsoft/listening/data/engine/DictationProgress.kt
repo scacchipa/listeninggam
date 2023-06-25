@@ -1,14 +1,8 @@
 package ar.com.westsoft.listening.data.engine
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-
-@Entity
-data class DictationProgressEntity(
-    @ColumnInfo(name = "original_text")
+data class DictationProgress(
+    var progressId: Long?,
     val originalTxt: String = "",
-
-    @ColumnInfo(name = "progression_text")
     val progressTxt: CharArray = getInitialProgressText(originalTxt)
 ) {
 
@@ -28,7 +22,7 @@ data class DictationProgressEntity(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as DictationProgressEntity
+        other as DictationProgress
 
         if (originalTxt != other.originalTxt) return false
         if (!progressTxt.contentEquals(other.progressTxt)) return false
