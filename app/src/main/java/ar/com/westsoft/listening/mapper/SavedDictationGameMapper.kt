@@ -14,8 +14,7 @@ class SavedDictationGameMapper @Inject constructor(
             dictationProgressEntityLists = dictationProgressListMapper
                 .toDataSource( origin.dictationProgressList)
                 .onEach {
-                    it.progressId = origin.gameHeader.gui
-                        ?: throw Exception("SavedDictationGameEntity Mapper Error")
+                    it.gameHeaderId = origin.gameHeader.gui
                 }
         )
 

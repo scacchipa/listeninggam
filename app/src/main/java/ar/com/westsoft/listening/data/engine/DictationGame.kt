@@ -31,14 +31,22 @@ class DictationGame @Inject constructor(
 ) {
     private var game = Game()
 
+    var selectedLineNumber: Int? = null
     var selectedLetterPos: Int = 0
+
     suspend fun setup(gui: Long) {
         game = getGame(gui)
+        selectedLineNumber = if (game.dictationProgressList.isNotEmpty()) 0 else null
     }
 
     private suspend fun getGame(gui: Long): Game = withContext(ioDispatcher) {
         savedListeningGameMapper.toEngine(
-            appDatabase.getSavedListeningGameDao().getSavedDictationGameDtoList()[gui.toInt()]
+            appDatabase
+                .getSavedListeningGameDao()
+                .getSavedDictationGameDtoList()
+                .find {
+                    it.gameHeaderEntity.gui == gui
+                } ?: throw Exception("GUI didn't find in the database")
         )
     }
 
@@ -47,30 +55,41 @@ class DictationGame @Inject constructor(
             .filterNotNull()
             .map { utterance ->
                 buildAnnotatedString {
-                    append(String(game.dictationProgressList[0].getProgress()))
-                    addStyle(
-                        style = SpanStyle(fontWeight = FontWeight.Bold),
-                        start = utterance.start,
-                        end = utterance.end,
-                    )
-                    addStyle(
-                        style = SpanStyle(color = Color.Red),
-                        start = selectedLetterPos,
-                        end = selectedLetterPos + 1
-                    )
-
+                    selectedLineNumber?.let { _selectedLineNumber ->
+                        append(
+                            game
+                                .dictationProgressList[_selectedLineNumber]
+                                .progressTxt
+                                .joinToString("")
+                        )
+                        addStyle(
+                            style = SpanStyle(fontWeight = FontWeight.ExtraBold),
+                            start = utterance.start,
+                            end = utterance.end
+                        )
+                        addStyle(
+                            style = SpanStyle(color = Color.Red),
+                            start = selectedLetterPos,
+                            end = selectedLetterPos + 1
+                        )
+                    }
                 }
             }
 
     fun getFirstAnnotatedString(): AnnotatedString {
         return buildAnnotatedString {
-            game.dictationProgressList[0].getProgress()
+            game.dictationProgressList.let {
+                if (it.isNotEmpty())
+                    append(it[0].getProgress().joinToString(""))
+                else
+                    append("")
+            }
         }
     }
 
     fun speakOut(offset: Int = 0) {
         readerEngine.speakOut(
-            message = game.dictationProgressList[0].getAllText(),
+            message = game.dictationProgressList[0].originalTxt,
             offset = findPreviousSpace(offset)
         )
     }
@@ -80,7 +99,7 @@ class DictationGame @Inject constructor(
         if (keyEvent.type == KeyEventType.KeyDown) {
             when (keyEvent.key) {
                 Key.DirectionRight -> {
-                    if (selectedLetterPos < game.dictationProgressList[0].getAllText().length) {
+                    if (selectedLetterPos < game.dictationProgressList[0].originalTxt.length) {
                         selectedLetterPos += 1
                     }
                     moveNextBlank()
@@ -120,15 +139,19 @@ class DictationGame @Inject constructor(
     }
 
     private fun checkLetterReveal(key: Key, pos: Int) {
-        if (game.dictationProgressList[0].getAllText()[pos].uppercaseChar() == keyboard.toChar(key)) {
-            game.dictationProgressList[0].setLetterProgress(pos)
-            moveNextBlank()
+        selectedLineNumber?.let { _lineNumber ->
+            val correctKey = game.dictationProgressList[_lineNumber].originalTxt[pos].uppercaseChar()
+
+            if (correctKey == keyboard.toChar(key)) {
+                game.dictationProgressList[_lineNumber].setLetterProgress(pos)
+                moveNextBlank()
+            }
         }
     }
 
     private fun moveNextBlank() {
         while (
-            selectedLetterPos < game.dictationProgressList[0].getAllText().length
+            selectedLetterPos < game.dictationProgressList[0].originalTxt.length
             && game.dictationProgressList[0].getProgress()[selectedLetterPos] != '_'
         ) {
             selectedLetterPos += 1

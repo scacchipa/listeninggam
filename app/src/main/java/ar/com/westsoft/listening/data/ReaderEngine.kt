@@ -33,6 +33,7 @@ class ReaderEngine @Inject constructor(
             emit(tts.awaitUtterance(offset))
         }
     }
+
     init {
         tts.setPitch(1f)
         tts.setSpeechRate(0.5f)

@@ -39,6 +39,6 @@ interface SavedDictationGameDao {
     }
 
     @Transaction
-    @Query("SELECT * FROM GAME_HEADER")
+    @Query("SELECT * FROM GameHeaderEntity")
     fun getSavedDictationGameDtoList(): List<SavedDictationGameEntity>
 }

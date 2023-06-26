@@ -14,6 +14,7 @@ class ExternalApi @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend fun downloadFile(url: String): String? = withContext(ioDispatcher) {
+        println("Download: $url")
         val request = Request.Builder()
             .url(url)
             .build()

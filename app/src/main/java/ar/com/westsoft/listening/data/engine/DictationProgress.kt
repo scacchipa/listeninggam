@@ -14,10 +14,6 @@ data class DictationProgress(
         progressTxt[pos] = originalTxt[pos]
     }
 
-    fun getAllText(): String {
-        return originalTxt
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

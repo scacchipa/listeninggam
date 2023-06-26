@@ -6,6 +6,7 @@ import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.domain.dictationgame.CreateNewDictationGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -26,7 +27,10 @@ class ConfigNewDictationGameViewModel @Inject constructor(
         title: String,
         address: String
     ) {
-        viewModelScope.launch(defaultDispatcher) {
+        val coroutineExceptionHandler = CoroutineExceptionHandler {_, throwable ->
+            throwable.printStackTrace()
+        }
+        viewModelScope.launch(defaultDispatcher + coroutineExceptionHandler) {
             _gameCreationGameStatus.emit(GameCreationGameStatus.IsDownloading)
             _gameCreationGameStatus.emit(createNewDictationGameUseCase(title, address))
         }

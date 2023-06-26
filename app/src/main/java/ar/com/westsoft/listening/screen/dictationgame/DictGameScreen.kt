@@ -42,7 +42,9 @@ fun DictGameScreen() {
                 Text("Speak Out")
             }
             val textToShowState = viewModel.annotatedStringStateFlow.collectAsState()
-            //textToShowState.value.split(' ')
+
+            println("*** Text to read: " + textToShowState.value)
+
             ClickableText(
                 modifier = Modifier
                     .fillMaxSize(1f)
