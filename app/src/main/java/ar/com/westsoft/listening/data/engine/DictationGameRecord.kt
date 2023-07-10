@@ -1,7 +1,7 @@
 package ar.com.westsoft.listening.data.engine
 
-data class Game(
-    val gameHeader: GameHeader = GameHeader(),
+data class DictationGameRecord(
+    val gameHeader: DictationGameHeader = DictationGameHeader(),
     val dictationProgressList: List<DictationProgress> = listOf()
 )
 

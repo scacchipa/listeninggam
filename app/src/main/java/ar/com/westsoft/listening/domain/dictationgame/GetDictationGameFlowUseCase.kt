@@ -8,11 +8,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-class AnnotationStringFlowUseCase @Inject constructor(
+class GetDictationGameFlowUseCase @Inject constructor(
     private val dictationGame: DictationGame,
 ) {
     operator fun invoke(scope: CoroutineScope): StateFlow<AnnotatedString> {
-        return dictationGame.getAnnotatedStringFlow().stateIn(
+        println("getting DictationGameStateFlow")
+        return dictationGame.getDictationGameStateFlow().stateIn(
             scope = scope,
             started = SharingStarted.Eagerly,
             initialValue = dictationGame.getFirstAnnotatedString()

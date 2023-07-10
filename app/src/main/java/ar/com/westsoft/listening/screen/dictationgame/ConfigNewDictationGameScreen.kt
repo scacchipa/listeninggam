@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.westsoft.listening.BuildConfig
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(
@@ -104,8 +105,11 @@ fun ConfigNewDictationGameScreen(
             }
         }
         is GameCreationGameStatus.Error -> {
-            AdviceScreen("Navigation ...")
-            LaunchedEffect(Unit) { goBack() }
+            AdviceScreen("Error ...")
+            LaunchedEffect(Unit) {
+                delay(2000)
+                goBack()
+            }
         }
         is GameCreationGameStatus.IsDownloading -> {
             AdviceScreen("Downloading ...")

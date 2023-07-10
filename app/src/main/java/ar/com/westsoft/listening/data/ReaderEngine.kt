@@ -20,9 +20,9 @@ class ReaderEngine @Inject constructor(
         context
     ) { status ->
         if (status == TextToSpeech.ERROR) {
-            Log.i("SpeechToText", "Sintetizer init error")
+            Log.i("SpeechToText", "Synthesizer init error")
         } else if (status == TextToSpeech.SUCCESS) {
-            Log.i("SpeechToText", "Sintetizer init Success")
+            Log.i("SpeechToText", "Synthesizer init Success")
         }
     }
     private var offset: Int = 0
@@ -63,7 +63,7 @@ data class Utterance(
 )
 
 suspend fun TextToSpeech.awaitUtterance(offset: Int) =
-    suspendCancellableCoroutine<Utterance?> {
+    suspendCancellableCoroutine {
         val listener = object : UtteranceProgressListener() {
             override fun onStart(utteranceId: String?) {
                 println("*** onStart SpeakOut")

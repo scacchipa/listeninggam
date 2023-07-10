@@ -41,7 +41,7 @@ fun DictGameScreen() {
             ) {
                 Text("Speak Out")
             }
-            val textToShowState = viewModel.annotatedStringStateFlow.collectAsState()
+            val textToShowState = viewModel.dictationGameStateFlow.collectAsState()
 
             println("*** Text to read: " + textToShowState.value)
 

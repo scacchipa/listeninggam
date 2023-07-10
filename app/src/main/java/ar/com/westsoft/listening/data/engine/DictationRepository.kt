@@ -23,11 +23,11 @@ class DictationRepository @Inject constructor(
 
         val gui = runBlocking(ioDispatcher) {
 
-            val gameHeader = GameHeader(0, title, url)
+            val gameHeader = DictationGameHeader(0, title, url)
 
             appDatabase.getSavedListeningGameDao().insertGameDto(
                 savedDictationGameMapper.toDataSource(
-                    Game(
+                    DictationGameRecord(
                         gameHeader = gameHeader,
                         dictationProgressList = originalText
                             .lines()

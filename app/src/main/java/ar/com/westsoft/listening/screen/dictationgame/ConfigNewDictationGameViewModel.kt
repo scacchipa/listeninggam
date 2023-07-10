@@ -27,9 +27,14 @@ class ConfigNewDictationGameViewModel @Inject constructor(
         title: String,
         address: String
     ) {
+
         val coroutineExceptionHandler = CoroutineExceptionHandler {_, throwable ->
             throwable.printStackTrace()
+            viewModelScope.launch {
+                _gameCreationGameStatus.emit(GameCreationGameStatus.Error)
+            }
         }
+
         viewModelScope.launch(defaultDispatcher + coroutineExceptionHandler) {
             _gameCreationGameStatus.emit(GameCreationGameStatus.IsDownloading)
             _gameCreationGameStatus.emit(createNewDictationGameUseCase(title, address))
