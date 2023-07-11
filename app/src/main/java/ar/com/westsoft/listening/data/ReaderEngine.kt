@@ -31,6 +31,7 @@ class ReaderEngine @Inject constructor(
         emit(Utterance())
         while (true) {
             emit(tts.awaitUtterance(offset))
+            println("Utterance emitted")
         }
     }
 
