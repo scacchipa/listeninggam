@@ -50,9 +50,9 @@ class ReaderEngine @Inject constructor(
         )
     }
 
-    fun speakOut(message: String, offset: Int = 0) {
+    fun speakOut(message: String, offset: Int = 0, utteranceId: String = "") {
         this.offset = offset
-        tts.speak(message.substring(offset), TextToSpeech.QUEUE_FLUSH, null, "")
+        tts.speak(message.substring(offset), TextToSpeech.QUEUE_FLUSH, null, utteranceId)
     }
 }
 
