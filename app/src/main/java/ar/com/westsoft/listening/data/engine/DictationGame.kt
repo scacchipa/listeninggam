@@ -117,6 +117,16 @@ class DictationGame @Inject constructor(
                             cursorLetterPos = paragraph.progressTxt.getIdxPreviousTo(currentLetterPos, '_')
                                 ?:currentLetterPos
                         ))
+                    Key.DirectionDown ->
+                        dictationViewSharedFlow.emit(currentState.copy(
+                            cursorParagraphIdx = currentState.cursorParagraphIdx + 1,
+                            cursorLetterPos = 0
+                        ))
+                    Key.DirectionUp ->
+                        dictationViewSharedFlow.emit(currentState.copy(
+                            cursorParagraphIdx = currentState.cursorParagraphIdx + 1,
+                            cursorLetterPos = 0
+                        ))
                     Key.A,
                     Key.B,
                     Key.C,
