@@ -25,12 +25,12 @@ class ReaderEngine @Inject constructor(
             Log.i("SpeechToText", "Synthesizer init Success")
         }
     }
-    private var offset: Int = 0
+    var offset: Int = 0
 
     fun getUtteranceFlow() = flow {
         emit(Utterance())
         while (true) {
-            emit(tts.awaitUtterance(offset))
+            emit(tts.awaitUtterance(this@ReaderEngine))
             println("Utterance emitted")
         }
     }
@@ -52,6 +52,7 @@ class ReaderEngine @Inject constructor(
 
     fun speakOut(message: String, offset: Int = 0, utteranceId: String = "") {
         this.offset = offset
+        println("Offset speakOut: ${this.offset}")
         tts.speak(message.substring(offset), TextToSpeech.QUEUE_FLUSH, null, utteranceId)
     }
 }
@@ -63,7 +64,7 @@ data class Utterance(
     val frame: Int = 0,
 )
 
-suspend fun TextToSpeech.awaitUtterance(offset: Int) =
+suspend fun TextToSpeech.awaitUtterance(readerEngine: ReaderEngine) =
     suspendCancellableCoroutine {
         val listener = object : UtteranceProgressListener() {
             override fun onStart(utteranceId: String?) {
@@ -85,8 +86,8 @@ suspend fun TextToSpeech.awaitUtterance(offset: Int) =
                 end: Int,
                 frame: Int,
             ) {
-                println("*** onRangeStart: utteranceId=$utteranceId, start=$start, end=$end, frame=$frame")
-                it.resume(Utterance(utteranceId, start + offset, end + offset, frame))
+                println("*** onRangeStart: utteranceId=$utteranceId, start=${start + readerEngine.offset}, end=${end + readerEngine.offset}, frame=$frame")
+                it.resume(Utterance(utteranceId, start + readerEngine.offset, end + readerEngine.offset, frame))
             }
         }
         it.invokeOnCancellation {

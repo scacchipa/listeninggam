@@ -97,6 +97,7 @@ class DictationGame @Inject constructor(
 
     fun speakOut(offset: Int = 0) {
         runBlocking(defaultDispatcher) {
+            println("offset: $offset")
             val paragraphNumber = dictationViewSharedFlow.first().cursorParagraphIdx
             val paragraph = dictationGameRecord.dictationProgressList[paragraphNumber]
             readerEngine.speakOut(
@@ -241,6 +242,7 @@ fun CharArray.getIdxNextTo(idx: Int?, char: Char): Int? {
 fun CharArray.getIdxPreviousTo(idx: Int?, char: Char): Int? {
     idx?.let { _idx ->
         var pos = _idx - 1
+        println("pos: $pos")
 
         while (pos >= 0) {
             if (this[pos] == char) return pos
