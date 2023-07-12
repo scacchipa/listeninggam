@@ -41,15 +41,30 @@ fun DictGameScreen() {
             ) {
                 Text("Speak Out")
             }
-            val textToShowState = viewModel.dictationGameStateFlow.collectAsState()
+            val viewState = viewModel.dictationGameStateFlow.collectAsState()
 
-            println("*** Text to read: " + textToShowState.value)
+            println("*** Text to read: " + viewState.value)
+
+            Text(
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 20.sp
+                ),
+                text = "Paragraph: ${viewState.value.paragraphIdx}"
+            )
+            Text(
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 20.sp
+                ),
+                text = "Column: ${viewState.value.cursorColumn}"
+            )
 
             ClickableText(
                 modifier = Modifier
                     .fillMaxSize(1f)
                     .background(color = Color.Yellow),
-                text = textToShowState.value,
+                text = viewState.value.textToShow,
                 style = TextStyle(
                     fontFamily = FontFamily.Monospace,
                     fontSize = 20.sp

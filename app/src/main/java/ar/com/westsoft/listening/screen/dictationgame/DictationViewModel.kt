@@ -1,7 +1,6 @@
 package ar.com.westsoft.listening.screen.dictationgame
 
 import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.di.DefaultDispatcher
@@ -18,14 +17,14 @@ import javax.inject.Inject
 @HiltViewModel
 class DictationViewModel @Inject constructor(
     private val setupDictationGameUseCase: SetupDictationUseCase,
-    private val GetDictationGameFlowUseCase: GetDictationGameFlowUseCase,
+    private val getDictationGameFlowUseCase: GetDictationGameFlowUseCase,
     private val keyEventUseCase: KeyEventUseCase,
     private val speakOutUseCase: SpeakOutUseCase,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val dictationGameStateFlow: StateFlow<AnnotatedString> =
-        GetDictationGameFlowUseCase(viewModelScope)
+    val dictationGameStateFlow: StateFlow<DictationViewState> =
+        getDictationGameFlowUseCase(viewModelScope)
 
     fun onInitializeProgress(gui: Long) {
         viewModelScope.launch(defaultDispatcher) {
