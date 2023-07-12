@@ -7,6 +7,16 @@ import javax.inject.Inject
 class Keyboard @Inject constructor() {
     @OptIn(ExperimentalComposeUiApi::class)
     fun toChar(key: Key) = when(key) {
+        Key.Zero -> '0'
+        Key.One -> '1'
+        Key.Two -> '2'
+        Key.Three -> '3'
+        Key.Four -> '4'
+        Key.Five -> '5'
+        Key.Six -> '6'
+        Key.Seven -> '7'
+        Key.Eight -> '8'
+        Key.Nine -> '9'
         Key.A -> 'A'
         Key.B -> 'B'
         Key.C -> 'C'

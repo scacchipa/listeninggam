@@ -117,6 +117,7 @@ class DictationGame @Inject constructor(
             val paragraph = dictationGameRecord.dictationProgressList[paragraphIdx]
 
             if (keyEvent.type == KeyEventType.KeyDown) {
+                println(keyEvent.key.nativeKeyCode)
                 when (keyEvent.key) {
                     Key.DirectionRight -> dictationViewSharedFlow.emit(currentState.copy(
                             cursorLetterPos = paragraph.progressTxt.getIdxNextTo(currentLetterPos, '_')
@@ -156,6 +157,16 @@ class DictationGame @Inject constructor(
                             )
                         )
                     }
+                    Key.Zero,
+                    Key.One,
+                    Key.Two,
+                    Key.Three,
+                    Key.Four,
+                    Key.Five,
+                    Key.Six,
+                    Key.Seven,
+                    Key.Eight,
+                    Key.Nine,
                     Key.A,
                     Key.B,
                     Key.C,
@@ -181,7 +192,8 @@ class DictationGame @Inject constructor(
                     Key.W,
                     Key.X,
                     Key.Y,
-                    Key.Z -> checkLetterReveal(keyEvent.key, currentLetterPos)
+                    Key.Z ->
+                        checkLetterReveal(keyEvent.key, currentLetterPos)
                 }
             }
         }
