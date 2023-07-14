@@ -1,5 +1,9 @@
 package ar.com.westsoft.listening.data.engine
 
+import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
+import ar.com.westsoft.listening.util.Field
+import ar.com.westsoft.listening.util.concatenate
+
 data class DictationProgress(
     var progressId: Long?,
     val originalTxt: String = "",
@@ -32,16 +36,21 @@ data class DictationProgress(
         return result
     }
 
+    fun toEntity() = DictationProgressEntity(
+        progressId = progressId,
+        gameHeaderId = Field.unknown,
+        originalTxt = originalTxt,
+        progressTxt = progressTxt.concatenate()
+    )
+
     companion object {
         fun getInitialProgressText(origin: String): CharArray {
             val mappedOrigin = origin.map { char ->
                 if (char.isLetter() || char.isDigit()) '_'
                 else char
             }.toCharArray()
-            println(mappedOrigin.joinToString(""))
+            println(mappedOrigin.concatenate())
             return mappedOrigin
         }
     }
 }
-
-

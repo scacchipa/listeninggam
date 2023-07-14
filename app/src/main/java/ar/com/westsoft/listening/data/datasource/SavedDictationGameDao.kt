@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 
 @Dao
 interface SavedDictationGameDao {
@@ -37,6 +38,9 @@ interface SavedDictationGameDao {
             progressDtoList = game.dictationProgressEntityLists
         )
     }
+
+    @Update
+    fun updateDictationProgressEntity(dictionaryProgressEntity: DictationProgressEntity)
 
     @Transaction
     @Query("SELECT * FROM GameHeaderEntity")

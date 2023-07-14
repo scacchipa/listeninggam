@@ -14,11 +14,17 @@ import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.dictationgame.DictationViewState
+import ar.com.westsoft.listening.util.concatenate
+import ar.com.westsoft.listening.util.getIdxFirst
+import ar.com.westsoft.listening.util.getIdxNextTo
+import ar.com.westsoft.listening.util.getIdxPreviousTo
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -54,6 +60,17 @@ class DictationGame @Inject constructor(
         )
     }
 
+    private fun saveDictationProgress(dictationProgress: DictationProgress, gui: Long) {
+        CoroutineScope(ioDispatcher).launch {
+            val dictationProgressEntity = dictationProgress.toEntity()
+            dictationProgressEntity.gameHeaderId = gui
+
+            appDatabase
+                .getSavedListeningGameDao()
+                .updateDictationProgressEntity(dictationProgressEntity)
+        }
+    }
+
     fun getDictationGameStateFlow(): Flow<DictationViewState> = getReaderEngineFlow().combine(
             flow = getDictationViewStateFlow()
         ) { utterance, dictationState ->
@@ -65,7 +82,7 @@ class DictationGame @Inject constructor(
                     dictationGameRecord
                         .dictationProgressList[dictationState.cursorParagraphIdx]
                         .progressTxt
-                        .joinToString("")
+                        .concatenate()
                 )
                 if (dictationState.cursorParagraphIdx == utterance.utteranceId?.toInt()) {
                     addStyle(
@@ -114,26 +131,33 @@ class DictationGame @Inject constructor(
             val currentState = dictationViewSharedFlow.first()
             val currentLetterPos = currentState.cursorLetterPos
 
+            val gui = dictationGameRecord.gameHeader.gui
             val paragraphIdx = currentState.cursorParagraphIdx
-            val paragraph = dictationGameRecord.dictationProgressList[paragraphIdx]
+            val dictationProgress = dictationGameRecord.dictationProgressList[paragraphIdx]
 
             if (keyEvent.type == KeyEventType.KeyDown) {
                 println(keyEvent.key.nativeKeyCode)
                 when (keyEvent.key) {
                     Key.DirectionRight -> dictationViewSharedFlow.emit(currentState.copy(
-                            cursorLetterPos = paragraph.progressTxt.getIdxNextTo(currentLetterPos, '_')
-                                ?: paragraph.progressTxt.getIdxFirst('_')
+                            cursorLetterPos = dictationProgress.progressTxt.getIdxNextTo(currentLetterPos, '_')
+                                ?: dictationProgress.progressTxt.getIdxFirst('_')
                         ))
                     Key.DirectionLeft -> {
                         dictationViewSharedFlow.emit(
                             currentState.copy(
-                                cursorLetterPos = paragraph.progressTxt.getIdxPreviousTo(currentLetterPos, '_')
-                                    ?: paragraph.progressTxt.getIdxFirst('_')
+                                cursorLetterPos = dictationProgress.progressTxt.getIdxPreviousTo(currentLetterPos, '_')
+                                    ?: dictationProgress.progressTxt.getIdxFirst('_')
                             )
                         )
                     }
-                    Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
-                    Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
+                    Key.DirectionDown -> {
+                        saveDictationProgress(dictationProgress, gui)
+                        emitNewParagraphDictationState(paragraphIdx + 1)
+                    }
+                    Key.DirectionUp -> {
+                        saveDictationProgress(dictationProgress, gui)
+                        emitNewParagraphDictationState(paragraphIdx - 1)
+                    }
                     Key.Zero,
                     Key.One,
                     Key.Two,
@@ -216,40 +240,4 @@ class DictationGame @Inject constructor(
             )
         )
     }
-}
-
-fun CharArray.getIdxNextTo(idx: Int?, char: Char): Int? {
-    idx?.let { _idx ->
-        var pos = _idx + 1
-
-        while (pos < this.size) {
-            if (this[pos] == char) return pos
-            pos += 1
-        }
-    }
-    return null
-}
-
-fun CharArray.getIdxPreviousTo(idx: Int?, char: Char): Int? {
-    idx?.let { _idx ->
-        var pos = _idx - 1
-        println("pos: $pos")
-
-        while (pos >= 0) {
-            if (this[pos] == char) return pos
-            pos -= 1
-        }
-    }
-    return null
-}
-
-fun CharArray.getIdxFirst(char: Char): Int? {
-    var pos = 0
-
-    while (pos < this.size) {
-        if (this[pos] == char) return pos
-        pos += 1
-    }
-
-    return null
 }
