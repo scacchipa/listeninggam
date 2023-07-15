@@ -7,6 +7,6 @@ class SpeakOutUseCase @Inject constructor(
     private val dictationGame: DictationGame
 ) {
     operator fun invoke(offset: Int = 0) {
-        dictationGame.speakOut(offset)
+        dictationGame.speakOut(offset, 8)
     }
 }

@@ -5,6 +5,7 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
 import android.util.Log
+import ar.com.westsoft.listening.util.takeWords
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Locale
@@ -50,10 +51,12 @@ class ReaderEngine @Inject constructor(
         )
     }
 
-    fun speakOut(message: String, offset: Int = 0, utteranceId: String = "") {
+    fun speakOut(message: String, offset: Int = 0, utteranceId: String = "", wordCount: Int?) {
         this.offset = offset
         println("Offset speakOut: ${this.offset}")
-        tts.speak(message.substring(offset), TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+
+        val msg = message.substring(offset).takeWords(wordCount)
+        tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
     }
 }
 

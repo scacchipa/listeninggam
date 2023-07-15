@@ -112,7 +112,7 @@ class DictationGame @Inject constructor(
         textToShow = AnnotatedString("No text yet.")
     )
 
-    fun speakOut(offset: Int = 0) {
+    fun speakOut(offset: Int = 0, wordCount: Int? = 8) {
         runBlocking(defaultDispatcher) {
             println("offset: $offset")
             val paragraphNumber = dictationViewSharedFlow.first().cursorParagraphIdx
@@ -120,7 +120,8 @@ class DictationGame @Inject constructor(
             readerEngine.speakOut(
                 message = paragraph.originalTxt,
                 offset = paragraph.progressTxt.getIdxPreviousTo(offset, ' ') ?: 0,
-                utteranceId = paragraphNumber.toString()
+                utteranceId = paragraphNumber.toString(),
+                wordCount = wordCount
             )
         }
     }
