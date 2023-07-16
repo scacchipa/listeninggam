@@ -98,18 +98,21 @@ class DictationGame @Inject constructor(
                         end = _pos + 1
                     )
                 }
-            })
+            },
+            dictationGameRecord = dictationGameRecord
+        )
     }
 
     private fun getDictationViewStateFlow() = dictationViewSharedFlow
 
     private fun getReaderEngineFlow() = readerEngine.getUtteranceFlow()
 
-
     fun getFirstViewState() = DictationViewState(
         paragraphIdx = 0,
         cursorColumn = 0,
-        textToShow = AnnotatedString("No text yet.")
+        textToShow = AnnotatedString("No text yet."),
+        dictationGameRecord= DictationGameRecord()
+
     )
 
     fun speakOut(offset: Int = 0, wordCount: Int? = 8) {
@@ -126,6 +129,9 @@ class DictationGame @Inject constructor(
         }
     }
 
+    suspend fun moveToParagraph(idx: Int) {
+        emitNewParagraphDictationState(idx)
+    }
     @OptIn(ExperimentalComposeUiApi::class)
     fun onKeyEvent(keyEvent: KeyEvent) {
         runBlocking(defaultDispatcher) {
