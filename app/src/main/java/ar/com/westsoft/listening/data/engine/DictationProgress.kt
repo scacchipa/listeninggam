@@ -3,6 +3,9 @@ package ar.com.westsoft.listening.data.engine
 import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
 import ar.com.westsoft.listening.util.Field
 import ar.com.westsoft.listening.util.concatenate
+import ar.com.westsoft.listening.util.getIdxFirst
+import ar.com.westsoft.listening.util.getIdxNextTo
+import ar.com.westsoft.listening.util.getIdxPreviousTo
 
 data class DictationProgress(
     var progressId: Long?,
@@ -14,8 +17,10 @@ data class DictationProgress(
         return progressTxt
     }
 
-    fun setLetterProgress(pos: Int) {
-        progressTxt[pos] = originalTxt[pos]
+    fun setLetterProgress(pos: Int?) {
+        pos?.let { _pos ->
+            progressTxt[_pos] = originalTxt[_pos]
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -42,6 +47,37 @@ data class DictationProgress(
         originalTxt = originalTxt,
         progressTxt = progressTxt.concatenate()
     )
+
+
+    fun getFirstBlank(): Int? {
+        var pos = progressTxt.getIdxFirst('_')
+
+        while (pos != null && originalTxt[pos] == '_') {
+            pos = progressTxt.getIdxNextTo(pos, '_')
+        }
+
+        return pos
+    }
+    fun getNextBlank(idx: Int?): Int? {
+        var pos = progressTxt.getIdxNextTo(idx, '_')
+
+        while (pos != null && originalTxt[pos] == '_') {
+            pos = progressTxt.getIdxNextTo(pos, '_')
+        }
+
+        return pos
+    }
+
+    fun getIdxPreviousBlank(idx: Int?): Int? {
+
+        var pos = progressTxt.getIdxPreviousTo(idx, '_')
+
+        while (pos != null && originalTxt[pos] == '_') {
+            pos = progressTxt.getIdxPreviousTo(pos, '_')
+        }
+
+        return pos
+    }
 
     companion object {
         fun getInitialProgressText(origin: String): CharArray {

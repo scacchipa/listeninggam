@@ -15,8 +15,6 @@ import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.dictationgame.DictationViewState
 import ar.com.westsoft.listening.util.concatenate
-import ar.com.westsoft.listening.util.getIdxFirst
-import ar.com.westsoft.listening.util.getIdxNextTo
 import ar.com.westsoft.listening.util.getIdxPreviousTo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -130,6 +128,11 @@ class DictationGame @Inject constructor(
     }
 
     suspend fun moveToParagraph(idx: Int) {
+        val currentState = dictationViewSharedFlow.first()
+
+        saveDictationProgress(
+            dictationProgress = dictationGameRecord.dictationProgressList[currentState.cursorParagraphIdx],
+            gui = dictationGameRecord.gameHeader.gui)
         emitNewParagraphDictationState(idx)
     }
     @OptIn(ExperimentalComposeUiApi::class)
@@ -146,14 +149,14 @@ class DictationGame @Inject constructor(
                 println(keyEvent.key.nativeKeyCode)
                 when (keyEvent.key) {
                     Key.DirectionRight -> dictationViewSharedFlow.emit(currentState.copy(
-                            cursorLetterPos = dictationProgress.progressTxt.getIdxNextTo(currentLetterPos, '_')
-                                ?: dictationProgress.progressTxt.getIdxFirst('_')
+                            cursorLetterPos = dictationProgress.getNextBlank(currentLetterPos)
+                                ?: dictationProgress.getFirstBlank()
                         ))
                     Key.DirectionLeft -> {
                         dictationViewSharedFlow.emit(
                             currentState.copy(
-                                cursorLetterPos = dictationProgress.progressTxt.getIdxPreviousTo(currentLetterPos, '_')
-                                    ?: dictationProgress.progressTxt.getIdxFirst('_')
+                                cursorLetterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
+                                    ?: dictationProgress.getFirstBlank()
                             )
                         )
                     }
@@ -201,35 +204,45 @@ class DictationGame @Inject constructor(
                     Key.X,
                     Key.Y,
                     Key.Z ->
-                        checkLetterReveal(keyEvent.key, currentLetterPos)
+                        checkLetterReveal(keyEvent.key, currentState)
                 }
             }
         }
     }
 
-    private suspend fun checkLetterReveal(key: Key, pos: Int?) {
-        pos?.let { _pos ->
+    private suspend fun checkLetterReveal(key: Key, currentState: DictationState) {
+        if (checkLetter(keyboard.toChar(key), currentState)) {
+            revealLetter(currentState)
+        }
+    }
 
-            val lineNumber = dictationViewSharedFlow.first().cursorParagraphIdx
+    private suspend fun revealLetter(currentState: DictationState) {
+        dictationGameRecord
+            .dictationProgressList[currentState.cursorParagraphIdx]
+            .setLetterProgress(currentState.cursorLetterPos)
+        moveNextBlank()
+    }
+
+    private fun checkLetter(char: Char?, currentState: DictationState): Boolean {
+        return currentState.cursorLetterPos?.let { _pos ->
+            val lineNumber = currentState.cursorParagraphIdx
             val paragraph = dictationGameRecord.dictationProgressList[lineNumber]
             val correctKey = paragraph.originalTxt[_pos].uppercaseChar()
 
-            if (correctKey == keyboard.toChar(key)) {
-                paragraph.setLetterProgress(_pos)
-                moveNextBlank()
-            }
-        }
+            correctKey == char
+        } ?: false
     }
+
+
 
     private suspend fun moveNextBlank() {
         val currentState = dictationViewSharedFlow.first()
         val paragraph = dictationGameRecord.dictationProgressList[currentState.cursorParagraphIdx]
-        val progressTxt = paragraph.progressTxt
         val currentLetterPos = currentState.cursorLetterPos
 
         dictationViewSharedFlow.emit(currentState.copy(
-            cursorLetterPos = progressTxt.getIdxNextTo(currentLetterPos, '_')
-                ?: paragraph.progressTxt.getIdxFirst('_')
+            cursorLetterPos = paragraph.getNextBlank(currentLetterPos)
+                ?: paragraph.getFirstBlank()
         ))
     }
 
@@ -238,11 +251,9 @@ class DictationGame @Inject constructor(
 
         if (paragraphIdx < 0 || paragraphIdx  >= progressList.size) return
 
-        val newProgress = progressList[paragraphIdx].progressTxt
-
         dictationViewSharedFlow.emit(
             DictationState(
-                cursorLetterPos = newProgress.getIdxFirst('_'),
+                cursorLetterPos = progressList[paragraphIdx].getFirstBlank(),
                 cursorParagraphIdx = paragraphIdx
             )
         )
