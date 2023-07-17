@@ -168,6 +168,16 @@ class DictationGame @Inject constructor(
                         saveDictationProgress(dictationProgress, gui)
                         emitNewParagraphDictationState(paragraphIdx - 1)
                     }
+                    Key.Spacebar-> {
+                        speakOut(
+                            offset = currentLetterPos ?: 0,
+
+                        )
+                    }
+                    Key.Enter -> {
+                        saveDictationProgress(dictationProgress, gui)
+                        moveToParagraph(paragraphIdx + 1)
+                    }
                     Key.Zero,
                     Key.One,
                     Key.Two,
