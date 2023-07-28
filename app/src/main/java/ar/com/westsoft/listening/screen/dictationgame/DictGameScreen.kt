@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 @Composable
 fun DictGameScreen() {
@@ -33,6 +35,7 @@ fun DictGameScreen() {
         val requester = remember { FocusRequester() }
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
+
         Column(
             modifier = Modifier
                 .onKeyEvent { keyEvent ->
@@ -40,9 +43,28 @@ fun DictGameScreen() {
                     true
                 }
                 .focusRequester(requester)
-                .focusable(),
+                .focusable()
         ) {
             val viewState = viewModel.dictationGameStateFlow.collectAsState()
+
+            SideEffect {
+                coroutineScope.launch {
+                    val firstVisibleItem = listState.firstVisibleItemIndex
+                    val paragraphToShow = viewState.value.paragraphIdx
+                    val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size - 1
+                    val lastVisibleItem = firstVisibleItem + visibleItemCount
+
+                    println("firstVisibleItemIndex: $firstVisibleItem")
+                    println("paragraphToShow: $paragraphToShow")
+                    println("visibleItemCount: $visibleItemCount")
+                    println("lastVisibleItem: $lastVisibleItem")
+
+
+                    if (paragraphToShow !in firstVisibleItem..lastVisibleItem - 3) {
+                            listState.animateScrollToItem(max(viewState.value.paragraphIdx - 3, 0))
+                    }
+                }
+            }
 
             Button(
                 onClick = {
@@ -51,7 +73,7 @@ fun DictGameScreen() {
                         // Animate scroll to the 10th item
                         listState.animateScrollToItem(index = viewState.value.paragraphIdx)
                     }
-                },
+                }
             ) {
                 Text("Speak Out")
             }
@@ -73,7 +95,7 @@ fun DictGameScreen() {
             LazyColumn(state = listState) {
                 val progressList = viewState.value.dictationGameRecord.dictationProgressList
 
-                items(progressList.size ) { idx ->
+                items(progressList.size) { idx ->
                     if (viewState.value.paragraphIdx != idx) {
                         ClickableText(
                             style = TextStyle(

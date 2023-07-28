@@ -44,7 +44,7 @@ class DictationGame @Inject constructor(
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
 
-        dictationViewSharedFlow.emit(DictationState(0))
+        dictationViewSharedFlow.emit(DictationState())
     }
 
     private suspend fun getDictationGameRecord(gui: Long): DictationGameRecord = withContext(ioDispatcher) {
@@ -148,10 +148,9 @@ class DictationGame @Inject constructor(
             if (keyEvent.type == KeyEventType.KeyDown) {
                 println(keyEvent.key.nativeKeyCode)
                 when (keyEvent.key) {
-                    Key.DirectionRight -> dictationViewSharedFlow.emit(currentState.copy(
-                            cursorLetterPos = dictationProgress.getNextBlank(currentLetterPos)
-                                ?: dictationProgress.getFirstBlank()
-                        ))
+                    Key.DirectionRight -> dictationViewSharedFlow.emit(
+                        currentState.moveNextBlank(dictationGameRecord)
+                    )
                     Key.DirectionLeft -> {
                         dictationViewSharedFlow.emit(
                             currentState.copy(

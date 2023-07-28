@@ -28,7 +28,6 @@ class DictationViewModel @Inject constructor(
     val dictationGameStateFlow: StateFlow<DictationViewState> =
         getDictationGameFlowUseCase(viewModelScope)
 
-
     fun onInitializeProgress(gui: Long) {
         viewModelScope.launch(defaultDispatcher) {
             setupDictationGameUseCase(gui)
@@ -44,7 +43,9 @@ class DictationViewModel @Inject constructor(
     }
 
     fun onLetterClicked(offset: Int) {
-        speakOutUseCase(offset = offset)
+        viewModelScope.launch {
+            speakOutUseCase(offset = offset)
+        }
     }
 
     fun onParagraphClick(paragraphIdx: Int) {
@@ -54,6 +55,8 @@ class DictationViewModel @Inject constructor(
     }
 
     fun onKeyEvent(keyEvent: KeyEvent) {
-        keyEventUseCase(keyEvent)
+        viewModelScope.launch {
+            keyEventUseCase(keyEvent)
+        }
     }
 }
