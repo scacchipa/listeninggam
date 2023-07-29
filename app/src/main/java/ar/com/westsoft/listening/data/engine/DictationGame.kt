@@ -149,9 +149,12 @@ class DictationGame @Inject constructor(
             if (keyEvent.type == KeyEventType.KeyDown) {
                 println(keyEvent.key.nativeKeyCode)
                 when (keyEvent.key) {
-                    Key.DirectionRight -> dictationViewSharedFlow.emit(
-                        currentState.moveNextBlank(dictationGameRecord)
-                    )
+                    Key.DirectionRight -> {
+                        saveDictationProgress(dictationProgress, gui)
+                        dictationViewSharedFlow.emit(
+                            currentState.moveNextBlank(dictationGameRecord)
+                        )
+                    }
                     Key.DirectionLeft -> {
                         dictationViewSharedFlow.emit(
                             currentState.copy(
