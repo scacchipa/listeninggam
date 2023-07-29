@@ -247,7 +247,6 @@ class DictationGame @Inject constructor(
     }
 
 
-
     private suspend fun moveNextBlank() {
         dictationViewSharedFlow.emit(
             dictationViewSharedFlow.first().moveNextBlank(dictationGameRecord)
