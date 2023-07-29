@@ -14,6 +14,7 @@ import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.dictationgame.DictationViewState
+import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.concatenate
 import ar.com.westsoft.listening.util.getIdxPreviousTo
 import kotlinx.coroutines.CoroutineDispatcher
@@ -236,7 +237,7 @@ class DictationGame @Inject constructor(
         return currentState.cursorLetterPos?.let { _pos ->
             val lineNumber = currentState.cursorParagraphIdx
             val paragraph = dictationGameRecord.dictationProgressList[lineNumber]
-            val correctKey = paragraph.originalTxt[_pos].uppercaseChar()
+            val correctKey = paragraph.originalTxt[_pos].uppercaseChar().normalize()
 
             correctKey == char
         } ?: false
