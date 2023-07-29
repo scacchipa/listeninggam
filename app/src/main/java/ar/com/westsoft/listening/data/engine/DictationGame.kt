@@ -249,14 +249,9 @@ class DictationGame @Inject constructor(
 
 
     private suspend fun moveNextBlank() {
-        val currentState = dictationViewSharedFlow.first()
-        val paragraph = dictationGameRecord.dictationProgressList[currentState.cursorParagraphIdx]
-        val currentLetterPos = currentState.cursorLetterPos
-
-        dictationViewSharedFlow.emit(currentState.copy(
-            cursorLetterPos = paragraph.getNextBlank(currentLetterPos)
-                ?: paragraph.getFirstBlank()
-        ))
+        dictationViewSharedFlow.emit(
+            dictationViewSharedFlow.first().moveNextBlank(dictationGameRecord)
+        )
     }
 
     private suspend fun emitNewParagraphDictationState(paragraphIdx: Int) {
