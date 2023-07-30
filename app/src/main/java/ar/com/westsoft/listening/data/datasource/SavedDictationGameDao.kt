@@ -11,34 +11,34 @@ import androidx.room.Update
 interface SavedDictationGameDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertHeader(gameHeaderDto: GameHeaderEntity): Long
+    fun insertHeader(gameHeaderEntity: GameHeaderEntity): Long
 
     @Update
     fun updateHeader(gameHeaderEntity: GameHeaderEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertProgress(progressDtoList: List<DictationProgressEntity>)
+    fun insertProgress(progressEntityList: List<DictationProgressEntity>)
 
     @Transaction
     fun insertGameHeaderAndProgress(
         gameHeaderEntity: GameHeaderEntity,
-        progressDtoList: List<DictationProgressEntity>
+        progressEntityList: List<DictationProgressEntity>
     ) : Long {
         val headerId = insertHeader(gameHeaderEntity)
 
-        progressDtoList.forEach {
+        progressEntityList.forEach {
             it.gameHeaderId = headerId
         }
 
-        insertProgress(progressDtoList)
+        insertProgress(progressEntityList)
 
         return headerId
     }
 
-    fun insertGameDto(game: SavedDictationGameEntity): Long {
+    fun insertGameEntity(game: SavedDictationGameEntity): Long {
         return insertGameHeaderAndProgress(
             gameHeaderEntity = game.gameHeaderEntity,
-            progressDtoList = game.dictationProgressEntityLists
+            progressEntityList = game.dictationProgressEntityLists
         )
     }
 
@@ -47,5 +47,5 @@ interface SavedDictationGameDao {
 
     @Transaction
     @Query("SELECT * FROM GameHeaderEntity")
-    fun getSavedDictationGameDtoList(): List<SavedDictationGameEntity>
+    fun getSavedDictationGameEntityList(): List<SavedDictationGameEntity>
 }

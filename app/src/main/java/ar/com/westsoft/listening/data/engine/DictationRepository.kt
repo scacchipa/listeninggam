@@ -25,7 +25,7 @@ class DictationRepository @Inject constructor(
 
             val gameHeader = DictationGameHeader(0, title, url, 0.0)
 
-            appDatabase.getSavedListeningGameDao().insertGameDto(
+            appDatabase.getSavedListeningGameDao().insertGameEntity(
                 savedDictationGameMapper.toDataSource(
                     DictationGameRecord(
                         gameHeader = gameHeader,
@@ -45,7 +45,7 @@ class DictationRepository @Inject constructor(
 
     fun getAllDictationGameLabel(): List<DictationGameHeader> =
         runBlocking(ioDispatcher) {
-            appDatabase.getSavedListeningGameDao().getSavedDictationGameDtoList().map { game ->
+            appDatabase.getSavedListeningGameDao().getSavedDictationGameEntityList().map { game ->
                 DictationGameHeader(
                     gui = game.gameHeaderEntity.gui,
                     title = game.gameHeaderEntity.title,

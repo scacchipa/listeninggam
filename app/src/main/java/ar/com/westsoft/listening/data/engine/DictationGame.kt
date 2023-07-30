@@ -53,7 +53,7 @@ class DictationGame @Inject constructor(
         savedListeningGameMapper.toEngine(
             appDatabase
                 .getSavedListeningGameDao()
-                .getSavedDictationGameDtoList()
+                .getSavedDictationGameEntityList()
                 .find {
                     it.gameHeaderEntity.gui == gui
                 } ?: throw Exception("GUI didn't find in the database")
