@@ -12,6 +12,7 @@ import ar.com.westsoft.listening.data.ReaderEngine
 import ar.com.westsoft.listening.data.datasource.AppDatabase
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
+import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.dictationgame.DictationViewState
 import ar.com.westsoft.listening.util.char.normalize
@@ -64,9 +65,28 @@ class DictationGame @Inject constructor(
             val dictationProgressEntity = dictationProgress.toEntity()
             dictationProgressEntity.gameHeaderId = gui
 
+            val progressList = dictationGameRecord.dictationProgressList.filter {
+                it.originalTxt.isNotEmpty()
+            }
+            val totalLinesCount = progressList.size
+            val completedLinesCount = progressList.count { progress ->
+                progress.originalTxt == progress.progressTxt.concatToString()
+            }
+            val progressRate: Double = completedLinesCount.toDouble() / totalLinesCount
+
             appDatabase
                 .getSavedListeningGameDao()
                 .updateDictationProgressEntity(dictationProgressEntity)
+
+            appDatabase
+                .getSavedListeningGameDao()
+                .updateHeader(
+                    GameHeaderMapper().toDataSource(
+                        dictationGameRecord.gameHeader.copy(
+                            progressRate = progressRate
+                        )
+                    )
+                )
         }
     }
 
@@ -147,7 +167,6 @@ class DictationGame @Inject constructor(
             val dictationProgress = dictationGameRecord.dictationProgressList[paragraphIdx]
 
             if (keyEvent.type == KeyEventType.KeyDown) {
-                println(keyEvent.key.nativeKeyCode)
                 when (keyEvent.key) {
                     Key.DirectionRight -> {
                         saveDictationProgress(dictationProgress, gui)
@@ -218,6 +237,7 @@ class DictationGame @Inject constructor(
                     Key.Y,
                     Key.Z ->
                         checkLetterReveal(keyEvent.key, currentState)
+                    Key.Apostrophe -> revealLetter(currentState)
                 }
             }
         }

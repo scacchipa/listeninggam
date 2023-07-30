@@ -13,6 +13,9 @@ interface SavedDictationGameDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertHeader(gameHeaderDto: GameHeaderEntity): Long
 
+    @Update
+    fun updateHeader(gameHeaderEntity: GameHeaderEntity)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProgress(progressDtoList: List<DictationProgressEntity>)
 

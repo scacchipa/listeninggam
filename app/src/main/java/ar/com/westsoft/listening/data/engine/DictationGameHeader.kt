@@ -4,5 +4,5 @@ data class DictationGameHeader(
     val gui: Long = 0,
     val title: String = "",
     val txtAddress: String = "",
-    val progressPercent: Double = 0.0
+    val progressRate: Double = 0.0
 )

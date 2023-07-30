@@ -34,7 +34,7 @@ fun SelectDictationGameScreen(
                         fontSize = 20.sp,
                         fontFamily = FontFamily.Monospace,
                         text = "${games[idx].gui} ${games[idx].title} " +
-                                String.format("%.1f", games[idx].progressPercent) + "%"
+                                String.format("%.1f", games[idx].progressRate * 100) + "%"
                     )
                 }
             }

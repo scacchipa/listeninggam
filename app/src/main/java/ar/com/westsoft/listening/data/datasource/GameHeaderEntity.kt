@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class GameHeaderEntity(
     @PrimaryKey(autoGenerate = true) val gui: Long,
     val title: String,
-    val txtAddress: String
+    val txtAddress: String,
+    val progressRate: Double
 )

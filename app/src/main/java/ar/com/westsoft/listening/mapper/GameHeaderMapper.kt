@@ -10,13 +10,15 @@ class GameHeaderMapper @Inject constructor()
         GameHeaderEntity(
             gui = origin.gui,
             title = origin.title,
-            txtAddress = origin.txtAddress
+            txtAddress = origin.txtAddress,
+            progressRate = origin.progressRate
         )
 
     override fun toEngine(origin: GameHeaderEntity) =
         DictationGameHeader(
             gui = origin.gui,
             title = origin.title,
-            txtAddress = origin.txtAddress
+            txtAddress = origin.txtAddress,
+            progressRate = origin.progressRate
         )
 }

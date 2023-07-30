@@ -23,7 +23,7 @@ class DictationRepository @Inject constructor(
 
         val gui = runBlocking(ioDispatcher) {
 
-            val gameHeader = DictationGameHeader(0, title, url)
+            val gameHeader = DictationGameHeader(0, title, url, 0.0)
 
             appDatabase.getSavedListeningGameDao().insertGameDto(
                 savedDictationGameMapper.toDataSource(
@@ -49,7 +49,7 @@ class DictationRepository @Inject constructor(
                 DictationGameHeader(
                     gui = game.gameHeaderEntity.gui,
                     title = game.gameHeaderEntity.title,
-                    progressPercent = 0.0
+                    progressRate = game.gameHeaderEntity.progressRate
                 )
             }
         }
