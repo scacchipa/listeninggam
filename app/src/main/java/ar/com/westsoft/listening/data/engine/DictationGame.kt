@@ -76,7 +76,7 @@ class DictationGame @Inject constructor(
                 .updateHeader(
                     GameHeaderMapper().toDataSource(
                         dictationGameRecord.gameHeader.copy(
-                            progressRate = dictationGameRecord.getProgressRate()
+                            progressRate = dictationGameRecord.getGlobalProgressRate()
                         )
                     )
                 )
