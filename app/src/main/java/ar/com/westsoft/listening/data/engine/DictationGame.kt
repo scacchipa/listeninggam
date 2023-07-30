@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -60,19 +61,11 @@ class DictationGame @Inject constructor(
         )
     }
 
-    private fun saveDictationProgress(dictationProgress: DictationProgress, gui: Long) {
+    private fun saveDictationProgress(paragraphIdx: Int, gui: Long) {
         CoroutineScope(ioDispatcher).launch {
-            val dictationProgressEntity = dictationProgress.toEntity()
-            dictationProgressEntity.gameHeaderId = gui
 
-            val progressList = dictationGameRecord.dictationProgressList.filter {
-                it.originalTxt.isNotEmpty()
-            }
-            val totalLinesCount = progressList.size
-            val completedLinesCount = progressList.count { progress ->
-                progress.originalTxt == progress.progressTxt.concatToString()
-            }
-            val progressRate: Double = completedLinesCount.toDouble() / totalLinesCount
+            val dictationProgressEntity = dictationGameRecord.dictationProgressList[paragraphIdx].toEntity()
+            dictationProgressEntity.gameHeaderId = gui
 
             appDatabase
                 .getSavedListeningGameDao()
@@ -83,7 +76,7 @@ class DictationGame @Inject constructor(
                 .updateHeader(
                     GameHeaderMapper().toDataSource(
                         dictationGameRecord.gameHeader.copy(
-                            progressRate = progressRate
+                            progressRate = dictationGameRecord.getProgressRate()
                         )
                     )
                 )
@@ -122,7 +115,11 @@ class DictationGame @Inject constructor(
         )
     }
 
-    private fun getDictationViewStateFlow() = dictationViewSharedFlow
+    private fun getDictationViewStateFlow() = dictationViewSharedFlow.onEach { dictationState ->
+        saveDictationProgress(
+            paragraphIdx = dictationState.cursorParagraphIdx,
+            gui = dictationGameRecord.gameHeader.gui)
+    }
 
     private fun getReaderEngineFlow() = readerEngine.getUtteranceFlow()
 
@@ -131,7 +128,6 @@ class DictationGame @Inject constructor(
         cursorColumn = 0,
         textToShow = AnnotatedString("No text yet."),
         dictationGameRecord= DictationGameRecord()
-
     )
 
     fun speakOut(offset: Int = 0, wordCount: Int? = 8) {
@@ -149,11 +145,6 @@ class DictationGame @Inject constructor(
     }
 
     suspend fun moveToParagraph(idx: Int) {
-        val currentState = dictationViewSharedFlow.first()
-
-        saveDictationProgress(
-            dictationProgress = dictationGameRecord.dictationProgressList[currentState.cursorParagraphIdx],
-            gui = dictationGameRecord.gameHeader.gui)
         emitNewParagraphDictationState(idx)
     }
     @OptIn(ExperimentalComposeUiApi::class)
@@ -162,44 +153,24 @@ class DictationGame @Inject constructor(
             val currentState = dictationViewSharedFlow.first()
             val currentLetterPos = currentState.cursorLetterPos
 
-            val gui = dictationGameRecord.gameHeader.gui
             val paragraphIdx = currentState.cursorParagraphIdx
             val dictationProgress = dictationGameRecord.dictationProgressList[paragraphIdx]
 
             if (keyEvent.type == KeyEventType.KeyDown) {
                 when (keyEvent.key) {
-                    Key.DirectionRight -> {
-                        saveDictationProgress(dictationProgress, gui)
-                        dictationViewSharedFlow.emit(
+                    Key.DirectionRight -> dictationViewSharedFlow.emit(
                             currentState.moveNextBlank(dictationGameRecord)
                         )
-                    }
-                    Key.DirectionLeft -> {
-                        dictationViewSharedFlow.emit(
+                    Key.DirectionLeft -> dictationViewSharedFlow.emit(
                             currentState.copy(
                                 cursorLetterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
                                     ?: dictationProgress.getFirstBlank()
                             )
                         )
-                    }
-                    Key.DirectionDown -> {
-                        saveDictationProgress(dictationProgress, gui)
-                        emitNewParagraphDictationState(paragraphIdx + 1)
-                    }
-                    Key.DirectionUp -> {
-                        saveDictationProgress(dictationProgress, gui)
-                        emitNewParagraphDictationState(paragraphIdx - 1)
-                    }
-                    Key.Spacebar-> {
-                        speakOut(
-                            offset = currentLetterPos ?: 0,
-
-                        )
-                    }
-                    Key.Enter -> {
-                        saveDictationProgress(dictationProgress, gui)
-                        moveToParagraph(paragraphIdx + 1)
-                    }
+                    Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
+                    Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
+                    Key.Spacebar-> speakOut(offset = currentLetterPos ?: 0)
+                    Key.Enter -> moveToParagraph(paragraphIdx + 1)
                     Key.Zero,
                     Key.One,
                     Key.Two,
@@ -266,7 +237,6 @@ class DictationGame @Inject constructor(
         } ?: false
     }
 
-
     private suspend fun moveNextBlank() {
         dictationViewSharedFlow.emit(
             dictationViewSharedFlow.first().moveNextBlank(dictationGameRecord)
@@ -276,7 +246,7 @@ class DictationGame @Inject constructor(
     private suspend fun emitNewParagraphDictationState(paragraphIdx: Int) {
         val progressList = dictationGameRecord.dictationProgressList
 
-        if (paragraphIdx < 0 || paragraphIdx  >= progressList.size) return
+        if (paragraphIdx < 0 || paragraphIdx >= progressList.size) return
 
         dictationViewSharedFlow.emit(
             DictationState(

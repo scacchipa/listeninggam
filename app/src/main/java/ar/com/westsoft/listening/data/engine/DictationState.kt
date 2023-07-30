@@ -26,6 +26,7 @@ data class DictationState(
             blankPosition = progressList[idx].getFirstBlank()
             blankPosition != null
         }
+
         return DictationState(
             cursorParagraphIdx = paragraphWithBlank ?: cursorParagraphIdx,
             cursorLetterPos = blankPosition

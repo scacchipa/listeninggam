@@ -54,8 +54,8 @@ fun DictGameScreen() {
                     val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size - 1
                     val lastVisibleItem = firstVisibleItem + visibleItemCount
 
-                    if (paragraphToShow !in firstVisibleItem..lastVisibleItem - 3) {
-                            listState.animateScrollToItem(max(viewState.value.paragraphIdx - 3, 0))
+                    if (paragraphToShow !in firstVisibleItem..lastVisibleItem - visibleItemCount / 2) {
+                            listState.animateScrollToItem(max(viewState.value.paragraphIdx - visibleItemCount / 2, 0))
                     }
                 }
             }
