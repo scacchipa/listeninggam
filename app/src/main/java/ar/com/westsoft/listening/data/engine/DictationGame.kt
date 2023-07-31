@@ -159,6 +159,8 @@ class DictationGame @Inject constructor(
             val paragraphIdx = currentState.cursorParagraphIdx
             val dictationProgress = dictationGameRecord.dictationProgressList[paragraphIdx]
 
+            println("key: ${keyEvent.key.nativeKeyCode}")
+
             if (keyEvent.type == KeyEventType.KeyDown) {
                 when (keyEvent.key) {
                     Key.DirectionRight -> moveNextBlank()
@@ -210,6 +212,7 @@ class DictationGame @Inject constructor(
                     Key.Z ->
                         checkLetterReveal(keyEvent.key, currentState)
                     Key.Apostrophe -> revealLetter(currentState)
+                    Key.Equals -> revealParagraph(currentState.cursorParagraphIdx)
                 }
             }
         }
@@ -225,6 +228,18 @@ class DictationGame @Inject constructor(
         dictationGameRecord
             .dictationProgressList[currentState.cursorParagraphIdx]
             .setLetterProgress(currentState.cursorLetterPos)
+
+        moveNextBlank()
+    }
+
+    private suspend fun revealParagraph(paragraphIdx: Int) {
+        val currentProgress = dictationGameRecord.dictationProgressList[paragraphIdx]
+
+        if (currentProgress.isCompleted.not()) {
+            (0 until currentProgress.progressTxt.size).forEach { idx  ->
+                currentProgress.setLetterProgress(idx)
+            }
+        }
 
         moveNextBlank()
     }
