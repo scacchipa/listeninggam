@@ -5,19 +5,18 @@ data class DictationState(
     var cursorLetterPos: Int? = 0
 ) {
 
-    fun moveNextBlank(gameRecord: DictationGameRecord) : DictationState {
-
-        val currentProgress = gameRecord.dictationProgressList[cursorParagraphIdx]
-
-        return currentProgress.getNextBlank(cursorLetterPos)?.let {nextBlank ->
-             DictationState(
-                cursorParagraphIdx = cursorParagraphIdx,
-                cursorLetterPos = nextBlank
-            )
-        } ?: moveFirstBlankInNextParagraph(gameRecord)
+    fun moveNextBlank(gameRecord: DictationGameRecord) : DictationState? {
+        return gameRecord
+            .dictationProgressList[cursorParagraphIdx]
+            .getNextBlank(cursorLetterPos)?.let { nextBlank ->
+                DictationState(
+                    cursorParagraphIdx = cursorParagraphIdx,
+                    cursorLetterPos = nextBlank
+                )
+            }
     }
 
-    private fun moveFirstBlankInNextParagraph(gameRecord: DictationGameRecord) : DictationState {
+    fun moveFirstBlankInNextParagraph(gameRecord: DictationGameRecord) : DictationState {
         val progressList = gameRecord.dictationProgressList
 
         var blankPosition: Int? = null

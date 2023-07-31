@@ -42,7 +42,10 @@ class DictationGame @Inject constructor(
 ) {
     private var dictationGameRecord = DictationGameRecord()
 
-    private val dictationViewSharedFlow = MutableSharedFlow<DictationState>(replay = 1)
+    private val dictationViewSharedFlow = MutableSharedFlow<DictationState>(
+        replay = 1,
+        extraBufferCapacity = 2
+    )
 
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
@@ -158,9 +161,7 @@ class DictationGame @Inject constructor(
 
             if (keyEvent.type == KeyEventType.KeyDown) {
                 when (keyEvent.key) {
-                    Key.DirectionRight -> dictationViewSharedFlow.emit(
-                            currentState.moveNextBlank(dictationGameRecord)
-                        )
+                    Key.DirectionRight -> moveNextBlank()
                     Key.DirectionLeft -> dictationViewSharedFlow.emit(
                             currentState.copy(
                                 cursorLetterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
@@ -224,6 +225,7 @@ class DictationGame @Inject constructor(
         dictationGameRecord
             .dictationProgressList[currentState.cursorParagraphIdx]
             .setLetterProgress(currentState.cursorLetterPos)
+
         moveNextBlank()
     }
 
@@ -238,9 +240,16 @@ class DictationGame @Inject constructor(
     }
 
     private suspend fun moveNextBlank() {
-        dictationViewSharedFlow.emit(
-            dictationViewSharedFlow.first().moveNextBlank(dictationGameRecord)
-        )
+        val currentState = dictationViewSharedFlow.first()
+
+        currentState.moveNextBlank(dictationGameRecord)?.let { nextBlank ->
+            dictationViewSharedFlow.emit(nextBlank)
+        } ?: let {
+            dictationViewSharedFlow.emit(currentState)
+            dictationViewSharedFlow.emit(
+                currentState.moveFirstBlankInNextParagraph(dictationGameRecord)
+            )
+        }
     }
 
     private suspend fun emitNewParagraphDictationState(paragraphIdx: Int) {
