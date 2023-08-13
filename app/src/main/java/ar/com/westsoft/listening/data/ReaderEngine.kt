@@ -55,7 +55,10 @@ class ReaderEngine @Inject constructor(
         this.offset = offset
         println("Offset speakOut: ${this.offset}")
 
-        val msg = message.substring(offset).takeWords(wordCount)
+        val msg = message
+            .substring(offset)
+            .takeWords(wordCount)
+            .replace("_", "", false)
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
     }
 }
