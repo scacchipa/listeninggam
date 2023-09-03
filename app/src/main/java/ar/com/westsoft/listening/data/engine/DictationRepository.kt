@@ -21,6 +21,8 @@ class DictationRepository @Inject constructor(
         val originalText = externalApi.downloadFile(url)
             ?: return RepoTaskResponse.Uncompleted
 
+        println(originalText)
+
         val gui = runBlocking(ioDispatcher) {
 
             val gameHeader = DictationGameHeader(0, title, url, 0.0)
