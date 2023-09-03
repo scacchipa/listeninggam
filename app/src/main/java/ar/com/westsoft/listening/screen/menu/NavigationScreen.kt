@@ -1,6 +1,9 @@
 package ar.com.westsoft.listening.screen.menu
 
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -12,7 +15,9 @@ fun NavigationScreen() {
 
     NavHost(
         navController = navController,
-        startDestination = Routes.SelectGame.name
+        startDestination = Routes.SelectGame.name,
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
     ) {
         composable(route = Routes.SelectGame.name) {
             SelectGameScreen(
