@@ -3,7 +3,6 @@ package ar.com.westsoft.listening.data
 import android.app.Application
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
-import android.speech.tts.Voice
 import android.util.Log
 import ar.com.westsoft.listening.util.takeWords
 import kotlinx.coroutines.flow.flow
@@ -17,13 +16,16 @@ import kotlin.coroutines.resume
 class ReaderEngine @Inject constructor(
     context: Application
 ) {
-    private val tts: TextToSpeech = TextToSpeech(
-        context
-    ) { status ->
-        if (status == TextToSpeech.ERROR) {
-            Log.i("SpeechToText", "Synthesizer init error")
-        } else if (status == TextToSpeech.SUCCESS) {
-            Log.i("SpeechToText", "Synthesizer init Success")
+    private val tts: TextToSpeech by lazy {
+        TextToSpeech(context) { status ->
+            if (status == TextToSpeech.ERROR) {
+                Log.i("SpeechToText", "Synthesizer init error")
+            } else if (status == TextToSpeech.SUCCESS) {
+                Log.i("SpeechToText", "Synthesizer init Success")
+                tts.language = Locale.US
+                tts.setPitch(1f)
+                tts.setSpeechRate(1f)
+            }
         }
     }
     var offset: Int = 0
@@ -34,21 +36,6 @@ class ReaderEngine @Inject constructor(
             emit(tts.awaitUtterance(this@ReaderEngine))
             println("Utterance emitted")
         }
-    }
-
-    init {
-        tts.setPitch(1f)
-        tts.setSpeechRate(0.5f)
-        tts.setVoice(
-            Voice(
-                "en-us-x-sfg#male-local",
-                Locale.US,
-                400,
-                200,
-                true,
-                hashSetOf("male"),
-            ),
-        )
     }
 
     fun speakOut(message: String, offset: Int = 0, utteranceId: String = "", wordCount: Int?) {
