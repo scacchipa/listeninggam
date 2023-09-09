@@ -44,7 +44,7 @@ import kotlin.math.max
 
 @Composable
 fun DictGameMainScreen() {
-    val viewModel = hiltViewModel<DictationViewModel>()
+    val viewModel = hiltViewModel<DictGameMainViewModel>()
 
     val isShowingOptions = viewModel.isShowingPreference.collectAsState()
 

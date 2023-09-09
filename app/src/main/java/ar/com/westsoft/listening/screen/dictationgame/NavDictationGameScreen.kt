@@ -50,7 +50,7 @@ fun NavDictationGameScreen() {
         ) { navBackStackEntry ->
             val gui: Long? = navBackStackEntry.arguments?.getLong("gui")
             gui?.let {
-                val viewModel = hiltViewModel<DictationViewModel>()
+                val viewModel = hiltViewModel<DictGameMainViewModel>()
                 viewModel.onInitializeProgress(it)
                 DictGameMainScreen()
             } ?: let {

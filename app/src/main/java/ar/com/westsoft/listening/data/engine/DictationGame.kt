@@ -14,7 +14,7 @@ import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
-import ar.com.westsoft.listening.screen.dictationgame.DictationViewState
+import ar.com.westsoft.listening.screen.dictationgame.DictGameState
 import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.concatenate
 import ar.com.westsoft.listening.util.getIdxPreviousTo
@@ -86,10 +86,10 @@ class DictationGame @Inject constructor(
         }
     }
 
-    fun getDictationGameStateFlow(): Flow<DictationViewState> = getReaderEngineFlow().combine(
+    fun getDictationGameStateFlow(): Flow<DictGameState> = getReaderEngineFlow().combine(
             flow = getDictationViewStateFlow()
         ) { utterance, dictationState ->
-        DictationViewState(
+        DictGameState(
             cursorColumn = dictationState.cursorLetterPos,
             paragraphIdx = dictationState.cursorParagraphIdx,
             textToShow = buildAnnotatedString {
@@ -126,7 +126,7 @@ class DictationGame @Inject constructor(
 
     private fun getReaderEngineFlow() = readerEngine.getUtteranceFlow()
 
-    fun getFirstViewState() = DictationViewState(
+    fun getFirstViewState() = DictGameState(
         paragraphIdx = 0,
         cursorColumn = 0,
         textToShow = AnnotatedString("No text yet."),

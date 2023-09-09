@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DictationViewModel @Inject constructor(
+class DictGameMainViewModel @Inject constructor(
     private val setupDictationGameUseCase: SetupDictationUseCase,
     getDictationGameFlowUseCase: GetDictationGameFlowUseCase,
     private val keyEventUseCase: KeyEventUseCase,
@@ -26,7 +26,7 @@ class DictationViewModel @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val dictationGameStateFlow: StateFlow<DictationViewState> =
+    val dictationGameStateFlow: StateFlow<DictGameState> =
         getDictationGameFlowUseCase(viewModelScope)
 
     private val isMutableShowingPreference = MutableStateFlow(false)
