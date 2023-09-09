@@ -11,6 +11,7 @@ import ar.com.westsoft.listening.domain.dictationgame.SetupDictationUseCase
 import ar.com.westsoft.listening.domain.dictationgame.SpeakOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DictationViewModel @Inject constructor(
     private val setupDictationGameUseCase: SetupDictationUseCase,
-    private val getDictationGameFlowUseCase: GetDictationGameFlowUseCase,
+    getDictationGameFlowUseCase: GetDictationGameFlowUseCase,
     private val keyEventUseCase: KeyEventUseCase,
     private val speakOutUseCase: SpeakOutUseCase,
     private val moveToParagraphUseCase: MoveToParagraphUseCase,
@@ -28,6 +29,9 @@ class DictationViewModel @Inject constructor(
     val dictationGameStateFlow: StateFlow<DictationViewState> =
         getDictationGameFlowUseCase(viewModelScope)
 
+    private val isMutableShowingPreference = MutableStateFlow(false)
+    val isShowingPreference = isMutableShowingPreference as StateFlow<Boolean>
+
     fun onInitializeProgress(gui: Long) {
         viewModelScope.launch(defaultDispatcher) {
             setupDictationGameUseCase(gui)
@@ -36,9 +40,15 @@ class DictationViewModel @Inject constructor(
         }
     }
 
-    fun onButtonClicked() {
+    fun onSettingButtonClicked() {
         viewModelScope.launch {
-            speakOutUseCase()
+            isMutableShowingPreference.emit(true)
+        }
+    }
+
+    fun onPreferenceClosed() {
+        viewModelScope.launch {
+            isMutableShowingPreference.emit(false)
         }
     }
 
