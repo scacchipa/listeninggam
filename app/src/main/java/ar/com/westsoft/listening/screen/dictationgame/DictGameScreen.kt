@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -108,18 +107,6 @@ fun DictGameScreen() {
                 }
             }
 
-            Button(
-                onClick = {
-                    viewModel.onButtonClicked()
-                    coroutineScope.launch {
-                        // Animate scroll to the 10th item
-                        listState.animateScrollToItem(index = viewState.value.paragraphIdx)
-                    }
-                }
-            ) {
-                Text("Speak Out")
-            }
-
             Text(
                 style = TextStyle(
                     fontFamily = FontFamily.Monospace,
@@ -127,6 +114,7 @@ fun DictGameScreen() {
                 ),
                 text = "Paragraph: ${viewState.value.paragraphIdx}"
             )
+
             Text(
                 style = TextStyle(
                     fontFamily = FontFamily.Monospace,
@@ -134,6 +122,7 @@ fun DictGameScreen() {
                 ),
                 text = "Column: ${viewState.value.cursorColumn}"
             )
+
             LazyColumn(state = listState) {
                 val progressList = viewState.value.dictationGameRecord.dictationProgressList
 
@@ -175,6 +164,7 @@ fun DictGameScreen() {
                 ),
             sideKey = sideKey
         )
+
         LaunchedEffect(Unit) {
             requester.requestFocus()
         }
