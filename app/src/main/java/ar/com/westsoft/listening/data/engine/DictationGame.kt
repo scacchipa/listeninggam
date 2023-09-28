@@ -15,6 +15,8 @@ import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.dictationgame.DictGameState
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.DictGameSettingsDSO
 import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.concatenate
 import ar.com.westsoft.listening.util.getIdxPreviousTo
@@ -22,6 +24,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
@@ -38,7 +41,8 @@ class DictationGame @Inject constructor(
     private val keyboard: Keyboard,
     private val savedListeningGameMapper: SavedDictationGameMapper,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val settingsDataStore: DictSettingsDataStore
 ) {
     private var dictationGameRecord = DictationGameRecord()
 
@@ -47,27 +51,36 @@ class DictationGame @Inject constructor(
         extraBufferCapacity = 2
     )
 
+    private val settingsFlow = MutableStateFlow(
+        DictGameSettingsDSO(
+            readWordAfterCursorValue = 7,
+            readWordBeforeCursorValue = 2
+        )
+    )
+
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
 
         dictationViewSharedFlow.emit(DictationState())
     }
 
-    private suspend fun getDictationGameRecord(gui: Long): DictationGameRecord = withContext(ioDispatcher) {
-        savedListeningGameMapper.toEngine(
-            appDatabase
-                .getSavedListeningGameDao()
-                .getSavedDictationGameEntityList()
-                .find {
-                    it.gameHeaderEntity.gui == gui
-                } ?: throw Exception("GUI didn't find in the database")
-        )
-    }
+    private suspend fun getDictationGameRecord(gui: Long): DictationGameRecord =
+        withContext(ioDispatcher) {
+            savedListeningGameMapper.toEngine(
+                appDatabase
+                    .getSavedListeningGameDao()
+                    .getSavedDictationGameEntityList()
+                    .find {
+                        it.gameHeaderEntity.gui == gui
+                    } ?: throw Exception("GUI didn't find in the database")
+            )
+        }
 
     private fun saveDictationProgress(paragraphIdx: Int, gui: Long) {
         CoroutineScope(ioDispatcher).launch {
 
-            val dictationProgressEntity = dictationGameRecord.dictationProgressList[paragraphIdx].toEntity()
+            val dictationProgressEntity =
+                dictationGameRecord.dictationProgressList[paragraphIdx].toEntity()
             dictationProgressEntity.gameHeaderId = gui
 
             appDatabase
@@ -87,8 +100,8 @@ class DictationGame @Inject constructor(
     }
 
     fun getDictationGameStateFlow(): Flow<DictGameState> = getReaderEngineFlow().combine(
-            flow = getDictationViewStateFlow()
-        ) { utterance, dictationState ->
+        flow = getDictationViewStateFlow()
+    ) { utterance, dictationState ->
         DictGameState(
             cursorColumn = dictationState.cursorLetterPos,
             paragraphIdx = dictationState.cursorParagraphIdx,
@@ -106,7 +119,7 @@ class DictationGame @Inject constructor(
                         end = utterance.end
                     )
                 }
-                dictationState.cursorLetterPos?.let {_pos ->
+                dictationState.cursorLetterPos?.let { _pos ->
                     addStyle(
                         style = SpanStyle(color = Color.Red),
                         start = _pos,
@@ -121,7 +134,8 @@ class DictationGame @Inject constructor(
     private fun getDictationViewStateFlow() = dictationViewSharedFlow.onEach { dictationState ->
         saveDictationProgress(
             paragraphIdx = dictationState.cursorParagraphIdx,
-            gui = dictationGameRecord.gameHeader.gui)
+            gui = dictationGameRecord.gameHeader.gui
+        )
     }
 
     private fun getReaderEngineFlow() = readerEngine.getUtteranceFlow()
@@ -130,10 +144,10 @@ class DictationGame @Inject constructor(
         paragraphIdx = 0,
         cursorColumn = 0,
         textToShow = AnnotatedString("No text yet."),
-        dictationGameRecord= DictationGameRecord()
+        dictationGameRecord = DictationGameRecord()
     )
 
-    fun speakOut(offset: Int = 0, wordCount: Int? = 8) {
+    fun speakOut(offset: Int = 0, wordCount: Int = 8) {
         runBlocking(defaultDispatcher) {
             println("offset: $offset")
             val paragraphNumber = dictationViewSharedFlow.first().cursorParagraphIdx
@@ -150,6 +164,7 @@ class DictationGame @Inject constructor(
     suspend fun moveToParagraph(idx: Int) {
         emitNewParagraphDictationState(idx)
     }
+
     @OptIn(ExperimentalComposeUiApi::class)
     fun onKeyEvent(keyEvent: KeyEvent) {
         runBlocking(defaultDispatcher) {
@@ -165,14 +180,19 @@ class DictationGame @Inject constructor(
                 when (keyEvent.key) {
                     Key.DirectionRight -> moveNextBlank()
                     Key.DirectionLeft -> dictationViewSharedFlow.emit(
-                            currentState.copy(
-                                cursorLetterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
-                                    ?: dictationProgress.getFirstBlank()
-                            )
+                        currentState.copy(
+                            cursorLetterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
+                                ?: dictationProgress.getFirstBlank()
                         )
+                    )
+
                     Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
                     Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
-                    Key.Spacebar-> speakOut(offset = currentLetterPos ?: 0)
+                    Key.Spacebar -> speakOut(
+                        offset = currentLetterPos ?: 0,
+                        wordCount = settingsFlow.first().readWordAfterCursorValue
+                    )
+
                     Key.Enter -> moveToParagraph(paragraphIdx + 1)
                     Key.Zero,
                     Key.One,
@@ -211,6 +231,7 @@ class DictationGame @Inject constructor(
                     Key.Y,
                     Key.Z ->
                         checkLetterReveal(keyEvent.key, currentState)
+
                     Key.Apostrophe -> revealLetter(currentState)
                     Key.Equals -> revealParagraph(currentState.cursorParagraphIdx)
                 }
@@ -236,7 +257,7 @@ class DictationGame @Inject constructor(
         val currentProgress = dictationGameRecord.dictationProgressList[paragraphIdx]
 
         if (currentProgress.isCompleted.not()) {
-            (0 until currentProgress.progressTxt.size).forEach { idx  ->
+            (0 until currentProgress.progressTxt.size).forEach { idx ->
                 currentProgress.setLetterProgress(idx)
             }
         }

@@ -29,5 +29,4 @@ fun String.takeWords(count: Int?): String {
         stringBuilder.toString()
 
     } ?: this
-
 }

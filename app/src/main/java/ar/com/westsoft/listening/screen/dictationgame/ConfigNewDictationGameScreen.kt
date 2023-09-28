@@ -7,12 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.westsoft.listening.BuildConfig
 import kotlinx.coroutines.delay
@@ -41,18 +37,11 @@ fun ConfigNewDictationGameScreen(
                 Text(
                     modifier = Modifier.padding(20.dp),
                     text = "Dictation game",
-                    fontSize = 30.sp,
-                    style = TextStyle(
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Bold
-                    )
+                    style = MaterialTheme.typography.labelLarge
                 )
                 Text(
                     text = "Title:",
-                    fontSize = 20.sp,
-                    style = TextStyle(
-                        fontFamily = FontFamily.Monospace
-                    )
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 TextField(
                     value = title,
@@ -60,10 +49,7 @@ fun ConfigNewDictationGameScreen(
                 )
                 Text(
                     text = "Enter .txt file address:",
-                    fontSize = 20.sp,
-                    style = TextStyle(
-                        fontFamily = FontFamily.Monospace
-                    )
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 TextField(
                     value = txtAddress,
@@ -73,7 +59,10 @@ fun ConfigNewDictationGameScreen(
                 Button(
                     onClick = { txtAddress = clipboardManager.getText().toString() }
                 ) {
-                    Text(text = "Paste from Clipboard")
+                    Text(
+                        text = "Paste from Clipboard",
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
                 Button(
                     onClick = {
@@ -84,7 +73,7 @@ fun ConfigNewDictationGameScreen(
                                 title = BuildConfig.DEBUG_DICTATION_TEXT_TITLE
                                     ?: title,
                                 address = BuildConfig.DEBUG_DICTATION_TEXT_ADDRESS
-                                    ?:txtAddress
+                                    ?: txtAddress
 
                                 // title = "The adventure of Tom Sawyer",
                                 // address = "http://medicamentosrothlin.com.ar/app/mac/"
@@ -94,16 +83,21 @@ fun ConfigNewDictationGameScreen(
                         }
                     }
                 ) {
-                    Text(text = "Start")
+                    Text(
+                        text = "Start",
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
             }
         }
+
         is GameCreationGameStatus.Completed -> {
             AdviceScreen("Stating new game ...")
             LaunchedEffect(Unit) {
                 playGame(gameCreationGameStatus.gui)
             }
         }
+
         is GameCreationGameStatus.Error -> {
             AdviceScreen("Error ...")
             LaunchedEffect(Unit) {
@@ -111,6 +105,7 @@ fun ConfigNewDictationGameScreen(
                 goBack()
             }
         }
+
         is GameCreationGameStatus.IsDownloading -> {
             AdviceScreen("Downloading ...")
         }

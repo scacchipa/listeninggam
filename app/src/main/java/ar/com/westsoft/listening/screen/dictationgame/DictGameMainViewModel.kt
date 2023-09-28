@@ -4,7 +4,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.di.DefaultDispatcher
-import ar.com.westsoft.listening.domain.dictationgame.GetDictationGameFlowUseCase
+import ar.com.westsoft.listening.domain.dictationgame.GetDictationGameStateFlowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.KeyEventUseCase
 import ar.com.westsoft.listening.domain.dictationgame.MoveToParagraphUseCase
 import ar.com.westsoft.listening.domain.dictationgame.SetupDictationUseCase
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DictGameMainViewModel @Inject constructor(
     private val setupDictationGameUseCase: SetupDictationUseCase,
-    getDictationGameFlowUseCase: GetDictationGameFlowUseCase,
+    getDictationGameStateFlowUseCase: GetDictationGameStateFlowUseCase,
     private val keyEventUseCase: KeyEventUseCase,
     private val speakOutUseCase: SpeakOutUseCase,
     private val moveToParagraphUseCase: MoveToParagraphUseCase,
@@ -27,7 +27,7 @@ class DictGameMainViewModel @Inject constructor(
 ) : ViewModel() {
 
     val dictationGameStateFlow: StateFlow<DictGameState> =
-        getDictationGameFlowUseCase(viewModelScope)
+        getDictationGameStateFlowUseCase(viewModelScope)
 
     private val isMutableShowingPreference = MutableStateFlow(false)
     val isShowingPreference = isMutableShowingPreference as StateFlow<Boolean>

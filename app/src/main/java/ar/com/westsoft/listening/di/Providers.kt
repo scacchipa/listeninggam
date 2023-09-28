@@ -1,6 +1,12 @@
 package ar.com.westsoft.listening.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import ar.com.westsoft.listening.data.datasource.AppDatabase
 import dagger.Module
@@ -30,4 +36,21 @@ class Providers {
             klass = AppDatabase::class.java,
             name = "GAMES_DATABASE"
         ).build()
+
+    @Singleton
+    @Provides
+    fun provideDataStore(
+        @ApplicationContext applicationContext: Context
+    ) : DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create(
+            corruptionHandler = ReplaceFileCorruptionHandler(
+                produceNewData = {
+                    emptyPreferences()
+                }
+            ),
+            produceFile = {
+                applicationContext.preferencesDataStoreFile("dict_game_preferences.db")
+            }
+        )
+    }
 }

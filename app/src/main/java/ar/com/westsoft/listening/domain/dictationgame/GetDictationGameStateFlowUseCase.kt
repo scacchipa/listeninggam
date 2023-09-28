@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-class GetDictationGameFlowUseCase @Inject constructor(
+class GetDictationGameStateFlowUseCase @Inject constructor(
     private val dictationGame: DictationGame,
 ) {
     operator fun invoke(scope: CoroutineScope): StateFlow<DictGameState> {
