@@ -49,7 +49,7 @@ fun DictGameSettingScreen(
             )
 
             TextField(
-                value = settingsState.value.readWordAfterCursorTextFieldValue,
+                value = settingsState.value.readWordAfterCursor,
                 onValueChange = {
                     settingsViewModel.setReadWordAfterCursor(it)
                 },
@@ -73,7 +73,7 @@ fun DictGameSettingScreen(
             )
 
             TextField(
-                value = settingsState.value.readWordBeforeCursorTextFieldValue,
+                value = settingsState.value.readWordBeforeCursor,
                 onValueChange = {
                     settingsViewModel.setReadWordBeforeCursor(it)
                 },
@@ -103,6 +103,6 @@ fun DictGameSettingScreen(
 }
 
 data class DictGameScreenSettingsState(
-    val readWordAfterCursorTextFieldValue: TextFieldValue = TextFieldValue(),
-    val readWordBeforeCursorTextFieldValue: TextFieldValue = TextFieldValue()
+    val readWordAfterCursor: TextFieldValue = TextFieldValue(),
+    val readWordBeforeCursor: TextFieldValue = TextFieldValue()
 )

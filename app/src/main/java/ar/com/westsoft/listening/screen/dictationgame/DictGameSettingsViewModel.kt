@@ -1,13 +1,11 @@
 package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.SettingsField
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.GetDictSettingFlowUseCase
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.toAnnotatedString
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterCursorUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,60 +16,54 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class DictGameSettingsViewModel @Inject constructor(
     private val setReadWordAfterCursorUseCase: SetReadWordAfterCursorUseCase,
     private val setReadWordBeforeCursorUseCase: SetReadWordBeforeCursorUseCase,
-    private val getDictSettingFlowUseCase: GetDictSettingFlowUseCase
+    private val getSettingFlowUseCase: GetDictSettingFlowUseCase
 ) : ViewModel() {
 
-    private val localTextFieldValueMutableStateFlow =
-        MutableStateFlow(DictGameScreenSettingsState())
+    private val directStateFlow = MutableStateFlow(DictGameScreenSettingsState())
 
     val screenStateFlow = listOf(
-        localTextFieldValueMutableStateFlow,
-        getDictSettingFlowUseCase().map {
-            val localState = localTextFieldValueMutableStateFlow.value
-            localState.copy(
-                readWordAfterCursorTextFieldValue = updateTextViewValue(
-                    previousValue = localState.readWordAfterCursorTextFieldValue,
-                    value = it.readWordAfterCursor
-                ),
-                readWordBeforeCursorTextFieldValue = updateTextViewValue(
-                    previousValue = localState.readWordBeforeCursorTextFieldValue,
-                    value = it.readWordBeforeCursor
+        directStateFlow,
+        getSettingFlowUseCase().map {
+            directStateFlow.value.run {
+                DictGameScreenSettingsState(
+                    readWordAfterCursor = updateTextViewValue(
+                        readWordAfterCursor,
+                        it.readWordAfterCursor
+                    ),
+                    readWordBeforeCursor = updateTextViewValue(
+                        readWordBeforeCursor,
+                        it.readWordBeforeCursor
+                    )
                 )
-            )
+            }
         }
-
     ).merge().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
-        initialValue = DictGameScreenSettingsState()
+        initialValue = runBlocking { getSettingFlowUseCase().first().toScreenSettingsState() }
     )
-
-    private fun getScreenSettingsFlow() = getDictSettingFlowUseCase()
 
     private fun updateTextViewValue(
         previousValue: TextFieldValue,
         value: SettingsField<String>
     ): TextFieldValue = previousValue.copy(
-        annotatedString = buildAnnotatedString {
-            if (!value.wasSaved) {
-                pushStyle(SpanStyle(color = Color.Red))
-            }
-            append(value.value)
-        })
+        annotatedString = value.toAnnotatedString()
+    )
 
     fun setReadWordAfterCursor(textFieldValue: TextFieldValue) {
         viewModelScope.launch {
             val state = screenStateFlow.first().copy(
-                readWordAfterCursorTextFieldValue = textFieldValue
+                readWordAfterCursor = textFieldValue
             )
 
-            localTextFieldValueMutableStateFlow.emit(state)
+            directStateFlow.emit(state)
             setReadWordAfterCursorUseCase(textFieldValue.text)
         }
     }
@@ -79,9 +71,9 @@ class DictGameSettingsViewModel @Inject constructor(
     fun setReadWordBeforeCursor(textFieldValue: TextFieldValue) {
         viewModelScope.launch {
             val state = screenStateFlow.first().copy(
-                readWordBeforeCursorTextFieldValue = textFieldValue
+                readWordBeforeCursor = textFieldValue
             )
-            localTextFieldValueMutableStateFlow.emit(state)
+            directStateFlow.emit(state)
             setReadWordBeforeCursorUseCase(textFieldValue.text)
         }
     }

@@ -1,31 +1,40 @@
 package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine
 
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.DictGameSetting
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.DictGameSettings
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.toSetting
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DictSettingsRepository @Inject constructor(
+class SettingsRepository @Inject constructor(
     private val dictSettingsDataStore: DictSettingsDataStore
 ) {
-
-    private var settingsStateFlow = MutableStateFlow(
-        DictGameSetting(
+    private var loopbackSettingsStateFlow = MutableStateFlow(
+        DictGameSettings(
             readWordAfterCursor = SettingsField("", false),
             readWordBeforeCursor = SettingsField("", false)
         )
     )
 
-    fun getDictGameSettingFlow() = settingsStateFlow as StateFlow<DictGameSetting>
+    private fun getStoredSettings() = dictSettingsDataStore
+        .getDictGameSettingsDSOFlow()
+        .map { it.toSetting() }
+
+    fun getDictGameSettingFlow() = listOf(
+        loopbackSettingsStateFlow,
+        getStoredSettings()
+    ).merge()
 
     suspend fun setReadWordAfterCursor(value: String) {
         val number = value.toIntOrNull()
-        val oldState = settingsStateFlow.value
+        val oldState = getStoredSettings().first()
         if (number in 1..200) {
-            settingsStateFlow.emit(
+            loopbackSettingsStateFlow.emit(
                 oldState.copy(
                     readWordAfterCursor = SettingsField(value, true)
                 )
@@ -33,7 +42,7 @@ class DictSettingsRepository @Inject constructor(
             dictSettingsDataStore.setReadWordAfterCursor(number ?: 0)
             return
         }
-        settingsStateFlow.emit(
+        loopbackSettingsStateFlow.emit(
             oldState.copy(
                 readWordAfterCursor = SettingsField(value, false)
             )
@@ -42,9 +51,9 @@ class DictSettingsRepository @Inject constructor(
 
     suspend fun setReadWordBeforeCursor(value: String) {
         val number = value.toIntOrNull()
-        val oldState = settingsStateFlow.value
+        val oldState = getStoredSettings().first()
         if (number in 0..10) {
-            settingsStateFlow.emit(
+            loopbackSettingsStateFlow.emit(
                 oldState.copy(
                     readWordBeforeCursor = SettingsField(value, true)
                 )
@@ -52,15 +61,10 @@ class DictSettingsRepository @Inject constructor(
             dictSettingsDataStore.setReadWordBeforeCursor(number ?: 0)
             return
         }
-        settingsStateFlow.emit(
+        loopbackSettingsStateFlow.emit(
             oldState.copy(
                 readWordBeforeCursor = SettingsField(value, false)
             )
         )
     }
 }
-
-data class SettingsField<T>(
-    val value: T,
-    val wasSaved: Boolean
-)
