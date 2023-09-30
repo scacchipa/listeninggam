@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.keyboard
+package ar.com.westsoft.listening.screen.keyboard
 
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent

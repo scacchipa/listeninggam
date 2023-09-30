@@ -1,7 +1,7 @@
 package ar.com.westsoft.listening.domain.dictationgame
 
 import ar.com.westsoft.listening.data.engine.DictationGame
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.SettingsRepository
+import ar.com.westsoft.listening.data.repository.SettingsRepository
 import javax.inject.Inject
 
 class SpeakOutUseCase @Inject constructor(

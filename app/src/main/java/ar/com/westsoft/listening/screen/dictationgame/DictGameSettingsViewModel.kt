@@ -1,13 +1,13 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame
 
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.SettingsField
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.toAnnotatedString
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterCursorUseCase
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
+import ar.com.westsoft.listening.data.repository.SettingsField
+import ar.com.westsoft.listening.data.repository.toAnnotatedString
+import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterCursorUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

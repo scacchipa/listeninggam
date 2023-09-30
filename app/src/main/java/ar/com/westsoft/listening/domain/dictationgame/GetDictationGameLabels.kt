@@ -1,7 +1,7 @@
 package ar.com.westsoft.listening.domain.dictationgame
 
 import ar.com.westsoft.listening.data.engine.DictationGameHeader
-import ar.com.westsoft.listening.data.engine.DictationRepository
+import ar.com.westsoft.listening.data.repository.DictationRepository
 import javax.inject.Inject
 
 class GetDictationGameLabels @Inject constructor(

@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource
+package ar.com.westsoft.listening.data.datasource
 
 import androidx.datastore.preferences.core.intPreferencesKey
 

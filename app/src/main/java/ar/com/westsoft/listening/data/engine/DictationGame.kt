@@ -10,13 +10,13 @@ import androidx.compose.ui.text.font.FontWeight
 import ar.com.westsoft.listening.data.Keyboard
 import ar.com.westsoft.listening.data.ReaderEngine
 import ar.com.westsoft.listening.data.datasource.AppDatabase
+import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
+import ar.com.westsoft.listening.screen.dictationgame.DictGameSettingsDSO
 import ar.com.westsoft.listening.screen.dictationgame.DictGameState
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.DictGameSettingsDSO
 import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.concatenate
 import ar.com.westsoft.listening.util.getIdxPreviousTo

@@ -1,7 +1,10 @@
-package ar.com.westsoft.listening.data.engine
+package ar.com.westsoft.listening.data.repository
 
 import ar.com.westsoft.listening.data.datasource.AppDatabase
 import ar.com.westsoft.listening.data.datasource.ExternalApi
+import ar.com.westsoft.listening.data.engine.DictationGameHeader
+import ar.com.westsoft.listening.data.engine.DictationGameRecord
+import ar.com.westsoft.listening.data.engine.DictationProgress
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import kotlinx.coroutines.CoroutineDispatcher

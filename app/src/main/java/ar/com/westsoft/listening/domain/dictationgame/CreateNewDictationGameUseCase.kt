@@ -1,7 +1,7 @@
 package ar.com.westsoft.listening.domain.dictationgame
 
-import ar.com.westsoft.listening.data.engine.DictationRepository
-import ar.com.westsoft.listening.data.engine.RepoTaskResponse
+import ar.com.westsoft.listening.data.repository.DictationRepository
+import ar.com.westsoft.listening.data.repository.RepoTaskResponse
 import ar.com.westsoft.listening.screen.dictationgame.GameCreationGameStatus
 import ar.com.westsoft.listening.screen.dictationgame.GameCreationGameStatus.Completed
 import ar.com.westsoft.listening.screen.dictationgame.GameCreationGameStatus.Error

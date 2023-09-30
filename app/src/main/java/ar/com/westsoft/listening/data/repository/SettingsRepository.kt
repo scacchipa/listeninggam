@@ -1,8 +1,8 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine
+package ar.com.westsoft.listening.data.repository
 
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.DictGameSettings
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.toSetting
+import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
+import ar.com.westsoft.listening.screen.dictationgame.DictGameSettings
+import ar.com.westsoft.listening.screen.dictationgame.toSetting
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
