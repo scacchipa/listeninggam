@@ -8,7 +8,7 @@ import ar.com.westsoft.listening.data.repository.toAnnotatedString
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterCursorUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
-import ar.com.westsoft.listening.screen.dictationgame.game.toScreenSettingsState
+import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeechRateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,10 +24,13 @@ import javax.inject.Inject
 class DictGameSettingsViewModel @Inject constructor(
     private val setReadWordAfterCursorUseCase: SetReadWordAfterCursorUseCase,
     private val setReadWordBeforeCursorUseCase: SetReadWordBeforeCursorUseCase,
+    private val setSpeechRateUseCase: SetSpeechRateUseCase,
     private val getSettingFlowUseCase: GetDictSettingFlowUseCase
 ) : ViewModel() {
 
-    private val directStateFlow = MutableStateFlow(DictGameScreenSettingsState())
+    private val directStateFlow = MutableStateFlow(
+        runBlocking { getSettingFlowUseCase().first().toScreenSettingsState() }
+        )
 
     val screenStateFlow = listOf(
         directStateFlow,
@@ -41,7 +44,10 @@ class DictGameSettingsViewModel @Inject constructor(
                     readWordBeforeCursor = updateTextViewValue(
                         readWordBeforeCursor,
                         it.readWordBeforeCursor
-                    )
+                    ),
+                    speechRate = updateTextViewValue(
+                        speechRate,
+                        it.speechRate)
                 )
             }
         }
@@ -76,6 +82,16 @@ class DictGameSettingsViewModel @Inject constructor(
             )
             directStateFlow.emit(state)
             setReadWordBeforeCursorUseCase(textFieldValue.text)
+        }
+    }
+
+    fun setSpeechRate(textFieldValue: TextFieldValue) {
+        viewModelScope.launch {
+            val state = screenStateFlow.first().copy(
+                speechRate = textFieldValue
+            )
+            directStateFlow.emit(state)
+            setSpeechRateUseCase(textFieldValue.text)
         }
     }
 }

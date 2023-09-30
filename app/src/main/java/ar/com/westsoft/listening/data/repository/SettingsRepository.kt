@@ -1,8 +1,8 @@
 package ar.com.westsoft.listening.data.repository
 
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
-import ar.com.westsoft.listening.screen.dictationgame.game.DictGameSettings
 import ar.com.westsoft.listening.data.datasource.toSetting
+import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -17,7 +17,8 @@ class SettingsRepository @Inject constructor(
     private var loopbackSettingsStateFlow = MutableStateFlow(
         DictGameSettings(
             readWordAfterCursor = SettingsField("", false),
-            readWordBeforeCursor = SettingsField("", false)
+            readWordBeforeCursor = SettingsField("", false),
+            speechRate = SettingsField("", false)
         )
     )
 
@@ -64,6 +65,25 @@ class SettingsRepository @Inject constructor(
         loopbackSettingsStateFlow.emit(
             oldState.copy(
                 readWordBeforeCursor = SettingsField(value, false)
+            )
+        )
+    }
+
+    suspend fun setSpeechRate(value: String) {
+        val number = value.toDoubleOrNull() ?: Double.NaN
+        val oldState = getStoredSettings().first()
+        if (number in 25.0..400.0) {
+            loopbackSettingsStateFlow.emit(
+                oldState.copy(
+                    speechRate = SettingsField(value, true)
+                )
+            )
+            dictSettingsDataStore.setSpeechRate(number)
+            return
+        }
+        loopbackSettingsStateFlow.emit(
+            oldState.copy(
+                speechRate = SettingsField(value, false)
             )
         )
     }

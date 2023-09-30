@@ -1,6 +1,7 @@
 package ar.com.westsoft.listening.data.datasource
 
 data class DictGameSettingsDSO(
-    val readWordAfterCursorValue: Int,
-    val readWordBeforeCursorValue: Int
+    val readWordAfterCursor: Int,
+    val readWordBeforeCursor: Int,
+    val speechRate: Double
 )

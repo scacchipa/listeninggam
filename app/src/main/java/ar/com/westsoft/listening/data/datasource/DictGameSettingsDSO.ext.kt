@@ -1,10 +1,11 @@
 package ar.com.westsoft.listening.data.datasource
 
 import ar.com.westsoft.listening.data.repository.SettingsField
-import ar.com.westsoft.listening.screen.dictationgame.game.DictGameSettings
+import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
 
 fun DictGameSettingsDSO.toSetting() =
     DictGameSettings(
-        readWordAfterCursor = SettingsField(readWordAfterCursorValue.toString(), true),
-        readWordBeforeCursor = SettingsField(readWordBeforeCursorValue.toString(), true)
+        readWordAfterCursor = SettingsField(readWordAfterCursor.toString(), true),
+        readWordBeforeCursor = SettingsField(readWordBeforeCursor.toString(), true),
+        speechRate = SettingsField(speechRate.toString(), true)
     )

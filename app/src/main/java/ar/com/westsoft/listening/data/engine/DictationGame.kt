@@ -10,12 +10,12 @@ import androidx.compose.ui.text.font.FontWeight
 import ar.com.westsoft.listening.data.Keyboard
 import ar.com.westsoft.listening.data.ReaderEngine
 import ar.com.westsoft.listening.data.datasource.AppDatabase
+import ar.com.westsoft.listening.data.datasource.DictGameSettingsDSO
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
-import ar.com.westsoft.listening.data.datasource.DictGameSettingsDSO
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
 import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.concatenate
@@ -53,8 +53,9 @@ class DictationGame @Inject constructor(
 
     private val settingsFlow = MutableStateFlow(
         DictGameSettingsDSO(
-            readWordAfterCursorValue = 7,
-            readWordBeforeCursorValue = 2
+            readWordAfterCursor = 7,
+            readWordBeforeCursor = 2,
+            speechRate = 100.0
         )
     )
 
@@ -190,7 +191,7 @@ class DictationGame @Inject constructor(
                     Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
                     Key.Spacebar -> speakOut(
                         offset = currentLetterPos ?: 0,
-                        wordCount = settingsFlow.first().readWordAfterCursorValue
+                        wordCount = settingsFlow.first().readWordAfterCursor
                     )
 
                     Key.Enter -> moveToParagraph(paragraphIdx + 1)

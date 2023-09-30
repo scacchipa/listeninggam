@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -89,6 +88,29 @@ fun DictGameSettingScreen(
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+        Row {
+            Text(
+                "- speech rate ",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            TextField(
+                value = settingsState.value.speechRate,
+                onValueChange = {
+                    settingsViewModel.setSpeechRate(it)
+                },
+                modifier = Modifier.width(100.dp),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Decimal
+                )
+            )
+
+            Text(
+                text = "%.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
 
         Button(onClick = {
             onBack()
@@ -101,8 +123,3 @@ fun DictGameSettingScreen(
         }
     }
 }
-
-data class DictGameScreenSettingsState(
-    val readWordAfterCursor: TextFieldValue = TextFieldValue(),
-    val readWordBeforeCursor: TextFieldValue = TextFieldValue()
-)

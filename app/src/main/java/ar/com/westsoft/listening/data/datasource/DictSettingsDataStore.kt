@@ -40,6 +40,10 @@ class DictSettingsDataStore @Inject constructor(
         saveValueWithKey(value, PreferencesKeys.READ_WORD_BEFORE_CURSOR)
     }
 
+    suspend fun setSpeechRate(value: Double) {
+        saveValueWithKey(value, PreferencesKeys.SPEECH_RATE)
+    }
+
     private suspend fun <T> saveValueWithKey(value: T, key: Preferences.Key<T>) {
         dataStore.edit { preferences ->
             preferences[key] = value
