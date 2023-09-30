@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.data.datasource
 
 data class DictGameSettingsDSO(
     val readWordAfterCursorValue: Int,

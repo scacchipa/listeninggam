@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.settings
 
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
@@ -8,6 +8,7 @@ import ar.com.westsoft.listening.data.repository.toAnnotatedString
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterCursorUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
+import ar.com.westsoft.listening.screen.dictationgame.game.toScreenSettingsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

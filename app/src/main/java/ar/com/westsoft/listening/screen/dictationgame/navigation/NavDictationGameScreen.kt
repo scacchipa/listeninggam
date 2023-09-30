@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.navigation
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
@@ -13,6 +13,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import ar.com.westsoft.listening.screen.dictationgame.game.ConfigNewDictationGameScreen
+import ar.com.westsoft.listening.screen.dictationgame.game.DictGameMainScreen
+import ar.com.westsoft.listening.screen.dictationgame.game.DictGameMainViewModel
 
 @Composable
 fun NavDictationGameScreen() {

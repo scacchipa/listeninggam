@@ -15,8 +15,8 @@ import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
-import ar.com.westsoft.listening.screen.dictationgame.DictGameSettingsDSO
-import ar.com.westsoft.listening.screen.dictationgame.DictGameState
+import ar.com.westsoft.listening.data.datasource.DictGameSettingsDSO
+import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
 import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.concatenate
 import ar.com.westsoft.listening.util.getIdxPreviousTo

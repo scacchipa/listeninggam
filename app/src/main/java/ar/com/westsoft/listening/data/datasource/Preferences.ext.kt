@@ -1,7 +1,6 @@
 package ar.com.westsoft.listening.data.datasource
 
 import androidx.datastore.preferences.core.Preferences
-import ar.com.westsoft.listening.screen.dictationgame.DictGameSettingsDSO
 
 fun Preferences.getDictGameSettingsDSO() = DictGameSettingsDSO(
     readWordAfterCursorValue = this[PreferencesKeys.READ_WORD_AFTER_CURSOR] ?: 7,

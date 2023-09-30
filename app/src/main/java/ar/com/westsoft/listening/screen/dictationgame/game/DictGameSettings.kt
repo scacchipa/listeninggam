@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.game
 
 import ar.com.westsoft.listening.data.repository.SettingsField
 

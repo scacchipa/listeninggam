@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.navigation
 
 sealed class GameCreationGameStatus {
     object Uninitialized : GameCreationGameStatus()

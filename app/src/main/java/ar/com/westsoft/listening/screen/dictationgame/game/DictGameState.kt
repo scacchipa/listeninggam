@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.game
 
 import androidx.compose.ui.text.AnnotatedString
 import ar.com.westsoft.listening.data.engine.DictationGameRecord

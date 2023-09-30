@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.domain.dictationgame
+package ar.com.westsoft.listening.domain.dictationgame.repository
 
 import ar.com.westsoft.listening.data.engine.DictationGameHeader
 import ar.com.westsoft.listening.data.repository.DictationRepository

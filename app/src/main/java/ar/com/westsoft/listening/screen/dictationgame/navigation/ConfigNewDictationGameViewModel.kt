@@ -1,9 +1,9 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.di.DefaultDispatcher
-import ar.com.westsoft.listening.domain.dictationgame.CreateNewDictationGameUseCase
+import ar.com.westsoft.listening.domain.dictationgame.repository.CreateNewDictationGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler

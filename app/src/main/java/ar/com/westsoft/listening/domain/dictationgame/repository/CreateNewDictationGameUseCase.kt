@@ -1,10 +1,10 @@
-package ar.com.westsoft.listening.domain.dictationgame
+package ar.com.westsoft.listening.domain.dictationgame.repository
 
 import ar.com.westsoft.listening.data.repository.DictationRepository
 import ar.com.westsoft.listening.data.repository.RepoTaskResponse
-import ar.com.westsoft.listening.screen.dictationgame.GameCreationGameStatus
-import ar.com.westsoft.listening.screen.dictationgame.GameCreationGameStatus.Completed
-import ar.com.westsoft.listening.screen.dictationgame.GameCreationGameStatus.Error
+import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus
+import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus.Completed
+import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus.Error
 import javax.inject.Inject
 
 class CreateNewDictationGameUseCase @Inject constructor(

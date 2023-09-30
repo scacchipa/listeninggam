@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.game
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -11,6 +11,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.westsoft.listening.BuildConfig
+import ar.com.westsoft.listening.screen.dictationgame.AdviceScreen
+import ar.com.westsoft.listening.screen.dictationgame.navigation.ConfigNewDictationGameViewModel
+import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)

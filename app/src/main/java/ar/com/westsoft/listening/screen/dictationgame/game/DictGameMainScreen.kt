@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.game
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
 import ar.com.westsoft.listening.screen.keyboard.MainKeyBoard
 import kotlinx.coroutines.launch
 import kotlin.math.max

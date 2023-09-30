@@ -1,6 +1,7 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.data.datasource
 
 import ar.com.westsoft.listening.data.repository.SettingsField
+import ar.com.westsoft.listening.screen.dictationgame.game.DictGameSettings
 
 fun DictGameSettingsDSO.toSetting() =
     DictGameSettings(

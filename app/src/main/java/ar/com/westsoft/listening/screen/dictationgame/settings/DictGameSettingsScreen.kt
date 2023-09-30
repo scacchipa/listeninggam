@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

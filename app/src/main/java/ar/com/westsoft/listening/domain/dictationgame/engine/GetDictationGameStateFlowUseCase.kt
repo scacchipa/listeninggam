@@ -1,7 +1,7 @@
-package ar.com.westsoft.listening.domain.dictationgame
+package ar.com.westsoft.listening.domain.dictationgame.engine
 
 import ar.com.westsoft.listening.data.engine.DictationGame
-import ar.com.westsoft.listening.screen.dictationgame.DictGameState
+import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

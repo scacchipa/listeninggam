@@ -1,7 +1,8 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.game
 
 import androidx.compose.ui.text.input.TextFieldValue
 import ar.com.westsoft.listening.data.repository.toAnnotatedString
+import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameScreenSettingsState
 
 fun DictGameSettings.toScreenSettingsState() =
     DictGameScreenSettingsState(

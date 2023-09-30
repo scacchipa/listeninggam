@@ -1,14 +1,14 @@
-package ar.com.westsoft.listening.screen.dictationgame
+package ar.com.westsoft.listening.screen.dictationgame.game
 
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.di.DefaultDispatcher
-import ar.com.westsoft.listening.domain.dictationgame.GetDictationGameStateFlowUseCase
-import ar.com.westsoft.listening.domain.dictationgame.KeyEventUseCase
-import ar.com.westsoft.listening.domain.dictationgame.MoveToParagraphUseCase
-import ar.com.westsoft.listening.domain.dictationgame.SetupDictationUseCase
-import ar.com.westsoft.listening.domain.dictationgame.SpeakOutUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.GetDictationGameStateFlowUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.MoveToParagraphUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.SetupDictationUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.SpeakOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
