@@ -7,5 +7,5 @@ fun DictGameSettingsDSO.toSetting() =
     DictGameSettings(
         readWordAfterCursor = SettingsField(readWordAfterCursor.toString(), true),
         readWordBeforeCursor = SettingsField(readWordBeforeCursor.toString(), true),
-        speechRate = SettingsField(speechRate.toString(), true)
+        speechRatePercentage = SettingsField(speechRate.toString(), true)
     )

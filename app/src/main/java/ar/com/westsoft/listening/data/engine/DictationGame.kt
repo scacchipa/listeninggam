@@ -12,6 +12,7 @@ import ar.com.westsoft.listening.data.ReaderEngine
 import ar.com.westsoft.listening.data.datasource.AppDatabase
 import ar.com.westsoft.listening.data.datasource.DictGameSettingsDSO
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
+import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.GameHeaderMapper
@@ -148,7 +149,10 @@ class DictationGame @Inject constructor(
         dictationGameRecord = DictationGameRecord()
     )
 
-    fun speakOut(offset: Int = 0, wordCount: Int = 8) {
+    fun speakOut(
+        offset: Int = 0,
+        wordCount: Int = runBlocking { settingsDataStore.get(PreferencesKey.ReadWordAfterCursor) }
+    ) {
         runBlocking(defaultDispatcher) {
             println("offset: $offset")
             val paragraphNumber = dictationViewSharedFlow.first().cursorParagraphIdx

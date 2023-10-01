@@ -3,7 +3,10 @@ package ar.com.westsoft.listening.data.datasource
 import androidx.datastore.preferences.core.Preferences
 
 fun Preferences.getDictGameSettingsDSO() = DictGameSettingsDSO(
-    readWordAfterCursor = this[PreferencesKeys.READ_WORD_AFTER_CURSOR] ?: 7,
-    readWordBeforeCursor = this[PreferencesKeys.READ_WORD_BEFORE_CURSOR] ?: 2,
-    speechRate = this[PreferencesKeys.SPEECH_RATE] ?: 100.0
+    readWordAfterCursor = this[PreferencesKey.ReadWordAfterCursor],
+    readWordBeforeCursor = this[PreferencesKey.ReadWordBeforeCursor],
+    speechRate = this[PreferencesKey.SpeechRatePercentage]
 )
+
+operator fun <T> Preferences.get(preferenceField: PreferencesKey<T>): T =
+    this[preferenceField.key] ?: preferenceField.defaultValue

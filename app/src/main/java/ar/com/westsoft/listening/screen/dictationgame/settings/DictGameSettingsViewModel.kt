@@ -30,7 +30,7 @@ class DictGameSettingsViewModel @Inject constructor(
 
     private val directStateFlow = MutableStateFlow(
         runBlocking { getSettingFlowUseCase().first().toScreenSettingsState() }
-        )
+    )
 
     val screenStateFlow = listOf(
         directStateFlow,
@@ -47,7 +47,8 @@ class DictGameSettingsViewModel @Inject constructor(
                     ),
                     speechRate = updateTextViewValue(
                         speechRate,
-                        it.speechRate)
+                        it.speechRatePercentage
+                    )
                 )
             }
         }
@@ -59,7 +60,7 @@ class DictGameSettingsViewModel @Inject constructor(
 
     private fun updateTextViewValue(
         previousValue: TextFieldValue,
-        value: SettingsField<String>
+        value: SettingsField
     ): TextFieldValue = previousValue.copy(
         annotatedString = value.toAnnotatedString()
     )

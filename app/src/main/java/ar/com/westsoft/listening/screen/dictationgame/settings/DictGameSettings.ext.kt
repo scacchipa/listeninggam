@@ -7,5 +7,5 @@ fun DictGameSettings.toScreenSettingsState() =
     DictGameScreenSettingsState(
         readWordAfterCursor = TextFieldValue(readWordAfterCursor.toAnnotatedString()),
         readWordBeforeCursor = TextFieldValue(readWordBeforeCursor.toAnnotatedString()),
-        speechRate = TextFieldValue(speechRate.toAnnotatedString())
+        speechRate = TextFieldValue(speechRatePercentage.toAnnotatedString())
     )

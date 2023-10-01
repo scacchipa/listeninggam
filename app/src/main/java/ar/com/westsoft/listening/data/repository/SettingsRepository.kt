@@ -1,6 +1,7 @@
 package ar.com.westsoft.listening.data.repository
 
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
+import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.data.datasource.toSetting
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,7 @@ class SettingsRepository @Inject constructor(
         DictGameSettings(
             readWordAfterCursor = SettingsField("", false),
             readWordBeforeCursor = SettingsField("", false),
-            speechRate = SettingsField("", false)
+            speechRatePercentage = SettingsField("", false)
         )
     )
 
@@ -32,59 +33,37 @@ class SettingsRepository @Inject constructor(
     ).merge()
 
     suspend fun setReadWordAfterCursor(value: String) {
-        val number = value.toIntOrNull()
-        val oldState = getStoredSettings().first()
-        if (number in 1..200) {
-            loopbackSettingsStateFlow.emit(
-                oldState.copy(
-                    readWordAfterCursor = SettingsField(value, true)
-                )
-            )
-            dictSettingsDataStore.setReadWordAfterCursor(number ?: 0)
-            return
-        }
-        loopbackSettingsStateFlow.emit(
-            oldState.copy(
-                readWordAfterCursor = SettingsField(value, false)
-            )
-        )
+        emitStatesAndSave(value, PreferencesKey.ReadWordAfterCursor)
     }
 
     suspend fun setReadWordBeforeCursor(value: String) {
-        val number = value.toIntOrNull()
+        emitStatesAndSave(value, PreferencesKey.ReadWordBeforeCursor)
+    }
+
+    suspend fun setSpeechRate(value: String) {
+        emitStatesAndSave(value, PreferencesKey.SpeechRatePercentage)
+    }
+
+    private suspend inline fun <reified T> emitStatesAndSave(
+        value: String,
+        preferenceKey: PreferencesKey<T>
+    ) {
+        val number = preferenceKey.convert(value)//convert(value)
         val oldState = getStoredSettings().first()
-        if (number in 0..10) {
+
+        if (preferenceKey.conditionToSave(number)) {
             loopbackSettingsStateFlow.emit(
-                oldState.copy(
-                    readWordBeforeCursor = SettingsField(value, true)
-                )
+                oldState.copy(preferenceKey, SettingsField(value, true))
             )
-            dictSettingsDataStore.setReadWordBeforeCursor(number ?: 0)
+
+            dictSettingsDataStore.save(preferenceKey, number)
             return
         }
+
         loopbackSettingsStateFlow.emit(
-            oldState.copy(
-                readWordBeforeCursor = SettingsField(value, false)
+            oldState.copy(preferenceKey, SettingsField(value, false)
             )
         )
     }
 
-    suspend fun setSpeechRate(value: String) {
-        val number = value.toDoubleOrNull() ?: Double.NaN
-        val oldState = getStoredSettings().first()
-        if (number in 25.0..400.0) {
-            loopbackSettingsStateFlow.emit(
-                oldState.copy(
-                    speechRate = SettingsField(value, true)
-                )
-            )
-            dictSettingsDataStore.setSpeechRate(number)
-            return
-        }
-        loopbackSettingsStateFlow.emit(
-            oldState.copy(
-                speechRate = SettingsField(value, false)
-            )
-        )
-    }
 }
