@@ -10,7 +10,6 @@ import androidx.compose.ui.text.font.FontWeight
 import ar.com.westsoft.listening.data.Keyboard
 import ar.com.westsoft.listening.data.ReaderEngine
 import ar.com.westsoft.listening.data.datasource.AppDatabase
-import ar.com.westsoft.listening.data.datasource.DictGameSettingsDSO
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.di.DefaultDispatcher
@@ -25,7 +24,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
@@ -50,14 +48,6 @@ class DictationGame @Inject constructor(
     private val dictationViewSharedFlow = MutableSharedFlow<DictationState>(
         replay = 1,
         extraBufferCapacity = 2
-    )
-
-    private val settingsFlow = MutableStateFlow(
-        DictGameSettingsDSO(
-            readWordAfterCursor = 7,
-            readWordBeforeCursor = 2,
-            speechRate = 100.0
-        )
     )
 
     suspend fun setup(gui: Long) {
@@ -193,11 +183,7 @@ class DictationGame @Inject constructor(
 
                     Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
                     Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
-                    Key.Spacebar -> speakOut(
-                        offset = currentLetterPos ?: 0,
-                        wordCount = settingsFlow.first().readWordAfterCursor
-                    )
-
+                    Key.Spacebar -> speakOut(offset = currentLetterPos ?: 0)
                     Key.Enter -> moveToParagraph(paragraphIdx + 1)
                     Key.Zero,
                     Key.One,
