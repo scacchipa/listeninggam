@@ -4,6 +4,7 @@ import android.app.Application
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import ar.com.westsoft.listening.util.rewindWordsOrFirst
 import ar.com.westsoft.listening.util.takeWords
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -38,12 +39,17 @@ class ReaderEngine @Inject constructor(
         }
     }
 
-    fun speakOut(message: String, offset: Int = 0, utteranceId: String = "", wordCount: Int?) {
-        this.offset = offset
+    fun speakOut(
+        message: String,
+        offset: Int = 0,
+        utteranceId: String = "",
+        wordCount: Int,
+        rewindWordCount: Int = 0) {
+        this.offset = message.rewindWordsOrFirst(offset, rewindWordCount) ?: offset
         println("Offset speakOut: ${this.offset}")
 
         val msg = message
-            .substring(offset)
+            .substring(this.offset)
             .takeWords(wordCount)
             .replace("_", "", false)
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, utteranceId)

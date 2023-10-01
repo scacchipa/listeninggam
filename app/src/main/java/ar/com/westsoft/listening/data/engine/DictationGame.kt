@@ -141,7 +141,8 @@ class DictationGame @Inject constructor(
 
     fun speakOut(
         offset: Int = 0,
-        wordCount: Int = runBlocking { settingsDataStore.get(PreferencesKey.ReadWordAfterCursor) }
+        wordCount: Int = runBlocking { settingsDataStore.get(PreferencesKey.ReadWordAfterCursor) },
+        rewindWordCount: Int = runBlocking { settingsDataStore.get(PreferencesKey.ReadWordBeforeCursor) }
     ) {
         runBlocking(defaultDispatcher) {
             println("offset: $offset")
@@ -149,9 +150,10 @@ class DictationGame @Inject constructor(
             val paragraph = dictationGameRecord.dictationProgressList[paragraphNumber]
             readerEngine.speakOut(
                 message = paragraph.originalTxt,
-                offset = paragraph.progressTxt.getIdxPreviousTo(offset, ' ') ?: 0,
+                offset = paragraph.progressTxt.getIdxPreviousTo(offset, ' ')?.plus(1) ?: 0,
                 utteranceId = paragraphNumber.toString(),
-                wordCount = wordCount
+                wordCount = wordCount,
+                rewindWordCount = rewindWordCount
             )
         }
     }
