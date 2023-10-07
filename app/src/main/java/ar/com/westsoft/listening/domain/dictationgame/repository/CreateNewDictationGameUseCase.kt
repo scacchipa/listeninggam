@@ -1,5 +1,6 @@
 package ar.com.westsoft.listening.domain.dictationgame.repository
 
+import ar.com.westsoft.listening.data.engine.DictationGame
 import ar.com.westsoft.listening.data.repository.DictationRepository
 import ar.com.westsoft.listening.data.repository.RepoTaskResponse
 import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus
@@ -8,13 +9,17 @@ import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGam
 import javax.inject.Inject
 
 class CreateNewDictationGameUseCase @Inject constructor(
-    private val dictationRepository: DictationRepository
+    private val dictationRepository: DictationRepository,
+    private val dictationGame: DictationGame
 ) {
     suspend operator fun invoke(title: String, url: String): GameCreationGameStatus {
         return when(
             val response = dictationRepository.createADictationGame(title, url)
         ) {
-            is RepoTaskResponse.Completed -> Completed(response.gui)
+            is RepoTaskResponse.Completed -> {
+                dictationGame.setup(response.gui)
+                Completed
+            }
             is RepoTaskResponse.Uncompleted -> Error
         }
     }

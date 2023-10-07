@@ -7,7 +7,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.westsoft.listening.BuildConfig
@@ -17,19 +16,15 @@ import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGam
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(
-    widthDp = 400,
-    heightDp = 600
-)
 @Composable
 fun ConfigNewDictationGameScreen(
-    playGame: (Long) -> Unit = { },
-    goBack: () -> Unit = { }
+    playGame: () -> Unit,
+    goBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<ConfigNewDictationGameViewModel>()
 
     when (
-        val gameCreationGameStatus = viewModel.gameCreationGameStatus.collectAsState().value
+        viewModel.gameCreationGameStatus.collectAsState().value
     ) {
         is GameCreationGameStatus.Uninitialized -> {
             Column(
@@ -96,9 +91,7 @@ fun ConfigNewDictationGameScreen(
 
         is GameCreationGameStatus.Completed -> {
             AdviceScreen("Stating new game ...")
-            LaunchedEffect(Unit) {
-                playGame(gameCreationGameStatus.gui)
-            }
+            LaunchedEffect(Unit) { playGame() }
         }
 
         is GameCreationGameStatus.Error -> {

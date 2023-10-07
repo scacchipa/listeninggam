@@ -15,8 +15,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun SelectDictationGameScreen(
-    playGame: (gui: Long) -> Unit = { },
-    goBack: () -> Unit = { }
+    playGame: () -> Unit,
+    goBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<SelectDictationGameViewModel>()
 
@@ -27,7 +27,10 @@ fun SelectDictationGameScreen(
         content = {
             items(games.size) { idx ->
                 Button(
-                    onClick = { playGame(games[idx].gui) }
+                    onClick = {
+                        viewModel.onInitializeProgress(games[idx].gui)
+                        playGame()
+                    }
                 ) {
                     Text(
                         text = "${games[idx].gui} ${games[idx].title} " +

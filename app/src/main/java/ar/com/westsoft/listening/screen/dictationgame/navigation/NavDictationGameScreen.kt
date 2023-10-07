@@ -7,15 +7,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import ar.com.westsoft.listening.screen.dictationgame.game.ConfigNewDictationGameScreen
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameMainScreen
-import ar.com.westsoft.listening.screen.dictationgame.game.DictGameMainViewModel
 
 @Composable
 fun NavDictationGameScreen() {
@@ -63,39 +59,20 @@ fun NavDictationGameScreen() {
             }
             composable(route = DictRoutes.StartNewGame.name) {
                 ConfigNewDictationGameScreen(
-                    playGame = { gui ->
-                        navController.navigate("${DictRoutes.DictationGame.name}/$gui")
-                    },
-                    goBack = {
-                        navController.navigateUp()
-                    }
+                    playGame = { navController.navigate(DictRoutes.DictationGame.name) },
+                    goBack = { navController.navigateUp() }
                 )
             }
             composable(route = DictRoutes.LoadGame.name) {
                 SelectDictationGameScreen(
-                    playGame = { gui ->
-                        navController.navigate("${DictRoutes.DictationGame.name}/$gui")
-                    },
-                    goBack = {
-                        navController.navigateUp()
-                    }
+                    playGame = { navController.navigate(DictRoutes.DictationGame.name) },
+                    goBack = { navController.navigateUp() }
                 )
             }
-            composable(
-                route = "${DictRoutes.DictationGame.name}/{gui}",
-                arguments = listOf(navArgument("gui") {
-                    defaultValue = -1
-                    type = NavType.LongType
-                })
-            ) { navBackStackEntry ->
-                val gui: Long? = navBackStackEntry.arguments?.getLong("gui")
-                gui?.let {
-                    val viewModel = hiltViewModel<DictGameMainViewModel>()
-                    viewModel.onInitializeProgress(it)
-                    DictGameMainScreen()
-                } ?: let {
-                    navController.navigateUp()
-                }
+            composable(route = DictRoutes.DictationGame.name) {
+                DictGameMainScreen(
+                    goBack = { navController.popBackStack(DictRoutes.DictMainMenu.name, false) }
+                )
             }
         }
     }
