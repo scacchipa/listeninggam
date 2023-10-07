@@ -4,9 +4,17 @@ import android.app.Application
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.util.rewindWordsOrFirst
 import ar.com.westsoft.listening.util.takeWords
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Locale
 import javax.inject.Inject
@@ -15,8 +23,20 @@ import kotlin.coroutines.resume
 
 @Singleton
 class ReaderEngine @Inject constructor(
-    context: Application
+    context: Application,
+    private val settingsDataStore: DictSettingsDataStore,
+    private val coroutineScope: CoroutineScope
 ) {
+    val settings = settingsDataStore
+        .getDictGameSettingsDSOFlow()
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.Lazily,
+            initialValue = runBlocking {
+                settingsDataStore.getDictGameSettingsDSOFlow().first()
+            }
+        )
+
     private val tts: TextToSpeech by lazy {
         TextToSpeech(context) { status ->
             if (status == TextToSpeech.ERROR) {
@@ -24,12 +44,25 @@ class ReaderEngine @Inject constructor(
             } else if (status == TextToSpeech.SUCCESS) {
                 Log.i("SpeechToText", "Synthesizer init Success")
                 tts.language = Locale.US
-                tts.setPitch(1f)
-                tts.setSpeechRate(1f)
+                tts.setSpeechRate(settings.value.speechRate / 100)
             }
         }
     }
+
+    init {
+        coroutineScope.launch {
+            settings.collect { collector ->
+                tts.setSpeechRate(collector.speechRate / 100)
+                println("setSpeechRate: ${collector.speechRate}%")
+            }
+        }
+    }
+
     var offset: Int = 0
+
+    protected fun finalize() {
+        coroutineScope.cancel()
+    }
 
     fun getUtteranceFlow() = flow {
         emit(Utterance())
@@ -44,7 +77,8 @@ class ReaderEngine @Inject constructor(
         offset: Int = 0,
         utteranceId: String = "",
         wordCount: Int,
-        rewindWordCount: Int = 0) {
+        rewindWordCount: Int = 0
+    ) {
         this.offset = message.rewindWordsOrFirst(offset, rewindWordCount) ?: offset
         println("Offset speakOut: ${this.offset}")
 
@@ -86,7 +120,14 @@ suspend fun TextToSpeech.awaitUtterance(readerEngine: ReaderEngine) =
                 frame: Int,
             ) {
                 println("*** onRangeStart: utteranceId=$utteranceId, start=${start + readerEngine.offset}, end=${end + readerEngine.offset}, frame=$frame")
-                it.resume(Utterance(utteranceId, start + readerEngine.offset, end + readerEngine.offset, frame))
+                it.resume(
+                    Utterance(
+                        utteranceId,
+                        start + readerEngine.offset,
+                        end + readerEngine.offset,
+                        frame
+                    )
+                )
             }
         }
         it.invokeOnCancellation {
