@@ -6,6 +6,7 @@ import ar.com.westsoft.listening.data.engine.DictationGameHeader
 import ar.com.westsoft.listening.data.engine.DictationGameRecord
 import ar.com.westsoft.listening.data.engine.DictationProgress
 import ar.com.westsoft.listening.di.IoDispatcher
+import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
@@ -17,7 +18,8 @@ class DictationRepository @Inject constructor(
     private val externalApi: ExternalApi,
     private val appDatabase: AppDatabase,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val savedDictationGameMapper: SavedDictationGameMapper
+    private val savedDictationGameMapper: SavedDictationGameMapper,
+    private val gameHeaderMapper: GameHeaderMapper
 ) {
     suspend fun createADictationGame(title: String, url: String): RepoTaskResponse {
 
@@ -58,4 +60,9 @@ class DictationRepository @Inject constructor(
                 )
             }
         }
+
+    fun deleteGame(gameHeader: DictationGameHeader): Int =
+        appDatabase.getSavedListeningGameDao().deleteWholeGame(
+            gameHeaderMapper.toDataSource(gameHeader)
+        )
 }

@@ -8,7 +8,7 @@ data class SavedDictationGameEntity(
     @Relation(
         parentColumn = "gui",
         entityColumn = "gameHeaderId",
-        entity = DictationProgressEntity::class
+        entity = DictationProgressEntity::class,
     )
     val dictationProgressEntityLists: List<DictationProgressEntity>
 )

@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.navigation.SelectorGameButton
 
 @Composable
 fun SelectDictationGameScreen(
@@ -26,18 +27,14 @@ fun SelectDictationGameScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         content = {
             items(games.size) { idx ->
-                Button(
-                    onClick = {
+                SelectorGameButton(
+                    game = games[idx],
+                    onPlay = {
                         viewModel.onInitializeProgress(games[idx].gui)
                         playGame()
-                    }
-                ) {
-                    Text(
-                        text = "${games[idx].gui} ${games[idx].title} " +
-                                String.format("%.1f", games[idx].progressRate * 100) + "%",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                    },
+                    onDelete = { viewModel.onDeleteGame(games[idx]) }
+                )
             }
             item {
                 Button(onClick = { goBack() }) {
