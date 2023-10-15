@@ -113,11 +113,11 @@ class DictationGame @Inject constructor(
                         end = utterance.end
                     )
                 }
-                dictationState.cursorLetterPos?.let { _pos ->
+                dictationState.cursorLetterPos?.let { pos ->
                     addStyle(
                         style = SpanStyle(color = Color.Red),
-                        start = _pos,
-                        end = _pos + 1
+                        start = pos,
+                        end = pos + 1
                     )
                 }
             },
@@ -261,10 +261,10 @@ class DictationGame @Inject constructor(
     }
 
     private fun checkLetter(char: Char?, currentState: DictationState): Boolean {
-        return currentState.cursorLetterPos?.let { _pos ->
+        return currentState.cursorLetterPos?.let { pos ->
             val lineNumber = currentState.cursorParagraphIdx
             val paragraph = dictationGameRecord.dictationProgressList[lineNumber]
-            val correctKey = paragraph.originalTxt[_pos].uppercaseChar().normalize()
+            val correctKey = paragraph.originalTxt[pos].uppercaseChar().normalize()
 
             correctKey == char
         } ?: false
