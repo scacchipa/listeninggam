@@ -17,6 +17,7 @@ import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.VibratorEngine
 import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.concatenate
 import ar.com.westsoft.listening.util.getIdxPreviousTo
@@ -41,7 +42,8 @@ class DictationGame @Inject constructor(
     private val savedListeningGameMapper: SavedDictationGameMapper,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
-    private val settingsDataStore: DictSettingsDataStore
+    private val settingsDataStore: DictSettingsDataStore,
+    private val vibratorEngine: VibratorEngine
 ) {
     private var dictationGameRecord = DictationGameRecord()
 
@@ -242,7 +244,7 @@ class DictationGame @Inject constructor(
         dictationGameRecord
             .dictationProgressList[currentState.cursorParagraphIdx]
             .setLetterProgress(currentState.cursorLetterPos)
-
+        vibratorEngine.vibrareTick()
         moveNextBlank()
     }
 

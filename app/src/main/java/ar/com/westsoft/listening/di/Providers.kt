@@ -1,6 +1,9 @@
 package ar.com.westsoft.listening.di
 
 import android.content.Context
+import android.os.Build
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -41,7 +44,7 @@ class Providers {
     @Provides
     fun provideDataStore(
         @ApplicationContext applicationContext: Context
-    ) : DataStore<Preferences> {
+    ): DataStore<Preferences> {
         return PreferenceDataStoreFactory.create(
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = {
@@ -53,4 +56,18 @@ class Providers {
             }
         )
     }
+
+    @Singleton
+    @Provides
+    fun provideVibrator(
+        @ApplicationContext context: Context
+    ) : Vibrator =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vbManager =
+                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vbManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        }
 }
