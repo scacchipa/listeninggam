@@ -1,7 +1,7 @@
 package ar.com.westsoft.listening.mapper
 
 import ar.com.westsoft.listening.data.datasource.GameHeaderEntity
-import ar.com.westsoft.listening.data.engine.DictationGameHeader
+import ar.com.westsoft.listening.data.game.DictationGameHeader
 import javax.inject.Inject
 
 class GameHeaderMapper @Inject constructor()

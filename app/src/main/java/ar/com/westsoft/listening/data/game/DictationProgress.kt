@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.data.engine
+package ar.com.westsoft.listening.data.game
 
 import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
 import ar.com.westsoft.listening.util.Field

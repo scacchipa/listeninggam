@@ -1,7 +1,7 @@
 package ar.com.westsoft.listening.domain.dictationgame.engine
 
 import androidx.compose.ui.input.key.KeyEvent
-import ar.com.westsoft.listening.data.engine.DictationGame
+import ar.com.westsoft.listening.data.game.DictationGame
 import javax.inject.Inject
 
 class KeyEventUseCase @Inject constructor(

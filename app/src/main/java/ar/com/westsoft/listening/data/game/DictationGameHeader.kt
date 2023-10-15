@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.data.engine
+package ar.com.westsoft.listening.data.game
 
 data class DictationGameHeader(
     val gui: Long = 0,

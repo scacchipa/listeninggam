@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import ar.com.westsoft.listening.data.engine.DictationGameHeader
+import ar.com.westsoft.listening.data.game.DictationGameHeader
 
 @Composable
 fun SelectorGameButton(

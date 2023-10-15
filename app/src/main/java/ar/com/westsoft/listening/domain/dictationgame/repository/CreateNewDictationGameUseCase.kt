@@ -1,6 +1,6 @@
 package ar.com.westsoft.listening.domain.dictationgame.repository
 
-import ar.com.westsoft.listening.data.engine.DictationGame
+import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.DictationRepository
 import ar.com.westsoft.listening.data.repository.RepoTaskResponse
 import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus

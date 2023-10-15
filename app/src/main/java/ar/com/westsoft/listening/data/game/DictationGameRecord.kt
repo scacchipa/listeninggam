@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.data.engine
+package ar.com.westsoft.listening.data.game
 
 data class DictationGameRecord(
     val gameHeader: DictationGameHeader = DictationGameHeader(),

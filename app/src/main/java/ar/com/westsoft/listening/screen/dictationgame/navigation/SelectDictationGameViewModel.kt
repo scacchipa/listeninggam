@@ -2,7 +2,7 @@ package ar.com.westsoft.listening.screen.dictationgame.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ar.com.westsoft.listening.data.engine.DictationGameHeader
+import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.domain.dictationgame.engine.SetupDictationUseCase
 import ar.com.westsoft.listening.domain.dictationgame.repository.GetDictationGameLabels

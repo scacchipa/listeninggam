@@ -1,6 +1,6 @@
 package ar.com.westsoft.listening.domain.dictationgame.repository
 
-import ar.com.westsoft.listening.data.engine.DictationGameHeader
+import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.repository.DictationRepository
 import javax.inject.Inject
 
