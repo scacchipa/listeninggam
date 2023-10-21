@@ -4,19 +4,24 @@ import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.ReadWordAfterCursor
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.ReadWordBeforeCursor
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.SpeechRatePercentage
+import ar.com.westsoft.listening.data.datasource.PreferencesKey.SpeedLevel
 import ar.com.westsoft.listening.data.repository.SettingsField
+import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
 
 data class DictGameSettings(
-    val readWordAfterCursor: SettingsField,
-    val readWordBeforeCursor: SettingsField,
-    val speechRatePercentage: SettingsField
+    val readWordAfterCursor: SettingsField<Int>,
+    val readWordBeforeCursor: SettingsField<Int>,
+    val speechRatePercentage: SettingsField<Float>,
+    val speedLevel: SettingsField<SpeedLevelPreference>
 ) {
-    fun <T> copy(param: PreferencesKey<T>, newValue: SettingsField): DictGameSettings{
+    fun <T> copy(param: PreferencesKey<T>, newValue: SettingsField<*>): DictGameSettings{
+
+        @Suppress("UNCHECKED_CAST")
         return when(param) {
-            ReadWordAfterCursor -> copy(readWordAfterCursor = newValue)
-            ReadWordBeforeCursor -> copy(readWordBeforeCursor = newValue)
-            SpeechRatePercentage -> copy(speechRatePercentage = newValue)
+            ReadWordAfterCursor -> copy(readWordAfterCursor = newValue as SettingsField<Int>)
+            ReadWordBeforeCursor -> copy(readWordBeforeCursor = newValue as SettingsField<Int>)
+            SpeechRatePercentage -> copy(speechRatePercentage = newValue as SettingsField<Float>)
+            SpeedLevel -> copy(speedLevel = newValue as SettingsField<SpeedLevelPreference>)
         }
     }
 }
-

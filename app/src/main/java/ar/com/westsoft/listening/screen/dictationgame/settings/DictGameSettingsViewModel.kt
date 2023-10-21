@@ -9,6 +9,8 @@ import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlo
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterCursorUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeechRateUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeedLevelUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,6 +27,7 @@ class DictGameSettingsViewModel @Inject constructor(
     private val setReadWordAfterCursorUseCase: SetReadWordAfterCursorUseCase,
     private val setReadWordBeforeCursorUseCase: SetReadWordBeforeCursorUseCase,
     private val setSpeechRateUseCase: SetSpeechRateUseCase,
+    private val setSpeedLevelUseCase: SetSpeedLevelUseCase,
     private val getSettingFlowUseCase: GetDictSettingFlowUseCase
 ) : ViewModel() {
 
@@ -39,16 +42,26 @@ class DictGameSettingsViewModel @Inject constructor(
                 DictGameScreenSettingsState(
                     readWordAfterCursor = updateTextViewValue(
                         readWordAfterCursor,
-                        it.readWordAfterCursor
+                        SettingsField(
+                            it.readWordAfterCursor.value.toString(),
+                            it.readWordAfterCursor.wasSaved
+                        )
                     ),
                     readWordBeforeCursor = updateTextViewValue(
                         readWordBeforeCursor,
-                        it.readWordBeforeCursor
+                        SettingsField(
+                            it.readWordBeforeCursor.value.toString(),
+                            it.readWordBeforeCursor.wasSaved
+                        )
                     ),
                     speechRate = updateTextViewValue(
                         speechRate,
-                        it.speechRatePercentage
-                    )
+                        SettingsField(
+                            it.speechRatePercentage.value.toString(),
+                            it.speechRatePercentage.wasSaved
+                        )
+                    ),
+                    speedLevelField = it.speedLevel
                 )
             }
         }
@@ -60,7 +73,7 @@ class DictGameSettingsViewModel @Inject constructor(
 
     private fun updateTextViewValue(
         previousValue: TextFieldValue,
-        value: SettingsField
+        value: SettingsField<String>
     ): TextFieldValue = previousValue.copy(
         annotatedString = value.toAnnotatedString()
     )
@@ -93,6 +106,19 @@ class DictGameSettingsViewModel @Inject constructor(
             )
             directStateFlow.emit(state)
             setSpeechRateUseCase(textFieldValue.text)
+        }
+    }
+
+    fun setSpeedLevel(speedLevel: SpeedLevelPreference) {
+        viewModelScope.launch {
+            val oldSettings = screenStateFlow.first()
+            val state = oldSettings.copy(
+                speedLevelField = oldSettings.speedLevelField.copy(
+                    value = speedLevel
+                )
+            )
+            directStateFlow.emit(state)
+            setSpeedLevelUseCase.invoke(speedLevel)
         }
     }
 }

@@ -1,11 +1,11 @@
 package ar.com.westsoft.listening.screen.dictationgame.settings
 
 import androidx.compose.ui.text.input.TextFieldValue
-import ar.com.westsoft.listening.data.repository.toAnnotatedString
 
 fun DictGameSettings.toScreenSettingsState() =
     DictGameScreenSettingsState(
-        readWordAfterCursor = TextFieldValue(readWordAfterCursor.toAnnotatedString()),
-        readWordBeforeCursor = TextFieldValue(readWordBeforeCursor.toAnnotatedString()),
-        speechRate = TextFieldValue(speechRatePercentage.toAnnotatedString())
+        readWordAfterCursor = TextFieldValue(readWordAfterCursor.value.toString()),
+        readWordBeforeCursor = TextFieldValue(readWordBeforeCursor.toString()),
+        speechRate = TextFieldValue(speechRatePercentage.value.toString()),
+        speedLevelField = this.speedLevel
     )

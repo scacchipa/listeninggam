@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -23,6 +24,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -30,9 +32,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
 import ar.com.westsoft.listening.screen.keyboard.MainKeyBoard
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.game.GameConsoleScreen
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.settings.SelectableButton
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -47,9 +51,11 @@ fun DictGameMainScreen(
     }
 
     if (isShowingOptions.value) {
-        DictGameSettingScreen(
-            onBack = { viewModel.onPreferenceClosed() }
-        )
+        Row {
+            DictGameSettingScreen(
+                onBack = { viewModel.onPreferenceClosed() }
+            )
+        }
     } else {
         val localDensity = LocalDensity.current
 
@@ -99,13 +105,59 @@ fun DictGameMainScreen(
                         height = heightDp - sideKey * 5
                     )
             ) {
-                IconButton(
-                    onClick = { viewModel.onSettingButtonClicked() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Settings,
-                        contentDescription = "Preference"
-                    )
+
+                Row {
+                    IconButton(
+                        onClick = { viewModel.onSettingButtonClicked() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = "Preference"
+                        )
+                    }
+
+                    Row {
+                        val settingsState = viewModel.screenStateFlow.collectAsState()
+
+                        val speedLevel = settingsState.value.speedLevelField
+                        SelectableButton(
+                            settingField = speedLevel,
+                            onSelected = {
+                                viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
+                            },
+                            value = SpeedLevelPreference.LOW_SPEED_LEVEL,
+                            text = "50%",
+                            textColor = Color.Green
+                        )
+
+                        SelectableButton(
+                            settingField = speedLevel,
+                            onSelected = {
+                                viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
+                            },
+                            value = SpeedLevelPreference.MEDIUM_SPEED_LEVEL,
+                            text = "75%",
+                            textColor = Color.Yellow
+                        )
+                        SelectableButton(
+                            settingField = speedLevel,
+                            onSelected = {
+                                viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
+                            },
+                            value = SpeedLevelPreference.NORMAL_SPEED_LEVEL,
+                            text = "100%",
+                            textColor = Color.Magenta
+                        )
+                        SelectableButton(
+                            settingField = speedLevel,
+                            onSelected = {
+                                viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
+                            },
+                            value = SpeedLevelPreference.HIGH_SPEED_LEVEL,
+                            text = "125%",
+                            textColor = Color.Red
+                        )
+                    }
                 }
 
                 GameConsoleScreen()

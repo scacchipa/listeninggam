@@ -3,6 +3,7 @@ package ar.com.westsoft.listening.data.repository
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.data.datasource.toSetting
+import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -17,9 +18,10 @@ class SettingsRepository @Inject constructor(
 ) {
     private var loopbackSettingsStateFlow = MutableStateFlow(
         DictGameSettings(
-            readWordAfterCursor = SettingsField("", false),
-            readWordBeforeCursor = SettingsField("", false),
-            speechRatePercentage = SettingsField("", false)
+            readWordAfterCursor = SettingsField(0, false),
+            readWordBeforeCursor = SettingsField(0, false),
+            speechRatePercentage = SettingsField(0f, false),
+            speedLevel = SettingsField(SpeedLevelPreference.NORMAL_SPEED_LEVEL, false)
         )
     )
 
@@ -44,6 +46,10 @@ class SettingsRepository @Inject constructor(
         emitStatesAndSave(value, PreferencesKey.SpeechRatePercentage)
     }
 
+    suspend fun setSpeedLevel(value: SpeedLevelPreference) {
+        emitStatesAndSave(value.name, PreferencesKey.SpeedLevel)
+    }
+
     private suspend inline fun <reified T> emitStatesAndSave(
         value: String,
         preferenceKey: PreferencesKey<T>
@@ -65,5 +71,4 @@ class SettingsRepository @Inject constructor(
             )
         )
     }
-
 }

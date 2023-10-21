@@ -5,6 +5,8 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
+import ar.com.westsoft.listening.data.datasource.toSetting
+import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
 import ar.com.westsoft.listening.util.rewindWordsOrFirst
 import ar.com.westsoft.listening.util.takeWords
 import kotlinx.coroutines.CoroutineScope
@@ -12,6 +14,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -29,11 +32,12 @@ class ReaderEngine @Inject constructor(
 ) {
     val settings = settingsDataStore
         .getDictGameSettingsDSOFlow()
+        .map { it.toSetting() }
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.Lazily,
             initialValue = runBlocking {
-                settingsDataStore.getDictGameSettingsDSOFlow().first()
+                settingsDataStore.getDictGameSettingsDSOFlow().first().toSetting()
             }
         )
 
@@ -44,7 +48,7 @@ class ReaderEngine @Inject constructor(
             } else if (status == TextToSpeech.SUCCESS) {
                 Log.i("SpeechToText", "Synthesizer init Success")
                 tts.language = Locale.US
-                tts.setSpeechRate(settings.value.speechRate / 100)
+                tts.setSpeechRate(calculateSpeechRate())
             }
         }
     }
@@ -52,8 +56,8 @@ class ReaderEngine @Inject constructor(
     init {
         coroutineScope.launch {
             settings.collect { collector ->
-                tts.setSpeechRate(collector.speechRate / 100)
-                println("setSpeechRate: ${collector.speechRate}%")
+                tts.setSpeechRate(calculateSpeechRate())
+                println("setSpeechRate: ${collector.speechRatePercentage}%")
             }
         }
     }
@@ -88,6 +92,16 @@ class ReaderEngine @Inject constructor(
             .replace("_", "", false)
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
     }
+
+    private fun calculateSpeechRate() =
+        settings.value.speechRatePercentage.value / 100 * getSpeedLevelFactor()
+    private fun getSpeedLevelFactor(): Float =
+        when (settings.value.speedLevel.value ){
+            SpeedLevelPreference.LOW_SPEED_LEVEL -> 0.50f
+            SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> 0.75f
+            SpeedLevelPreference.NORMAL_SPEED_LEVEL -> 1.00f
+            SpeedLevelPreference.HIGH_SPEED_LEVEL -> 1.25f
+        }
 }
 
 data class Utterance(

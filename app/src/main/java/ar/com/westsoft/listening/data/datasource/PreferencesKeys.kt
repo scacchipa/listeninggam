@@ -3,6 +3,8 @@ package ar.com.westsoft.listening.data.datasource
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
 import ar.com.westsoft.listening.util.Constants
 
 sealed class PreferencesKey<T>(
@@ -33,5 +35,12 @@ sealed class PreferencesKey<T>(
         defaultValue = Constants.SPEECH_RATE_PERCENTAGE_DEFAULT,
         convert = { it.toFloatOrNull() },
         conditionToSave = { (it ?: Float.NaN) in 25.0..400.0 }
+    )
+
+    object SpeedLevel : PreferencesKey<String>(
+        key = stringPreferencesKey("speed_level"),
+        defaultValue = Constants.SPEED_LEVEL_DEFAULT.name,
+        convert = { SpeedLevelPreference.fromKey(it).name },
+        conditionToSave = { true }
     )
 }
