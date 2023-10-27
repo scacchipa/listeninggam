@@ -54,12 +54,16 @@ class SettingsRepository @Inject constructor(
         value: String,
         preferenceKey: PreferencesKey<T>
     ) {
-        val number = preferenceKey.convert(value)//convert(value)
+        val number = preferenceKey.convert(value) ?: return
         val oldState = getStoredSettings().first()
 
         if (preferenceKey.conditionToSave(number)) {
             loopbackSettingsStateFlow.emit(
-                oldState.copy(preferenceKey, SettingsField(value, true))
+                oldState.copy(
+                    param = preferenceKey,
+                    newValue = SettingsField(
+                        preferenceKey.convert(value),
+                        true))
             )
 
             dictSettingsDataStore.save(preferenceKey, number)
@@ -67,7 +71,9 @@ class SettingsRepository @Inject constructor(
         }
 
         loopbackSettingsStateFlow.emit(
-            oldState.copy(preferenceKey, SettingsField(value, false)
+            oldState.copy(
+                param = preferenceKey,
+                newValue = SettingsField(preferenceKey.convert(value), false)
             )
         )
     }
