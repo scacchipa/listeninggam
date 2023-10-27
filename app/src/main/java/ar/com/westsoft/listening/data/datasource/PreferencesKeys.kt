@@ -26,7 +26,7 @@ sealed class PreferencesKey<T>(
         key = intPreferencesKey("read_word_before_cursor"),
         defaultValue = Constants.READ_WORD_BEFORE_CURSOR_DEFAULT,
         convert = { it.toIntOrNull() },
-        conditionToSave = { it in 1..100 }
+        conditionToSave = { it in 0..100 }
     )
 
     object SpeechRatePercentage
