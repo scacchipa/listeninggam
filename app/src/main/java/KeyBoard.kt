@@ -124,7 +124,7 @@ fun FunctionKeyBoard(
     ) {
         KeyButton(key = Key.Spacebar, text = "Rd", height = sideKey, width = sideKey * 2, viewModel = viewModel)
         KeyButton(key = Key.Apostrophe, text = "Lt", height = sideKey, width = sideKey * 2, viewModel = viewModel)
-        KeyButton(key = Key.Multiply, text = "Wd", height = sideKey, width = sideKey * 2, viewModel = viewModel)
+        KeyButton(key = Key.Backslash, text = "Wd", height = sideKey, width = sideKey * 2, viewModel = viewModel)
         KeyButton(key = Key.Equals, text = "Ph", height = sideKey, width = sideKey * 2, viewModel = viewModel)
     }
 }

@@ -13,15 +13,37 @@ data class DictationProgress(
     val progressTxt: CharArray = getInitialProgressText(originalTxt)
 ) {
     val progressRate: Double =
-            originalTxt.zip(progressTxt.concatToString()).count { (originalChar, progressChar) ->
-                originalChar != progressChar
-            }.toDouble() / originalTxt.count { it.isLetterOrDigit() }
+        originalTxt.zip(progressTxt.concatToString()).count { (originalChar, progressChar) ->
+            originalChar != progressChar
+        }.toDouble() / originalTxt.count { it.isLetterOrDigit() }
     val isCompleted: Boolean = progressTxt.concatToString() == originalTxt
 
     fun setLetterProgress(pos: Int?) {
         pos?.let { _pos ->
-            progressTxt[_pos] = originalTxt[_pos]
+            revealLetter(_pos)
         }
+    }
+
+    fun revealParagraph() {
+        if (isCompleted.not()) {
+            (progressTxt.indices).forEach { idx ->
+                revealLetter(idx)
+            }
+        }
+    }
+
+    fun revealWord(pos: Int) {
+        var posx = pos
+        while (posx < originalTxt.length
+            && originalTxt[posx].isLetterOrDigit()
+        ) {
+            revealLetter(posx)
+            posx++
+        }
+    }
+
+    private fun revealLetter(pos: Int) {
+        progressTxt[pos] = originalTxt[pos]
     }
 
     override fun equals(other: Any?): Boolean {
@@ -58,6 +80,7 @@ data class DictationProgress(
 
         return pos
     }
+
     fun getNextBlank(idx: Int?): Int? {
         var pos = progressTxt.getIdxNextTo(idx, '_')
 

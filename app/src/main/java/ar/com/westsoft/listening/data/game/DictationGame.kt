@@ -184,7 +184,6 @@ class DictationGame @Inject constructor(
                                 ?: dictationProgress.getFirstBlank()
                         )
                     )
-
                     Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
                     Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
                     Key.Spacebar -> speakOut(offset = currentLetterPos ?: 0)
@@ -224,10 +223,9 @@ class DictationGame @Inject constructor(
                     Key.W,
                     Key.X,
                     Key.Y,
-                    Key.Z ->
-                        checkLetterReveal(keyEvent.key, currentState)
-
+                    Key.Z -> checkLetterReveal(keyEvent.key, currentState)
                     Key.Apostrophe -> revealLetter(currentState)
+                    Key.Backslash -> revealWord(currentState)
                     Key.Equals -> revealParagraph(currentState.cursorParagraphIdx)
                 }
             }
@@ -248,14 +246,20 @@ class DictationGame @Inject constructor(
         moveNextBlank()
     }
 
-    private suspend fun revealParagraph(paragraphIdx: Int) {
-        val currentProgress = dictationGameRecord.dictationProgressList[paragraphIdx]
-
-        if (currentProgress.isCompleted.not()) {
-            (0 until currentProgress.progressTxt.size).forEach { idx ->
-                currentProgress.setLetterProgress(idx)
-            }
+    private suspend fun revealWord(currentState: DictationState) {
+        currentState.cursorLetterPos?.let { cursorLetterPos ->
+            dictationGameRecord
+                .dictationProgressList[currentState.cursorParagraphIdx]
+                .revealWord(cursorLetterPos)
+            vibratorEngine.vibrareTick()
+            moveNextBlank()
         }
+    }
+
+    private suspend fun revealParagraph(paragraphIdx: Int) {
+        dictationGameRecord
+            .dictationProgressList[paragraphIdx]
+            .revealParagraph()
 
         moveNextBlank()
     }
