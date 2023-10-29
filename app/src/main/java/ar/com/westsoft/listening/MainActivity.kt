@@ -8,13 +8,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 // TODO: Add option to download a txt file to the SelectDictationGameScreen
 // TODO: Add the option to paste a text from clipboard in the SelectDictationGameScreen
-// TODO: Add vibration when a key is tap on the keyboard
 // TODO: Toggle the key of the keyboard and reset the the cursor advance.
-// TODO: Add 50%, 75%, 100% of speech rate on the game main view
-// TODO: Add vibration when a new letter is reveals
 // TODO: Add functionality to Word Button.
 // TODO: Modify readWordBeforeCursor condition to be able to start to read from the cursor
-// TODO: Create constants from string in the PreferencesKey.kt
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 

@@ -5,7 +5,14 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
-import ar.com.westsoft.listening.util.Constants
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_READ_WORD_AFTER_CURSOR
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_READ_WORD_AFTER_CURSOR_DEFAULT
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR_DEFAULT
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE_DEFAULT
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_SPEED_LEVEL
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_SPEED_LEVEL_DEFAULT
 
 sealed class PreferencesKey<T>(
     val key: Preferences.Key<T>,
@@ -15,31 +22,31 @@ sealed class PreferencesKey<T>(
 ) {
     object ReadWordAfterCursor
         : PreferencesKey<Int>(
-        key = intPreferencesKey("read_word_after_cursor"),
-        defaultValue = Constants.READ_WORD_AFTER_CURSOR_DEFAULT,
+        key = intPreferencesKey(PREFERENCES_KEY_READ_WORD_AFTER_CURSOR),
+        defaultValue = PREFERENCES_KEY_READ_WORD_AFTER_CURSOR_DEFAULT,
         convert = { it.toIntOrNull() },
         conditionToSave = { it in 1..200 }
     )
 
     object ReadWordBeforeCursor
         : PreferencesKey<Int>(
-        key = intPreferencesKey("read_word_before_cursor"),
-        defaultValue = Constants.READ_WORD_BEFORE_CURSOR_DEFAULT,
+        key = intPreferencesKey(PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR),
+        defaultValue = PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR_DEFAULT,
         convert = { it.toIntOrNull() },
         conditionToSave = { it in 0..100 }
     )
 
     object SpeechRatePercentage
         : PreferencesKey<Float>(
-        key = floatPreferencesKey("speech_rate_percentage"),
-        defaultValue = Constants.SPEECH_RATE_PERCENTAGE_DEFAULT,
+        key = floatPreferencesKey(PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE),
+        defaultValue = PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE_DEFAULT,
         convert = { it.toFloatOrNull() },
         conditionToSave = { (it ?: Float.NaN) in 25.0..400.0 }
     )
 
     object SpeedLevel : PreferencesKey<String>(
-        key = stringPreferencesKey("speed_level"),
-        defaultValue = Constants.SPEED_LEVEL_DEFAULT.name,
+        key = stringPreferencesKey(PREFERENCES_KEY_SPEED_LEVEL),
+        defaultValue = PREFERENCES_KEY_SPEED_LEVEL_DEFAULT.name,
         convert = { SpeedLevelPreference.fromKey(it).name },
         conditionToSave = { true }
     )
