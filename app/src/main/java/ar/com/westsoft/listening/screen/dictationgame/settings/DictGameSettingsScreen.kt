@@ -159,6 +159,30 @@ fun DictGameSettingScreen(
             }
         }
 
+        Row {
+            Text(
+                "Column per page: ",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            TextField(
+                value = settingsState.value.columnPerPage,
+                onValueChange = {
+                    settingsViewModel.setColumnPerPage(it)
+                },
+                modifier = Modifier.width(100.dp),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Decimal
+                )
+            )
+
+            Text(
+                text = "column.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
         Button(onClick = {
             onBack()
         }) {

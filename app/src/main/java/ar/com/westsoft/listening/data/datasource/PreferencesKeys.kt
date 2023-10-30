@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
+import ar.com.westsoft.listening.util.Constants
+import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_COLUMN_PER_PAGE_DEFAULT
 import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_READ_WORD_AFTER_CURSOR
 import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_READ_WORD_AFTER_CURSOR_DEFAULT
 import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR
@@ -50,4 +52,12 @@ sealed class PreferencesKey<T>(
         convert = { SpeedLevelPreference.fromKey(it).name },
         conditionToSave = { true }
     )
+
+    object ColumnPerPage : PreferencesKey<Int>(
+        key = intPreferencesKey(Constants.PREFERENCES_KEY_COLUMN_PER_PAGE),
+        defaultValue = PREFERENCES_KEY_COLUMN_PER_PAGE_DEFAULT,
+        convert = { it.toIntOrNull() },
+        conditionToSave = { it in 15..200 }
+    )
 }
+

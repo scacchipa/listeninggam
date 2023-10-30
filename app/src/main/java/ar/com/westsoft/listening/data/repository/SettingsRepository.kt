@@ -21,7 +21,8 @@ class SettingsRepository @Inject constructor(
             readWordAfterCursor = SettingsField(0, false),
             readWordBeforeCursor = SettingsField(0, false),
             speechRatePercentage = SettingsField(0f, false),
-            speedLevel = SettingsField(SpeedLevelPreference.NORMAL_SPEED_LEVEL, false)
+            speedLevel = SettingsField(SpeedLevelPreference.NORMAL_SPEED_LEVEL, false),
+            columnPerPage = SettingsField(0, false)
         )
     )
 
@@ -48,6 +49,10 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setSpeedLevel(value: SpeedLevelPreference) {
         emitStatesAndSave(value.name, PreferencesKey.SpeedLevel)
+    }
+
+    suspend fun setColumnPerPage(value: String) {
+        emitStatesAndSave(value, PreferencesKey.ColumnPerPage)
     }
 
     private suspend inline fun <reified T> emitStatesAndSave(

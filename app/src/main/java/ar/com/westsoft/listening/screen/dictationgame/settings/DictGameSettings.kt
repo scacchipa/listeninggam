@@ -12,7 +12,8 @@ data class DictGameSettings(
     val readWordAfterCursor: SettingsField<Int>,
     val readWordBeforeCursor: SettingsField<Int>,
     val speechRatePercentage: SettingsField<Float>,
-    val speedLevel: SettingsField<SpeedLevelPreference>
+    val speedLevel: SettingsField<SpeedLevelPreference>,
+    val columnPerPage: SettingsField<Int>
 ) {
     fun <T> copy(param: PreferencesKey<T>, newValue: SettingsField<*>): DictGameSettings{
 
@@ -22,6 +23,7 @@ data class DictGameSettings(
             ReadWordBeforeCursor -> copy(readWordBeforeCursor = newValue as SettingsField<Int>)
             SpeechRatePercentage -> copy(speechRatePercentage = newValue as SettingsField<Float>)
             SpeedLevel -> copy(speedLevel = newValue as SettingsField<SpeedLevelPreference>)
+            PreferencesKey.ColumnPerPage -> copy(columnPerPage = newValue as SettingsField<Int>)
         }
     }
 }

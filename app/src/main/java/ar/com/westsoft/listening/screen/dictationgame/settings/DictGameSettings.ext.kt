@@ -7,5 +7,6 @@ fun DictGameSettings.toScreenSettingsState() =
         readWordAfterCursor = TextFieldValue(readWordAfterCursor.value.toString()),
         readWordBeforeCursor = TextFieldValue(readWordBeforeCursor.toString()),
         speechRate = TextFieldValue(speechRatePercentage.value.toString()),
-        speedLevelField = this.speedLevel
+        speedLevelField = this.speedLevel,
+        columnPerPage = TextFieldValue(columnPerPage.value.toString())
     )

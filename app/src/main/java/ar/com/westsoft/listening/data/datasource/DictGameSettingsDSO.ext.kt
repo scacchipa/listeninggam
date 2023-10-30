@@ -8,5 +8,6 @@ fun DictGameSettingsDSO.toSetting() =
         readWordAfterCursor = SettingsField(readWordAfterCursor, true),
         readWordBeforeCursor = SettingsField(readWordBeforeCursor, true),
         speechRatePercentage = SettingsField(speechRate, true),
-        speedLevel = SettingsField(speedLevel, true)
+        speedLevel = SettingsField(speedLevel, true),
+        columnPerPage = SettingsField(columnPerPage, true)
     )

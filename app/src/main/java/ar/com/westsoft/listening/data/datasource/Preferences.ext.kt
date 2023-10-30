@@ -7,7 +7,8 @@ fun Preferences.getDictGameSettingsDSO() = DictGameSettingsDSO(
     readWordAfterCursor = this[PreferencesKey.ReadWordAfterCursor],
     readWordBeforeCursor = this[PreferencesKey.ReadWordBeforeCursor],
     speechRate = this[PreferencesKey.SpeechRatePercentage],
-    speedLevel = SpeedLevelPreference.fromKey(this[PreferencesKey.SpeedLevel])
+    speedLevel = SpeedLevelPreference.fromKey(this[PreferencesKey.SpeedLevel]),
+    columnPerPage = this[PreferencesKey.ColumnPerPage]
 
 )
 

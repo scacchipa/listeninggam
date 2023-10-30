@@ -8,5 +8,6 @@ data class DictGameScreenSettingsState(
     val readWordAfterCursor: TextFieldValue,
     val readWordBeforeCursor: TextFieldValue,
     val speechRate: TextFieldValue,
-    val speedLevelField: SettingsField<SpeedLevelPreference>
+    val speedLevelField: SettingsField<SpeedLevelPreference>,
+    val columnPerPage: TextFieldValue
 )

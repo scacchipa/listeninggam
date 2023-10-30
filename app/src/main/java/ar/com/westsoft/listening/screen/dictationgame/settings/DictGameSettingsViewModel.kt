@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.repository.SettingsField
 import ar.com.westsoft.listening.data.repository.toAnnotatedString
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.SetColumnPerPageUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterCursorUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeechRateUseCase
@@ -28,7 +29,8 @@ class DictGameSettingsViewModel @Inject constructor(
     private val setReadWordBeforeCursorUseCase: SetReadWordBeforeCursorUseCase,
     private val setSpeechRateUseCase: SetSpeechRateUseCase,
     private val setSpeedLevelUseCase: SetSpeedLevelUseCase,
-    private val getSettingFlowUseCase: GetDictSettingFlowUseCase
+    private val getSettingFlowUseCase: GetDictSettingFlowUseCase,
+    private val setColumnPerPageUseCase: SetColumnPerPageUseCase
 ) : ViewModel() {
 
     private val directStateFlow = MutableStateFlow(
@@ -61,7 +63,14 @@ class DictGameSettingsViewModel @Inject constructor(
                             it.speechRatePercentage.wasSaved
                         )
                     ),
-                    speedLevelField = it.speedLevel
+                    speedLevelField = it.speedLevel,
+                    columnPerPage = updateTextViewValue(
+                        columnPerPage,
+                        SettingsField(
+                            it.columnPerPage.value.toString(),
+                            it.columnPerPage.wasSaved
+                        )
+                    )
                 )
             }
         }
@@ -119,6 +128,16 @@ class DictGameSettingsViewModel @Inject constructor(
             )
             directStateFlow.emit(state)
             setSpeedLevelUseCase.invoke(speedLevel)
+        }
+    }
+
+    fun setColumnPerPage(textFieldValue: TextFieldValue) {
+        viewModelScope.launch {
+            val state = screenStateFlow.first().copy(
+                columnPerPage = textFieldValue
+            )
+            directStateFlow.emit(state)
+            setColumnPerPageUseCase(textFieldValue.text)
         }
     }
 }
