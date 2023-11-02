@@ -5,7 +5,7 @@ import ar.com.westsoft.listening.data.game.DictationGameRecord
 
 data class DictGameState(
     val paragraphIdx: Int,
-    val cursorColumn: Int?,
+    val pos: Int?,
     val textToShow: AnnotatedString,
     val dictationGameRecord: DictationGameRecord
 )

@@ -1,22 +1,22 @@
 package ar.com.westsoft.listening.data.game
 
-data class DictationState(
+data class DictationForm(
     var cursorParagraphIdx: Int = 0,
     var cursorLetterPos: Int? = 0
 ) {
 
-    fun moveNextBlank(gameRecord: DictationGameRecord) : DictationState? {
+    fun moveNextBlank(gameRecord: DictationGameRecord) : DictationForm? {
         return gameRecord
             .dictationProgressList[cursorParagraphIdx]
             .getNextBlank(cursorLetterPos)?.let { nextBlank ->
-                DictationState(
+                DictationForm(
                     cursorParagraphIdx = cursorParagraphIdx,
                     cursorLetterPos = nextBlank
                 )
             }
     }
 
-    fun moveFirstBlankInNextParagraph(gameRecord: DictationGameRecord) : DictationState {
+    fun moveFirstBlankInNextParagraph(gameRecord: DictationGameRecord) : DictationForm {
         val progressList = gameRecord.dictationProgressList
 
         var blankPosition: Int? = null
@@ -26,7 +26,7 @@ data class DictationState(
             blankPosition != null
         }
 
-        return DictationState(
+        return DictationForm(
             cursorParagraphIdx = paragraphWithBlank ?: cursorParagraphIdx,
             cursorLetterPos = blankPosition
         )
