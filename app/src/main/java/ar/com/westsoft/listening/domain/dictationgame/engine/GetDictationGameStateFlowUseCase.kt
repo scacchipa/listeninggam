@@ -8,6 +8,7 @@ import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.SettingsRepository
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
 import ar.com.westsoft.listening.util.concatenate
+import ar.com.westsoft.listening.util.findLastCrIdxBefore
 import ar.com.westsoft.listening.util.splitInRow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -20,8 +21,8 @@ class GetDictationGameStateFlowUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<DictGameState> {
         return dictationGame.getDictationGameStageFlow().map { stage ->
-            if (stage.cursorColumn == null)
-                stage.copy(cursorColumn = 0)
+            if (stage.cursorPos == null)
+                stage.copy(cursorPos = 0)
             else
                 stage
         }.map { stage ->
@@ -31,11 +32,27 @@ class GetDictationGameStateFlowUseCase @Inject constructor(
                 charsToShow = stage.charsToShow.splitInRow(settings.columnPerPage.value)
             )
         }.map { stage ->
+
+            val textByRow = if (stage.charsToShow.isEmpty()) {
+                ""
+            } else {
+                stage.charsToShow.concatenate()
+            }
+
+            val cursorCol = if (stage.charsToShow.isEmpty()) {
+                null
+            } else {
+                stage.cursorPos?.let { cursorPos ->
+                    cursorPos - (stage.charsToShow.findLastCrIdxBefore(cursorPos) ?: 0)
+                }
+            }
+
             DictGameState(
                 paragraphIdx = stage.paragraphIdx,
-                pos = stage.cursorColumn,
+                pos = stage.cursorPos,
+                cursorCol = cursorCol,
                 textToShow = buildAnnotatedString {
-                    append(stage.charsToShow.concatenate())
+                    append(textByRow)
                     if (stage.paragraphIdx == stage.utterance.utteranceId?.toInt()) {
                         addStyle(
                             style = SpanStyle(fontWeight = FontWeight.ExtraBold),
@@ -43,7 +60,7 @@ class GetDictationGameStateFlowUseCase @Inject constructor(
                             end = stage.utterance.end
                         )
                     }
-                    stage.cursorColumn?.let { pos ->
+                    stage.cursorPos?.let { pos ->
                         addStyle(
                             style = SpanStyle(color = Color.Red),
                             start = pos,

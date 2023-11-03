@@ -44,18 +44,22 @@ fun CharArray.splitInRow(columnPerPage: Int): CharArray {
     var lastNewLinePos = 0
 
     this.forEachIndexed { pos, char ->
-        if (char == ' ' && nextSpacePos - lastNewLinePos > columnPerPage) {
-            newCharArray.add('\n')
-            lastNewLinePos = pos
+        if (pos == nextSpacePos) {
+
+            nextSpacePos = this.getIdxNextTo(pos, ' ') ?: this.lastIndex
+
+            if (nextSpacePos - lastNewLinePos > columnPerPage) {
+                newCharArray.add('\n')
+                lastNewLinePos = pos
+            } else {
+                newCharArray.add(char)
+            }
         } else {
             newCharArray.add(char)
         }
 
-        if (pos == nextSpacePos) {
-            nextSpacePos = this.getIdxNextTo(pos, ' ') ?: this.lastIndex
-        }
     }
-
     return newCharArray.toCharArray()
 }
 
+fun CharArray.findLastCrIdxBefore(pos: Int): Int? = (0..pos).findLast { this[it] == '\n' }

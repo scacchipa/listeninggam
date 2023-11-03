@@ -5,7 +5,7 @@ import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.
 
 data class DictGameStage(
     val paragraphIdx: Int,
-    val cursorColumn: Int?,
+    val cursorPos: Int?,
     val utterance: Utterance,
     val charsToShow: CharArray,
     val dictationGameRecord: DictationGameRecord
@@ -17,7 +17,7 @@ data class DictGameStage(
         other as DictGameStage
 
         if (paragraphIdx != other.paragraphIdx) return false
-        if (cursorColumn != other.cursorColumn) return false
+        if (cursorPos != other.cursorPos) return false
         if (utterance != other.utterance) return false
         if (!charsToShow.contentEquals(other.charsToShow)) return false
         if (dictationGameRecord != other.dictationGameRecord) return false
@@ -27,7 +27,7 @@ data class DictGameStage(
 
     override fun hashCode(): Int {
         var result = paragraphIdx
-        result = 31 * result + (cursorColumn ?: 0)
+        result = 31 * result + (cursorPos ?: 0)
         result = 31 * result + utterance.hashCode()
         result = 31 * result + charsToShow.contentHashCode()
         result = 31 * result + dictationGameRecord.hashCode()

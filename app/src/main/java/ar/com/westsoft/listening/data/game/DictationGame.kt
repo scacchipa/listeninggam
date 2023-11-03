@@ -91,7 +91,7 @@ class DictationGame @Inject constructor(
         flow = getDictationViewFormFlow()
     ) { utterance, dictationForm ->
         DictGameStage(
-            cursorColumn = dictationForm.cursorLetterPos,
+            cursorPos = dictationForm.cursorLetterPos,
             paragraphIdx = dictationForm.cursorParagraphIdx,
             utterance = utterance,
             charsToShow =  dictationGameRecord
