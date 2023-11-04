@@ -105,7 +105,6 @@ fun DictGameMainScreen(
                         height = heightDp - sideKey * 5
                     )
             ) {
-
                 Row {
                     IconButton(
                         onClick = { viewModel.onSettingButtonClicked() }
@@ -160,7 +159,7 @@ fun DictGameMainScreen(
                     }
                 }
 
-                GameConsoleScreen()
+                GameConsoleScreen(parentWidthPx = widthPx)
             }
 
             MainKeyBoard(

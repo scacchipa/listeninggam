@@ -7,10 +7,14 @@ import ar.com.westsoft.listening.domain.dictationgame.engine.GetDictationGameSta
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetFormatTextInRow
 import ar.com.westsoft.listening.domain.dictationgame.engine.MoveToParagraphUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.SpeakOutUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
+import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,7 +22,8 @@ class GameConsoleViewModel @Inject constructor(
     private val getDictationGameStateFlowUseCase: GetDictationGameStateFlowUseCase,
     private val speakOutUseCase: SpeakOutUseCase,
     private val moveToParagraphUseCase: MoveToParagraphUseCase,
-    private val getFormatTextInRow: GetFormatTextInRow
+    private val getFormatTextInRow: GetFormatTextInRow,
+    private val getDictSettingFlowUseCase: GetDictSettingFlowUseCase
 ) : ViewModel() {
 
     fun getDictationGameStateFlow(): Flow<DictGameState> =
@@ -38,5 +43,11 @@ class GameConsoleViewModel @Inject constructor(
 
     fun getFormatText(charArray: CharArray):AnnotatedString {
         return getFormatTextInRow(charArray)
+    }
+
+    fun getSetting(): DictGameSettings {
+        return runBlocking {
+            getDictSettingFlowUseCase().first()
+        }
     }
 }
