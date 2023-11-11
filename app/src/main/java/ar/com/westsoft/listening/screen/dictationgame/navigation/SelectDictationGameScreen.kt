@@ -16,7 +16,7 @@ import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.scree
 
 @Composable
 fun SelectDictationGameScreen(
-    playGame: () -> Unit,
+    playGame: (gui: Long) -> Unit,
     goBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<SelectDictationGameViewModel>()
@@ -29,10 +29,7 @@ fun SelectDictationGameScreen(
             items(games.size) { idx ->
                 SelectorGameButton(
                     game = games[idx],
-                    onPlay = {
-                        viewModel.onInitializeProgress(games[idx].gui)
-                        playGame()
-                    },
+                    onPlay = { playGame(games[idx].gui) },
                     onDelete = { viewModel.onDeleteGame(games[idx]) }
                 )
             }

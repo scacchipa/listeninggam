@@ -2,6 +2,8 @@ package ar.com.westsoft.listening.domain.dictationgame.engine
 
 import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.SettingsRepository
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.game.ComplexCursorPos
+import ar.com.westsoft.listening.util.countRow
 import ar.com.westsoft.listening.util.splitInRow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -11,13 +13,15 @@ class GetStartPositionToShowUseCase @Inject constructor(
     private val dictationGame: DictationGame,
     private val settingsRepository: SettingsRepository
 ) {
-    operator fun invoke(cursorParagraph: Int, cursorRow: Int, rewindRow: Int): Pair<Int, Int> {
-        val progressList = dictationGame.dictationGameRecord.dictationProgressList
+    operator fun invoke(cursorPos: ComplexCursorPos, numberRowAbove: Int): Pair<Int, Int>? {
+        val gameRecord = dictationGame.dictationGameRecord ?: return null
+
+        val progressList = gameRecord.dictationProgressList
         val rowPerParagraph =
             runBlocking { settingsRepository.getDictGameSettingFlow().first() }.columnPerPage.value
 
-        var leftRow = rewindRow - cursorRow
-        var currentParagraph = cursorParagraph
+        var leftRow = numberRowAbove - (cursorPos.row ?: 0)
+        var currentParagraph = (cursorPos.paragraphIdx ?: 0)
 
         while (leftRow > 0) {
             if (currentParagraph < 1) {
@@ -26,13 +30,11 @@ class GetStartPositionToShowUseCase @Inject constructor(
                 break
             }
             currentParagraph--
-            leftRow -= progressList[currentParagraph].progressTxt.splitInRow(rowPerParagraph)
-                .count { it == '\n' } + 1
+            leftRow -= progressList[currentParagraph].progressTxt
+                .splitInRow(rowPerParagraph)
+                .countRow()
         }
 
         return Pair(currentParagraph, -leftRow)
     }
 }
-
-
-

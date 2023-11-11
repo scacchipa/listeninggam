@@ -11,4 +11,3 @@ data class DictationGameRecord(
         return progressList.count { it.isCompleted }.toDouble() / progressList.size
     }
 }
-

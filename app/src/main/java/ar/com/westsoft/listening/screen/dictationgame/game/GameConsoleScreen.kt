@@ -1,6 +1,5 @@
 package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.game
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -45,19 +43,19 @@ fun GameConsoleScreen(parentWidthPx: Float) {
     SideEffect {
         coroutineScope.launch {
             val firstVisibleItem = listState.firstVisibleItemIndex
-            val paragraphToShow = viewState.cursorPosition.paragraphIdx
+            val paragraphToShow = viewState.cursorPos.paragraphIdx
             val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size - 1
             val lastVisibleItem = firstVisibleItem + visibleItemCount
 
             val (paragraph, row) = viewModel.getStartParagraphToShow(
-                cursorParagraph = paragraphToShow ?: 0,
-                cursorRow = viewState.cursorPosition.row ?: 0,
-                rewindRow = 5
-            )
+                numberRowAbove = 5
+            ) ?: return@launch
 
-            println("View: paragraph: ${viewState.cursorPosition.paragraphIdx}," +
-                    " cursorRow: ${viewState.cursorPosition.row}," +
-                    " cursorCol: ${viewState.cursorPosition.column}")
+            println(
+                "View: paragraph: ${viewState.cursorPos.paragraphIdx}," +
+                        " cursorRow: ${viewState.cursorPos.row}," +
+                        " cursorCol: ${viewState.cursorPos.column}"
+            )
 
 
             listState.animateScrollToItem(
@@ -65,7 +63,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
                 scrollOffset = with(localDensity) { row * 20.sp.roundToPx() }.toInt()
             )
 
-            val cursorCol = viewState.cursorPosition.column
+            val cursorCol = viewState.cursorPos.column
             val columnPerPage = viewModel.getSetting().columnPerPage.value
             val leftMargin = 10
             val rightMargin = 15
@@ -93,7 +91,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
             fontFamily = FontFamily.Monospace,
             fontSize = 20.sp
         ),
-        text = "Paragraph: ${viewState.cursorPosition.paragraphIdx}"
+        text = "Paragraph: ${viewState.cursorPos.paragraphIdx}"
     )
 
     Text(
@@ -120,40 +118,19 @@ fun GameConsoleScreen(parentWidthPx: Float) {
                 }
             }
     ) {
-        val progressList = viewState.dictationGameRecord.dictationProgressList
-
-        println(viewState.cursorPosition.column)
-
-        items(progressList.size) { idx ->
-            if (viewState.cursorPosition.paragraphIdx != idx) {
-                ClickableText(
-                    style = TextStyle(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 20.sp,
-                        lineHeight = 20.sp
-                    ),
-                    text = viewModel.getFormatText(progressList[idx].progressTxt),
-                    onClick = {
-                        viewModel.onParagraphClick(idx)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
-                ClickableText(
-                    modifier = Modifier
-                        .background(color = Color.Yellow),
-                    text = viewState.textToShow,
-                    softWrap = false,
-                    style = TextStyle(
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 20.sp,
-                        lineHeight = 20.sp
-                    ),
-                    onClick = { offset ->
-                        viewModel.onLetterClicked(offset)
-                    }
-                )
-            }
+        items(viewModel.getProgressListSize() ?: 0) { idx ->
+            ClickableText(
+                style = TextStyle(
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 20.sp,
+                    lineHeight = 20.sp
+                ),
+                text = viewModel.getFormatText(idx),
+                onClick = {
+                    viewModel.onParagraphClick(idx)
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

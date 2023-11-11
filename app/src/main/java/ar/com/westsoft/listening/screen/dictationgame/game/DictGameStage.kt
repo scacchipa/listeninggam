@@ -1,14 +1,12 @@
 package ar.com.westsoft.listening.screen.dictationgame.game
 
-import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.Utterance
 
 data class DictGameStage(
     val paragraphIdx: Int,
     val cursorPos: Int?,
     val utterance: Utterance,
-    val charsToShow: CharArray,
-    val dictationGameRecord: DictationGameRecord
+    val charsToShow: CharArray
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -20,7 +18,6 @@ data class DictGameStage(
         if (cursorPos != other.cursorPos) return false
         if (utterance != other.utterance) return false
         if (!charsToShow.contentEquals(other.charsToShow)) return false
-        if (dictationGameRecord != other.dictationGameRecord) return false
 
         return true
     }
@@ -30,7 +27,6 @@ data class DictGameStage(
         result = 31 * result + (cursorPos ?: 0)
         result = 31 * result + utterance.hashCode()
         result = 31 * result + charsToShow.contentHashCode()
-        result = 31 * result + dictationGameRecord.hashCode()
         return result
     }
 }

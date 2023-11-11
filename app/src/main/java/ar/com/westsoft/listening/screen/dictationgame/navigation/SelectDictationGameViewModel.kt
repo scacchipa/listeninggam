@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.di.DefaultDispatcher
-import ar.com.westsoft.listening.domain.dictationgame.engine.SetupDictationUseCase
 import ar.com.westsoft.listening.domain.dictationgame.repository.GetDictationGameLabels
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.repository.DeleteGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SelectDictationGameViewModel @Inject constructor(
     private val getDictationGameLabels: GetDictationGameLabels,
-    private val setupDictationGameUseCase: SetupDictationUseCase,
     private val deleteGame: DeleteGameUseCase,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -28,14 +26,6 @@ class SelectDictationGameViewModel @Inject constructor(
     init{
         viewModelScope.launch {
             _games.emit(getDictationGameLabels())
-        }
-    }
-
-    fun onInitializeProgress(gui: Long) {
-        viewModelScope.launch(defaultDispatcher) {
-            setupDictationGameUseCase(gui)
-            println("**** set game: $gui.")
-            println("**** set new DictationGameFlow.")
         }
     }
 

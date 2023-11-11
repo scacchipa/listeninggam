@@ -65,3 +65,10 @@ fun CharArray.splitInRow(columnPerPage: Int): CharArray {
 fun CharArray.findLastCrIdxBefore(pos: Int): Int? = (0..pos).findLast { this[it] == '\n' }
 
 fun CharArray.countCrBefore(pos: Int): Int = (0..pos).count { this[it] == '\n' }
+
+fun CharArray.countRow(): Int = count { it == '\n' } + 1
+
+fun CharArray.calcRow(letterPos: Int) = this.countCrBefore(letterPos)
+
+fun CharArray.calcColumn(letterPos: Int): Int =
+    letterPos - (findLastCrIdxBefore(letterPos) ?: 0)

@@ -3,15 +3,15 @@ package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.scre
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetDictationGameStateFlowUseCase
-import ar.com.westsoft.listening.domain.dictationgame.engine.GetFormatTextInRow
+import ar.com.westsoft.listening.domain.dictationgame.engine.GetFormatTextInRowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetStartPositionToShowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.MoveToParagraphUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.SpeakOutUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,20 +27,21 @@ class GameConsoleViewModel @Inject constructor(
     private val getDictationGameStateFlowUseCase: GetDictationGameStateFlowUseCase,
     private val speakOutUseCase: SpeakOutUseCase,
     private val moveToParagraphUseCase: MoveToParagraphUseCase,
-    private val getFormatTextInRow: GetFormatTextInRow,
+    private val getFormatTextInRowUseCase: GetFormatTextInRowUseCase,
     private val getDictSettingFlowUseCase: GetDictSettingFlowUseCase,
-    private val getStartPositionToShowUseCase: GetStartPositionToShowUseCase
+    private val getStartPositionToShowUseCase: GetStartPositionToShowUseCase,
+    private val getDictationProgressUseCase: DictationProgressSizeUseCase
 ) : ViewModel() {
 
     var dictGameState = getDictationGameStateFlow()
         .onEach {
-            println("ViewModel: paragraph: ${it.cursorPosition.paragraphIdx}," +
-                    " cursorRow: ${it.cursorPosition.row}, cursorCol: ${it.cursorPosition.column}")
+            println("ViewModel: paragraph: ${it.cursorPos.paragraphIdx}," +
+                    " cursorRow: ${it.cursorPos.row}, cursorCol: ${it.cursorPos.column}")
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = DictGameState(0, CursorPosition(), 0, AnnotatedString(""), DictationGameRecord())
+            initialValue = DictGameState(0, ComplexCursorPos(), 0, AnnotatedString(""))
         )
 
     fun getDictationGameStateFlow(): Flow<DictGameState> =
@@ -58,8 +59,16 @@ class GameConsoleViewModel @Inject constructor(
         }
     }
 
+    fun getProgressListSize(): Int? {
+        return getDictationProgressUseCase()
+    }
+
     fun getFormatText(charArray: CharArray): AnnotatedString {
-        return getFormatTextInRow(charArray)
+        return getFormatTextInRowUseCase(charArray)
+    }
+
+    fun getFormatText(paragraphIdx: Int): AnnotatedString {
+        return getFormatTextInRowUseCase(paragraphIdx)
     }
 
     fun getSetting(): DictGameSettings {
@@ -69,14 +78,11 @@ class GameConsoleViewModel @Inject constructor(
     }
 
     fun getStartParagraphToShow(
-        cursorParagraph: Int,
-        cursorRow: Int,
-        rewindRow: Int
-    ): Pair<Int, Int> {
+        numberRowAbove: Int
+    ): Pair<Int, Int>? {
         return getStartPositionToShowUseCase(
-            cursorParagraph = cursorParagraph,
-            cursorRow = cursorRow,
-            rewindRow = 5
+            cursorPos = dictGameState.value.cursorPos,
+            numberRowAbove = numberRowAbove
         )
     }
 }
