@@ -20,29 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import ar.com.westsoft.listening.data.game.DictationGameRecord
-import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
 @Composable
 fun GameConsoleScreen(parentWidthPx: Float) {
     val viewModel = hiltViewModel<GameConsoleViewModel>()
-    val viewState by viewModel.getDictationGameStateFlow().collectAsState(
-        initial = DictGameState(
-            0,
-            null,
-            null,
-            AnnotatedString(""),
-            DictationGameRecord()
-        )
-    )
+    val viewState by viewModel.dictGameState.collectAsState()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val horizontalScrollState = rememberScrollState()
@@ -56,24 +45,27 @@ fun GameConsoleScreen(parentWidthPx: Float) {
     SideEffect {
         coroutineScope.launch {
             val firstVisibleItem = listState.firstVisibleItemIndex
-            val paragraphToShow = viewState.paragraphIdx
+            val paragraphToShow = viewState.cursorPosition.paragraphIdx
             val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size - 1
             val lastVisibleItem = firstVisibleItem + visibleItemCount
 
-            if (paragraphToShow !in firstVisibleItem..lastVisibleItem - visibleItemCount / 2) {
-                listState.animateScrollToItem(
-                    max(
-                        viewState.paragraphIdx - visibleItemCount / 2,
-                        0
-                    )
-                )
-            }
+            val (paragraph, row) = viewModel.getStartParagraphToShow(
+                cursorParagraph = paragraphToShow ?: 0,
+                cursorRow = viewState.cursorPosition.row ?: 0,
+                rewindRow = 5
+            )
 
-            println("parent: $parentWidthPx")
-            println("width: $widthPx")
-            println("cursor col: ${viewState.cursorCol}")
+            println("View: paragraph: ${viewState.cursorPosition.paragraphIdx}," +
+                    " cursorRow: ${viewState.cursorPosition.row}," +
+                    " cursorCol: ${viewState.cursorPosition.column}")
 
-            val cursorCol = viewState.cursorCol
+
+            listState.animateScrollToItem(
+                index = max(paragraph, 0),
+                scrollOffset = with(localDensity) { row * 20.sp.roundToPx() }.toInt()
+            )
+
+            val cursorCol = viewState.cursorPosition.column
             val columnPerPage = viewModel.getSetting().columnPerPage.value
             val leftMargin = 10
             val rightMargin = 15
@@ -101,7 +93,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
             fontFamily = FontFamily.Monospace,
             fontSize = 20.sp
         ),
-        text = "Paragraph: ${viewState.paragraphIdx}"
+        text = "Paragraph: ${viewState.cursorPosition.paragraphIdx}"
     )
 
     Text(
@@ -130,14 +122,15 @@ fun GameConsoleScreen(parentWidthPx: Float) {
     ) {
         val progressList = viewState.dictationGameRecord.dictationProgressList
 
-        println(viewState.cursorCol)
+        println(viewState.cursorPosition.column)
 
         items(progressList.size) { idx ->
-            if (viewState.paragraphIdx != idx) {
+            if (viewState.cursorPosition.paragraphIdx != idx) {
                 ClickableText(
                     style = TextStyle(
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        lineHeight = 20.sp
                     ),
                     text = viewModel.getFormatText(progressList[idx].progressTxt),
                     onClick = {
@@ -153,7 +146,8 @@ fun GameConsoleScreen(parentWidthPx: Float) {
                     softWrap = false,
                     style = TextStyle(
                         fontFamily = FontFamily.Monospace,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        lineHeight = 20.sp
                     ),
                     onClick = { offset ->
                         viewModel.onLetterClicked(offset)

@@ -7,7 +7,9 @@ import androidx.compose.ui.text.font.FontWeight
 import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.SettingsRepository
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.game.CursorPosition
 import ar.com.westsoft.listening.util.concatenate
+import ar.com.westsoft.listening.util.countCrBefore
 import ar.com.westsoft.listening.util.findLastCrIdxBefore
 import ar.com.westsoft.listening.util.splitInRow
 import kotlinx.coroutines.flow.Flow
@@ -33,24 +35,27 @@ class GetDictationGameStateFlowUseCase @Inject constructor(
             )
         }.map { stage ->
 
-            val textByRow = if (stage.charsToShow.isEmpty()) {
-                ""
+            lateinit var textByRow: String
+            var cursorCol: Int? = null
+            var cursorRow: Int? = null
+            if (stage.charsToShow.isEmpty()) {
+                textByRow = ""
             } else {
-                stage.charsToShow.concatenate()
+                textByRow = stage.charsToShow.concatenate()
+                cursorCol =
+                    stage.cursorPos?.minus(stage.charsToShow.findLastCrIdxBefore(stage.cursorPos) ?: 0)
+                cursorRow = stage.charsToShow.countCrBefore(stage.cursorPos ?: 0)
             }
 
-            val cursorCol = if (stage.charsToShow.isEmpty()) {
-                null
-            } else {
-                stage.cursorPos?.let { cursorPos ->
-                    cursorPos - (stage.charsToShow.findLastCrIdxBefore(cursorPos) ?: 0)
-                }
-            }
+            val rowCount = stage.charsToShow.count { it == '\n' } + 1
 
             DictGameState(
-                paragraphIdx = stage.paragraphIdx,
                 pos = stage.cursorPos,
-                cursorCol = cursorCol,
+                cursorPosition = CursorPosition(
+                    paragraphIdx = stage.paragraphIdx,
+                    row = cursorRow,
+                    column = cursorCol),
+                rowCount = rowCount,
                 textToShow = buildAnnotatedString {
                     append(textByRow)
                     if (stage.paragraphIdx == stage.utterance.utteranceId?.toInt()) {

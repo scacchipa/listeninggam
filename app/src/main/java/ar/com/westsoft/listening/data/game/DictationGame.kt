@@ -39,7 +39,7 @@ class DictationGame @Inject constructor(
     private val settingsDataStore: DictSettingsDataStore,
     private val vibratorEngine: VibratorEngine
 ) {
-    private var dictationGameRecord = DictationGameRecord()
+    var dictationGameRecord = DictationGameRecord()
 
     private val dictationViewSharedFlow = MutableSharedFlow<DictationForm>(
         replay = 1,

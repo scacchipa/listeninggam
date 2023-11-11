@@ -63,3 +63,5 @@ fun CharArray.splitInRow(columnPerPage: Int): CharArray {
 }
 
 fun CharArray.findLastCrIdxBefore(pos: Int): Int? = (0..pos).findLast { this[it] == '\n' }
+
+fun CharArray.countCrBefore(pos: Int): Int = (0..pos).count { this[it] == '\n' }
