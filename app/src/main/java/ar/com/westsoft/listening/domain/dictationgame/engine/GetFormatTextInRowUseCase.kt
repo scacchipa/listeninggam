@@ -17,13 +17,6 @@ class GetFormatTextInRowUseCase @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val dictationGame: DictationGame
 ) {
-    operator fun invoke(charArray: CharArray): AnnotatedString {
-
-        val settings = runBlocking { settingsRepository.getDictGameSettingFlow().first() }
-
-        return AnnotatedString(charArray.splitInRow(settings.columnPerPage.value).concatToString())
-    }
-
     operator fun invoke(paragraphIdx: Int): AnnotatedString {
         val gameRecord = dictationGame.dictationGameRecord ?: return AnnotatedString("")
 

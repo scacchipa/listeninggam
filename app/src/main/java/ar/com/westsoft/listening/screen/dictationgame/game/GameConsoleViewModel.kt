@@ -63,10 +63,6 @@ class GameConsoleViewModel @Inject constructor(
         return getDictationProgressUseCase()
     }
 
-    fun getFormatText(charArray: CharArray): AnnotatedString {
-        return getFormatTextInRowUseCase(charArray)
-    }
-
     fun getFormatText(paragraphIdx: Int): AnnotatedString {
         return getFormatTextInRowUseCase(paragraphIdx)
     }
