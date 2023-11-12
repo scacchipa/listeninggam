@@ -52,6 +52,7 @@ class DictationGame @Inject constructor(
 
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
+        _cursorPosStateFlow.emit(SimpleCursorPos())
     }
 
     private suspend fun getDictationGameRecord(gui: Long): DictationGameRecord =
