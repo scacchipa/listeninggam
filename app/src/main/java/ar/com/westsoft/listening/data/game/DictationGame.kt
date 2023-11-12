@@ -100,9 +100,7 @@ class DictationGame @Inject constructor(
         DictGameStage(
             cursorPos = cursorPos.letterPos,
             paragraphIdx = cursorPos.paragraphIdx,
-            utterance = utterance,
-            charsToShow = dictationGameRecord?.dictationProgressList?.get(cursorPos.paragraphIdx)
-                ?.progressTxt ?: charArrayOf()
+            utterance = utterance
         )
     }.stateIn(
         scope = coroutineScope,
@@ -110,8 +108,7 @@ class DictationGame @Inject constructor(
         initialValue = DictGameStage(
             paragraphIdx = 0,
             cursorPos = null,
-            utterance = Utterance(),
-            charsToShow = charArrayOf()
+            utterance = Utterance()
         )
     )
 

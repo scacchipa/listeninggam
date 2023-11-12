@@ -42,21 +42,9 @@ fun GameConsoleScreen(parentWidthPx: Float) {
 
     SideEffect {
         coroutineScope.launch {
-            val firstVisibleItem = listState.firstVisibleItemIndex
-            val paragraphToShow = viewState.cursorPos.paragraphIdx
-            val visibleItemCount = listState.layoutInfo.visibleItemsInfo.size - 1
-            val lastVisibleItem = firstVisibleItem + visibleItemCount
-
             val (paragraph, row) = viewModel.getStartParagraphToShow(
                 numberRowAbove = 5
             ) ?: return@launch
-
-            println(
-                "View: paragraph: ${viewState.cursorPos.paragraphIdx}," +
-                        " cursorRow: ${viewState.cursorPos.row}," +
-                        " cursorCol: ${viewState.cursorPos.column}"
-            )
-
 
             listState.animateScrollToItem(
                 index = max(paragraph, 0),

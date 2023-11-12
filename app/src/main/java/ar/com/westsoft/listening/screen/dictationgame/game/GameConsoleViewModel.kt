@@ -13,10 +13,8 @@ import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -24,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GameConsoleViewModel @Inject constructor(
-    private val getDictationGameStateFlowUseCase: GetDictationGameStateFlowUseCase,
+    getDictationGameStateFlowUseCase: GetDictationGameStateFlowUseCase,
     private val speakOutUseCase: SpeakOutUseCase,
     private val moveToParagraphUseCase: MoveToParagraphUseCase,
     private val getFormatTextInRowUseCase: GetFormatTextInRowUseCase,
@@ -33,19 +31,12 @@ class GameConsoleViewModel @Inject constructor(
     private val getDictationProgressUseCase: DictationProgressSizeUseCase
 ) : ViewModel() {
 
-    var dictGameState = getDictationGameStateFlow()
-        .onEach {
-            println("ViewModel: paragraph: ${it.cursorPos.paragraphIdx}," +
-                    " cursorRow: ${it.cursorPos.row}, cursorCol: ${it.cursorPos.column}")
-        }
+    var dictGameState = getDictationGameStateFlowUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = DictGameState(0, ComplexCursorPos(), 0, AnnotatedString(""))
+            initialValue = DictGameState(0, ComplexCursorPos())
         )
-
-    fun getDictationGameStateFlow(): Flow<DictGameState> =
-        getDictationGameStateFlowUseCase()
 
     fun onLetterClicked(offset: Int) {
         viewModelScope.launch {
