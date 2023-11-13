@@ -23,13 +23,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import ar.com.westsoft.listening.data.game.SimpleCursorPos
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
 @Composable
 fun GameConsoleScreen(parentWidthPx: Float) {
     val viewModel = hiltViewModel<GameConsoleViewModel>()
-    val viewState by viewModel.dictGameState.collectAsState()
+    val viewState by viewModel.cursorPosStateFlow.collectAsState()
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val horizontalScrollState = rememberScrollState()
@@ -42,35 +43,21 @@ fun GameConsoleScreen(parentWidthPx: Float) {
 
     SideEffect {
         coroutineScope.launch {
-            val (paragraph, row) = viewModel.getStartParagraphToShow(
+            val startComplexCursorPos = viewModel.getStartParagraphToShow(
+                simpleCursor = SimpleCursorPos(viewState.paragraphIdx, viewState.letterPos),
                 numberRowAbove = 5
             ) ?: return@launch
 
             listState.animateScrollToItem(
-                index = max(paragraph, 0),
-                scrollOffset = with(localDensity) { row * 20.sp.roundToPx() }.toInt()
+                index = max(startComplexCursorPos.paragraphIdx ?: 0, 0),
+                scrollOffset = with(localDensity) {
+                    (startComplexCursorPos.row ?: 0) * 20.sp.roundToPx()
+                }.toInt()
             )
 
-            val cursorCol = viewState.cursorPos.column
-            val columnPerPage = viewModel.getSetting().columnPerPage.value
-            val leftMargin = 10
-            val rightMargin = 15
-
-            if (parentWidthPx < widthPx && cursorCol != null) {
-                when {
-                    cursorCol < leftMargin ->
-                        horizontalScrollState.scrollTo(0)
-
-                    cursorCol > columnPerPage - rightMargin ->
-                        horizontalScrollState.scrollTo(-(parentWidthPx - widthPx).toInt())
-
-                    else -> horizontalScrollState.scrollTo(
-                        -(parentWidthPx - widthPx).toInt()
-                                / (columnPerPage - leftMargin - rightMargin)
-                                * (cursorCol - leftMargin)
-                    )
-                }
-            }
+            horizontalScrollState.scrollTo(viewModel.getHorizontalShift(
+                startComplexCursorPos.column ?: 0, parentWidthPx.toInt(), widthPx.toInt()
+            ))
         }
     }
 
@@ -79,7 +66,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
             fontFamily = FontFamily.Monospace,
             fontSize = 20.sp
         ),
-        text = "Paragraph: ${viewState.cursorPos.paragraphIdx}"
+        text = "Paragraph: ${viewState.paragraphIdx}"
     )
 
     Text(
@@ -87,7 +74,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
             fontFamily = FontFamily.Monospace,
             fontSize = 20.sp
         ),
-        text = "Column: ${viewState.pos}"
+        text = "Column: ${viewState.letterPos}"
     )
 
     LazyColumn(

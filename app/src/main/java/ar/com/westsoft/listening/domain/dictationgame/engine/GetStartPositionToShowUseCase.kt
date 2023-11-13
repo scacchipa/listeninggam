@@ -13,15 +13,16 @@ class GetStartPositionToShowUseCase @Inject constructor(
     private val dictationGame: DictationGame,
     private val settingsRepository: SettingsRepository
 ) {
-    operator fun invoke(cursorPos: ComplexCursorPos, numberRowAbove: Int): Pair<Int, Int>? {
-        val gameRecord = dictationGame.dictationGameRecord ?: return null
-
-        val progressList = gameRecord.dictationProgressList
+    operator fun invoke(complexCursorPos: ComplexCursorPos, numberRowAbove: Int): ComplexCursorPos? {
         val rowPerParagraph =
             runBlocking { settingsRepository.getDictGameSettingFlow().first() }.columnPerPage.value
 
-        var leftRow = numberRowAbove - (cursorPos.row ?: 0)
-        var currentParagraph = (cursorPos.paragraphIdx ?: 0)
+        val gameRecord = dictationGame.dictationGameRecord ?: return null
+
+        val paragraphIdx = complexCursorPos.paragraphIdx ?: return null
+
+        var leftRow = numberRowAbove - (complexCursorPos.row ?: 0)
+        var currentParagraph = paragraphIdx
 
         while (leftRow > 0) {
             if (currentParagraph < 1) {
@@ -30,11 +31,16 @@ class GetStartPositionToShowUseCase @Inject constructor(
                 break
             }
             currentParagraph--
-            leftRow -= progressList[currentParagraph].progressTxt
+            leftRow -= gameRecord.dictationProgressList[currentParagraph].progressTxt
                 .splitInRow(rowPerParagraph)
                 .countRow()
         }
 
-        return Pair(currentParagraph, -leftRow)
+        val column = complexCursorPos.column
+
+        return ComplexCursorPos(
+            paragraphIdx = currentParagraph,
+            row = -leftRow,
+            column = column)
     }
 }

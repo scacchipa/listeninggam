@@ -3,15 +3,17 @@ package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.scre
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.com.westsoft.listening.data.game.SimpleCursorPos
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetDictationGameStateFlowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetFormatTextInRowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetStartPositionToShowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.MoveToParagraphUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.SpeakOutUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
-import ar.com.westsoft.listening.screen.dictationgame.game.DictGameState
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.GetColumnPerPageUseCase
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.GetComplexCursorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
@@ -28,14 +30,16 @@ class GameConsoleViewModel @Inject constructor(
     private val getFormatTextInRowUseCase: GetFormatTextInRowUseCase,
     private val getDictSettingFlowUseCase: GetDictSettingFlowUseCase,
     private val getStartPositionToShowUseCase: GetStartPositionToShowUseCase,
-    private val getDictationProgressUseCase: DictationProgressSizeUseCase
+    private val getDictationProgressUseCase: DictationProgressSizeUseCase,
+    private val getColumnPerPageUseCase: GetColumnPerPageUseCase,
+    private val getComplexCursorUseCase: GetComplexCursorUseCase
 ) : ViewModel() {
 
-    var dictGameState = getDictationGameStateFlowUseCase()
+    var cursorPosStateFlow = getDictationGameStateFlowUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = DictGameState(0, ComplexCursorPos())
+            initialValue = SimpleCursorPos()
         )
 
     fun onLetterClicked(offset: Int) {
@@ -64,12 +68,36 @@ class GameConsoleViewModel @Inject constructor(
         }
     }
 
+    fun getComplexCursor(simpleCursor: SimpleCursorPos): ComplexCursorPos? =
+        getComplexCursorUseCase(simpleCursor)
+
     fun getStartParagraphToShow(
+        simpleCursor: SimpleCursorPos,
         numberRowAbove: Int
-    ): Pair<Int, Int>? {
+    ): ComplexCursorPos? {
         return getStartPositionToShowUseCase(
-            cursorPos = dictGameState.value.cursorPos,
+            complexCursorPos = getComplexCursor(simpleCursor) ?: ComplexCursorPos(0, 0, 0),
             numberRowAbove = numberRowAbove
         )
+    }
+
+    fun getHorizontalShift(cursorCol: Int, parentWidthPx: Int, widthPx: Int): Int {
+        val columnPerPage = getColumnPerPageUseCase()
+        val leftMargin = 10
+        val rightMargin = 15
+
+        return if (parentWidthPx < widthPx) {
+            when {
+                cursorCol < leftMargin -> 0
+
+                cursorCol > columnPerPage - rightMargin ->
+                    widthPx - parentWidthPx
+
+                else -> (widthPx - parentWidthPx) /
+                        (columnPerPage - leftMargin - rightMargin) * (cursorCol - leftMargin)
+            }
+        } else {
+            0
+        }
     }
 }

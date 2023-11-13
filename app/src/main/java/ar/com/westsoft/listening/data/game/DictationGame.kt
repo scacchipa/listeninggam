@@ -19,7 +19,6 @@ import ar.com.westsoft.listening.util.getIdxPreviousTo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -48,7 +47,7 @@ class DictationGame @Inject constructor(
 
     private val _cursorPosStateFlow = MutableStateFlow(SimpleCursorPos())
 
-    val cursorPosStateFlow = _cursorPosStateFlow as SharedFlow<SimpleCursorPos>
+    val cursorPosStateFlow = _cursorPosStateFlow as StateFlow<SimpleCursorPos>
 
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
