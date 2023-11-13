@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -121,7 +120,7 @@ class DictationGame @Inject constructor(
             println("offset: $offset")
             val gameRecord = dictationGameRecord ?: return@runBlocking
 
-            val paragraphNumber = _cursorPosStateFlow.first().paragraphIdx
+            val paragraphNumber = _cursorPosStateFlow.value.paragraphIdx
             val paragraph = gameRecord.dictationProgressList[paragraphNumber]
             readerEngine.speakOut(
                 message = paragraph.originalTxt,
@@ -142,7 +141,7 @@ class DictationGame @Inject constructor(
         runBlocking(defaultDispatcher) {
             val gameRecord = dictationGameRecord ?: return@runBlocking
 
-            val currentState = _cursorPosStateFlow.first()
+            val currentState = _cursorPosStateFlow.value
             val currentLetterPos = currentState.letterPos
 
             val paragraphIdx = currentState.paragraphIdx
@@ -257,7 +256,7 @@ class DictationGame @Inject constructor(
     private suspend fun moveNextBlank() {
         val gameRecord = dictationGameRecord ?: return
 
-        val currentState = _cursorPosStateFlow.first()
+        val currentState = _cursorPosStateFlow.value
 
         val nextBlank = currentState.moveNextBlank(gameRecord)
 
