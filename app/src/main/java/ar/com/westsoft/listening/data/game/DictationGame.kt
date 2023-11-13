@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -94,7 +93,7 @@ class DictationGame @Inject constructor(
     }
 
     val getDictationGameStageFlow: StateFlow<DictGameStage> = getReaderEngineFlow().combine(
-        flow = getDictationViewFormFlow()
+        flow = _cursorPosStateFlow
     ) { utterance, cursorPos ->
         DictGameStage(
             cursorPos = cursorPos.letterPos,
@@ -110,15 +109,6 @@ class DictationGame @Inject constructor(
             utterance = Utterance()
         )
     )
-
-    private fun getDictationViewFormFlow() = _cursorPosStateFlow.onEach { cursorPos ->
-        val gameRecord = dictationGameRecord ?: return@onEach
-
-        saveDictationProgress(
-            paragraphIdx = cursorPos.paragraphIdx,
-            gui = gameRecord.gameHeader.gui
-        )
-    }
 
     private fun getReaderEngineFlow() = readerEngine.getUtteranceFlow()
 
@@ -226,10 +216,12 @@ class DictationGame @Inject constructor(
     }
 
     private suspend fun revealLetter(currentState: SimpleCursorPos) {
-        dictationGameRecord
-            ?.dictationProgressList?.get(currentState.paragraphIdx)
-            ?.setLetterProgress(currentState.letterPos)
+        val gameRecord = dictationGameRecord ?: return
+        gameRecord
+            .dictationProgressList[currentState.paragraphIdx]
+            .setLetterProgress(currentState.letterPos)
         vibratorEngine.vibrareTick()
+        saveDictationProgress(currentState.paragraphIdx, gameRecord.gameHeader.gui)
         moveNextBlank()
     }
 
