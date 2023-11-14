@@ -76,6 +76,11 @@ class DictationGame @Inject constructor(
             appDatabase
                 .getSavedListeningGameDao()
                 .updateDictationProgressEntity(dictationProgressEntity)
+        }
+    }
+
+    private fun saveGlobalProgressRate() {
+        CoroutineScope(ioDispatcher).launch {
 
             val gameRecord = dictationGameRecord ?: return@launch
 
@@ -263,6 +268,8 @@ class DictationGame @Inject constructor(
         if (nextBlank != null) {
             _cursorPosStateFlow.emit(nextBlank)
         } else {
+            saveGlobalProgressRate()
+
             _cursorPosStateFlow.emit(currentState)
             _cursorPosStateFlow.emit(
                 currentState.moveFirstBlankInNextParagraph(gameRecord)
