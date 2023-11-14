@@ -27,7 +27,7 @@ class GetFormatTextInRowUseCase @Inject constructor(
         val charsToShow = gameRecord.dictationProgressList[paragraphIdx].progressTxt
             .splitInRow(settings.columnPerPage.value)
 
-        val cursorPos: SimpleCursorPos = runBlocking { dictationGame.cursorPosStateFlow.first() }
+        val cursorPos: SimpleCursorPos = dictationGame.cursorPosStateFlow.value
 
         val textByRow = charsToShow.concatToString()
 
