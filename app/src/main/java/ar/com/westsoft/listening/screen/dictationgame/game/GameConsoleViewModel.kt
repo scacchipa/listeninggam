@@ -4,12 +4,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.game.SimpleCursorPos
+import ar.com.westsoft.listening.domain.dictationgame.engine.ConsoleViewState
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetDictationGameStateFlowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetFormatTextInRowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetStartPositionToShowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.MoveToParagraphUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.SpeakOutUseCase
-import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.GetColumnPerPageUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.GetComplexCursorUseCase
@@ -25,7 +25,6 @@ class GameConsoleViewModel @Inject constructor(
     private val speakOutUseCase: SpeakOutUseCase,
     private val moveToParagraphUseCase: MoveToParagraphUseCase,
     private val getFormatTextInRowUseCase: GetFormatTextInRowUseCase,
-    private val getDictSettingFlowUseCase: GetDictSettingFlowUseCase,
     private val getStartPositionToShowUseCase: GetStartPositionToShowUseCase,
     private val getDictationProgressUseCase: DictationProgressSizeUseCase,
     private val getColumnPerPageUseCase: GetColumnPerPageUseCase,
@@ -36,7 +35,10 @@ class GameConsoleViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = SimpleCursorPos()
+            initialValue = ConsoleViewState(
+                simpleCursorPos = SimpleCursorPos(),
+                utterance = null
+            )
         )
 
     fun onLetterClicked(offset: Int) {

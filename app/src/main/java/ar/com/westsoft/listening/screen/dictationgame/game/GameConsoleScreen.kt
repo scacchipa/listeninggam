@@ -31,6 +31,7 @@ import kotlin.math.max
 fun GameConsoleScreen(parentWidthPx: Float) {
     val viewModel = hiltViewModel<GameConsoleViewModel>()
     val viewState by viewModel.cursorPosStateFlow.collectAsState()
+    val simpleCursorPos = viewState.simpleCursorPos
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val horizontalScrollState = rememberScrollState()
@@ -44,7 +45,10 @@ fun GameConsoleScreen(parentWidthPx: Float) {
     SideEffect {
         coroutineScope.launch {
             val startComplexCursorPos = viewModel.getStartParagraphToShow(
-                simpleCursor = SimpleCursorPos(viewState.paragraphIdx, viewState.letterPos),
+                simpleCursor = SimpleCursorPos(
+                    simpleCursorPos.paragraphIdx,
+                    simpleCursorPos.letterPos
+                ),
                 numberRowAbove = 5
             ) ?: return@launch
 
@@ -55,9 +59,11 @@ fun GameConsoleScreen(parentWidthPx: Float) {
                 }.toInt()
             )
 
-            horizontalScrollState.scrollTo(viewModel.getHorizontalShift(
-                startComplexCursorPos.column ?: 0, parentWidthPx.toInt(), widthPx.toInt()
-            ))
+            horizontalScrollState.scrollTo(
+                viewModel.getHorizontalShift(
+                    startComplexCursorPos.column ?: 0, parentWidthPx.toInt(), widthPx.toInt()
+                )
+            )
         }
     }
 
@@ -66,7 +72,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
             fontFamily = FontFamily.Monospace,
             fontSize = 20.sp
         ),
-        text = "Paragraph: ${viewState.paragraphIdx}"
+        text = "Paragraph: ${simpleCursorPos.paragraphIdx}"
     )
 
     Text(
@@ -74,7 +80,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
             fontFamily = FontFamily.Monospace,
             fontSize = 20.sp
         ),
-        text = "Column: ${viewState.letterPos}"
+        text = "Column: ${simpleCursorPos.letterPos}"
     )
 
     LazyColumn(

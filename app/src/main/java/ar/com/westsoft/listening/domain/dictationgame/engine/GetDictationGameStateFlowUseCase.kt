@@ -9,16 +9,19 @@ import javax.inject.Inject
 class GetDictationGameStateFlowUseCase @Inject constructor(
     private val dictationGame: DictationGame
 ) {
-    operator fun invoke(): Flow<SimpleCursorPos> {
+    operator fun invoke(): Flow<ConsoleViewState> {
         return dictationGame.getDictationGameStageFlow.map { stage ->
             if (stage.cursorPos == null)
                 stage.copy(cursorPos = 0)
             else
                 stage
         }.map { stage ->
-            SimpleCursorPos(
-                paragraphIdx = stage.paragraphIdx,
-                letterPos = stage.cursorPos
+            ConsoleViewState(
+                simpleCursorPos = SimpleCursorPos(
+                    paragraphIdx = stage.paragraphIdx,
+                    letterPos = stage.cursorPos
+                ),
+                utterance = stage.utterance
             )
         }
     }
