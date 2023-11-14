@@ -10,16 +10,13 @@ import ar.com.westsoft.listening.domain.dictationgame.engine.GetStartPositionToS
 import ar.com.westsoft.listening.domain.dictationgame.engine.MoveToParagraphUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.SpeakOutUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
-import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.GetColumnPerPageUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.GetComplexCursorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -60,12 +57,6 @@ class GameConsoleViewModel @Inject constructor(
 
     fun getFormatText(paragraphIdx: Int): AnnotatedString {
         return getFormatTextInRowUseCase(paragraphIdx)
-    }
-
-    fun getSetting(): DictGameSettings {
-        return runBlocking {
-            getDictSettingFlowUseCase().first()
-        }
     }
 
     fun getComplexCursor(simpleCursor: SimpleCursorPos): ComplexCursorPos? =
