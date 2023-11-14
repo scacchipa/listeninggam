@@ -39,7 +39,7 @@ class DictationGame @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val settingsDataStore: DictSettingsDataStore,
     private val vibratorEngine: VibratorEngine,
-    coroutineScope: CoroutineScope
+    private var coroutineScope: CoroutineScope
 ) {
     var dictationGameRecord: DictationGameRecord? = null
 
@@ -50,6 +50,7 @@ class DictationGame @Inject constructor(
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
         _cursorPosStateFlow.emit(SimpleCursorPos())
+        gameStageFlow = createGameStageFlow()
     }
 
     private suspend fun getDictationGameRecord(gui: Long): DictationGameRecord =
@@ -96,7 +97,9 @@ class DictationGame @Inject constructor(
         }
     }
 
-    val getDictationGameStageFlow: StateFlow<DictGameStage> = getReaderEngineFlow().combine(
+    var gameStageFlow: StateFlow<DictGameStage> = createGameStageFlow()
+
+    private fun createGameStageFlow(): StateFlow<DictGameStage> = getReaderEngineFlow().combine(
         flow = _cursorPosStateFlow
     ) { utterance, cursorPos ->
         DictGameStage(

@@ -20,7 +20,7 @@ class GetFormatTextInRowUseCase @Inject constructor(
     operator fun invoke(paragraphIdx: Int): AnnotatedString {
         val gameRecord = dictationGame.dictationGameRecord ?: return AnnotatedString("")
 
-        val utterance = dictationGame.getDictationGameStageFlow.value.utterance
+        val utterance = dictationGame.gameStageFlow.value.utterance
 
         val settings = runBlocking { settingsRepository.getDictGameSettingFlow().first() }
 

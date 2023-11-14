@@ -10,7 +10,7 @@ class GetDictationGameStateFlowUseCase @Inject constructor(
     private val dictationGame: DictationGame
 ) {
     operator fun invoke(): Flow<ConsoleViewState> {
-        return dictationGame.getDictationGameStageFlow.map { stage ->
+        return dictationGame.gameStageFlow.map { stage ->
             if (stage.cursorPos == null)
                 stage.copy(cursorPos = 0)
             else
