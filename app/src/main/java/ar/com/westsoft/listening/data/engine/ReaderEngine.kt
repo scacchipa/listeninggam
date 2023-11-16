@@ -6,7 +6,7 @@ import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.toSetting
-import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.util.rewindWordsOrFirst
 import ar.com.westsoft.listening.util.takeWords
 import kotlinx.coroutines.CoroutineScope

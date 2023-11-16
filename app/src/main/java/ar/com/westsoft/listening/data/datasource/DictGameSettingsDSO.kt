@@ -1,6 +1,6 @@
 package ar.com.westsoft.listening.data.datasource
 
-import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 
 data class DictGameSettingsDSO(
     val readWordAfterCursor: Int,

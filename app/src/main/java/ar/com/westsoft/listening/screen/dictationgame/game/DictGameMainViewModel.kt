@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetDictSettingFlowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeedLevelUseCase
-import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameScreenSettingsState
 import ar.com.westsoft.listening.screen.dictationgame.settings.toScreenSettingsState
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,6 +1,6 @@
 package ar.com.westsoft.listening.util
 
-import ar.com.westsoft.listening.domain.dictationgame.settings.SpeedLevelPreference
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 
 object Constants {
 
