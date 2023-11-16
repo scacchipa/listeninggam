@@ -2,9 +2,6 @@ package ar.com.westsoft.listening.data.datasource
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import ar.com.westsoft.listening.util.Constants
 import kotlinx.coroutines.flow.flow
 import org.junit.Before
@@ -17,37 +14,50 @@ class PreferencesExtTest {
     private val mockPreferences = mock<Preferences>()
     private val mockDataStore = mock<DataStore<Preferences>>()
 
-    private val readWordAfterCursorKey =
-        intPreferencesKey(Constants.PREFERENCES_KEY_READ_WORD_AFTER_CURSOR)
-    private val readWordBeforeCursorKey =
-        intPreferencesKey(Constants.PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR)
-    private val speechRatePercentageKey =
-        floatPreferencesKey(Constants.PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE)
-    private val speedLevelKey = stringPreferencesKey(Constants.PREFERENCES_KEY_SPEED_LEVEL)
-    private val columnPerPageKey = intPreferencesKey(Constants.PREFERENCES_KEY_COLUMN_PER_PAGE)
-
-    private val readWordAfterCursorValue = Constants.PREFERENCES_KEY_READ_WORD_AFTER_CURSOR_DEFAULT
-    private val readWordBeforeCursorValue =
-        Constants.PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR_DEFAULT
-    private val speechRatePercentageValue = Constants.PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE_DEFAULT
-    private val speedLevelValue = Constants.PREFERENCES_KEY_SPEED_LEVEL_DEFAULT.name
-    private val columnPerPageValue = Constants.PREFERENCES_KEY_COLUMN_PER_PAGE_DEFAULT
+    private val readWordAfterCursorKey = PreferencesKey.ReadWordAfterCursor.key
+    private val readWordBeforeCursorKey = PreferencesKey.ReadWordBeforeCursor.key
+    private val speechRatePercentageKey = PreferencesKey.SpeechRatePercentage.key
+    private val speedLevelKey = PreferencesKey.SpeedLevel.key
+    private val columnPerPageKey = PreferencesKey.ColumnPerPage.key
 
     @Before
     fun setup() {
-        `when`(mockPreferences[readWordAfterCursorKey]).thenReturn(readWordAfterCursorValue)
-        `when`(mockPreferences[readWordBeforeCursorKey]).thenReturn(readWordBeforeCursorValue)
-        `when`(mockPreferences[speechRatePercentageKey]).thenReturn(speechRatePercentageValue)
-        `when`(mockPreferences[speedLevelKey]).thenReturn(speedLevelValue)
-        `when`(mockPreferences[columnPerPageKey]).thenReturn(columnPerPageValue)
-
+        
         `when`(mockDataStore.data).then {
             flow<Preferences> { emit(mockPreferences) }
         }
     }
 
     @Test
-    fun getDictGameSettingsDSOFlow() {
+    fun getDictGameSettingsDSOFlowNormal() {
+
+        `when`(mockPreferences[readWordAfterCursorKey]).thenReturn(PreferencesKey.ReadWordAfterCursor.defaultValue)
+        `when`(mockPreferences[readWordBeforeCursorKey]).thenReturn(PreferencesKey.ReadWordBeforeCursor.defaultValue)
+        `when`(mockPreferences[speechRatePercentageKey]).thenReturn(PreferencesKey.SpeechRatePercentage.defaultValue)
+        `when`(mockPreferences[speedLevelKey]).thenReturn(PreferencesKey.SpeedLevel.defaultValue)
+        `when`(mockPreferences[columnPerPageKey]).thenReturn(PreferencesKey.ColumnPerPage.defaultValue)
+
+        val actualResult = mockPreferences.getDictGameSettingsDSO()
+
+        val expectResult = DictGameSettingsDSO(
+            readWordAfterCursor = Constants.PREFERENCES_KEY_READ_WORD_AFTER_CURSOR_DEFAULT,
+            readWordBeforeCursor = Constants.PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR_DEFAULT,
+            speechRate = Constants.PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE_DEFAULT,
+            speedLevel = Constants.PREFERENCES_KEY_SPEED_LEVEL_DEFAULT,
+            columnPerPage = Constants.PREFERENCES_KEY_COLUMN_PER_PAGE_DEFAULT
+        )
+
+        assert(actualResult == expectResult)
+    }
+
+    @Test
+    fun getDictGameSettingsDSOFlowNormal_does_not_speedLevel() {
+        `when`(mockPreferences[speedLevelKey]).thenReturn("Wrong name")
+        `when`(mockPreferences[readWordAfterCursorKey]).thenReturn(null)
+        `when`(mockPreferences[readWordBeforeCursorKey]).thenReturn(null)
+        `when`(mockPreferences[speechRatePercentageKey]).thenReturn(null)
+        `when`(mockPreferences[speedLevelKey]).thenReturn(null)
+        `when`(mockPreferences[columnPerPageKey]).thenReturn(null)
 
         val actualResult = mockPreferences.getDictGameSettingsDSO()
 
