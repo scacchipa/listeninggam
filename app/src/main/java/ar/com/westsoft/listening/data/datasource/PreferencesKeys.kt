@@ -60,4 +60,3 @@ sealed class PreferencesKey<T>(
         conditionToSave = { it in 15..200 }
     )
 }
-
