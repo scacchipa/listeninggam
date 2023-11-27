@@ -6,8 +6,8 @@ import androidx.test.core.app.ApplicationProvider
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
-import ar.com.westsoft.listening.mapper.DictationProgressListMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -80,9 +80,7 @@ class SavedDictationGameDaoTest {
     @Test
     fun insertGameEntity() {
         val gui = gameDao.insertGameEntity(
-            game = SavedDictationGameMapper(
-                dictationProgressListMapper = DictationProgressListMapper()
-            ).toDataSource(
+            game = SavedDictationGameMapper().toDataSource(
                 origin = DictationGameRecord(
                     gameHeader = gameHeader,
                     dictationProgressList = progressList
@@ -109,9 +107,7 @@ class SavedDictationGameDaoTest {
     fun insertGameHeaderAndProgress() {
         val actualGui = gameDao.insertGameHeaderAndProgress(
             gameHeaderEntity = gameHeaderEntity1,
-            progressEntityList = DictationProgressListMapper().toDataSource(
-                origin = progressList
-            )
+            progressEntityList = progressList.toEntity()
         )
         val expectedGui = 234L
         val actual = gameDao.getSavedDictationGameEntityList()
@@ -133,13 +129,9 @@ class SavedDictationGameDaoTest {
     @Test
     fun deleteWhole() {
         gameDao.insertGameEntity(
-            game = SavedDictationGameMapper(
-                dictationProgressListMapper = DictationProgressListMapper()
-            ).toDataSource(
-                origin = DictationGameRecord(
-                    gameHeader = gameHeader,
-                    dictationProgressList = progressList
-                )
+            game = SavedDictationGameEntity(
+                gameHeaderEntity = gameHeader.toEntity(),
+                dictationProgressEntityLists = progressList.toEntity()
             )
         )
 
