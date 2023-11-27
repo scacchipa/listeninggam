@@ -7,7 +7,6 @@ import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
 import ar.com.westsoft.listening.mapper.DictationProgressListMapper
-import ar.com.westsoft.listening.mapper.DictationProgressMapper
 import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import org.junit.After
@@ -83,9 +82,7 @@ class SavedDictationGameDaoTest {
     fun insertGameEntity() {
         val gui = gameDao.insertGameEntity(
             game = SavedDictationGameMapper(
-                dictationProgressListMapper = DictationProgressListMapper(
-                    dictationProgressMapper = DictationProgressMapper()
-                ),
+                dictationProgressListMapper = DictationProgressListMapper(),
                 gameHeaderMapper = GameHeaderMapper()
             ).toDataSource(
                 origin = DictationGameRecord(
@@ -114,9 +111,7 @@ class SavedDictationGameDaoTest {
     fun insertGameHeaderAndProgress() {
         val actualGui = gameDao.insertGameHeaderAndProgress(
             gameHeaderEntity = gameHeaderEntity1,
-            progressEntityList = DictationProgressListMapper(
-                dictationProgressMapper = DictationProgressMapper()
-            ).toDataSource(
+            progressEntityList = DictationProgressListMapper().toDataSource(
                 origin = progressList
             )
         )
@@ -141,9 +136,7 @@ class SavedDictationGameDaoTest {
     fun deleteWhole() {
         gameDao.insertGameEntity(
             game = SavedDictationGameMapper(
-                dictationProgressListMapper = DictationProgressListMapper(
-                    dictationProgressMapper = DictationProgressMapper()
-                ),
+                dictationProgressListMapper = DictationProgressListMapper(),
                 gameHeaderMapper = GameHeaderMapper()
             ).toDataSource(
                 origin = DictationGameRecord(
@@ -154,7 +147,7 @@ class SavedDictationGameDaoTest {
         )
 
         gameDao.deleteWholeGame(
-            GameHeaderEntity(234, "New title", "address", 10.3)
+            GameHeaderEntity(1, "New title", "address", 10.3)
         )
 
         assert(gameDao.getSavedDictationGameEntityList().isEmpty())
