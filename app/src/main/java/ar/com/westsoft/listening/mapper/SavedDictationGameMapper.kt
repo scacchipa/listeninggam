@@ -2,8 +2,8 @@ package ar.com.westsoft.listening.mapper
 
 import ar.com.westsoft.listening.data.datasource.SavedDictationGameEntity
 import ar.com.westsoft.listening.data.game.DictationGameRecord
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEngine
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
 import javax.inject.Inject
 
 class SavedDictationGameMapper @Inject constructor() :
@@ -23,3 +23,5 @@ class SavedDictationGameMapper @Inject constructor() :
             dictationProgressList = origin.dictationProgressEntityLists.toEngine()
         )
 }
+
+
