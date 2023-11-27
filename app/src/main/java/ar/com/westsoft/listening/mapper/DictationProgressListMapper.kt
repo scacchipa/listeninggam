@@ -1,7 +1,7 @@
 package ar.com.westsoft.listening.mapper
 
 import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
-import ar.com.westsoft.listening.data.engine.DictationProgress
+import ar.com.westsoft.listening.data.game.DictationProgress
 import javax.inject.Inject
 
 class DictationProgressListMapper @Inject constructor(

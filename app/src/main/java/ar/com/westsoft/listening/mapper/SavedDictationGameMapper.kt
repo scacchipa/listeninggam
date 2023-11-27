@@ -1,7 +1,7 @@
 package ar.com.westsoft.listening.mapper
 
 import ar.com.westsoft.listening.data.datasource.SavedDictationGameEntity
-import ar.com.westsoft.listening.data.engine.DictationGameRecord
+import ar.com.westsoft.listening.data.game.DictationGameRecord
 import javax.inject.Inject
 
 class SavedDictationGameMapper @Inject constructor(

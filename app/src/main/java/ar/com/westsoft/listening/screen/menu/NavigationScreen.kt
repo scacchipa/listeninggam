@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ar.com.westsoft.listening.screen.dictationgame.NavDictationGameScreen
+import ar.com.westsoft.listening.screen.dictationgame.navigation.NavDictationGameScreen
 
 @Composable
 fun NavigationScreen() {

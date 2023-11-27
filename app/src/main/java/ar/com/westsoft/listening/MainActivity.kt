@@ -6,13 +6,11 @@ import androidx.activity.compose.setContent
 import ar.com.westsoft.listening.screen.menu.NavigationScreen
 import dagger.hilt.android.AndroidEntryPoint
 
-// TODO: Add a config button in the DictGameScreen and to open a ConfigScreen
-// TODO: Add option to modified the count the game read
-// TODO: Add option to start to read before the cursor position.
 // TODO: Add option to download a txt file to the SelectDictationGameScreen
 // TODO: Add the option to paste a text from clipboard in the SelectDictationGameScreen
-// TODO: Catch the back button and go out of the dictation game
-
+// TODO: Toggle the key of the keyboard and reset the the cursor advance.
+// TODO: Add functionality to Word Button.
+// TODO: Modify readWordBeforeCursor condition to be able to start to read from the cursor
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 

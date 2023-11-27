@@ -1,6 +1,7 @@
 package ar.com.westsoft.listening.data.datasource
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -48,4 +49,8 @@ interface SavedDictationGameDao {
     @Transaction
     @Query("SELECT * FROM GameHeaderEntity")
     fun getSavedDictationGameEntityList(): List<SavedDictationGameEntity>
+
+    @Transaction
+    @Delete
+    fun deleteWholeGame(gameHeaderEntity: GameHeaderEntity): Int
 }
