@@ -12,9 +12,9 @@ import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.ReaderEngine
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.Utterance
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.VibratorEngine
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEngine
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
-import ar.com.westsoft.listening.util.char.normalize
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util.toEngine
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util.toEntity
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util.normalize
 import ar.com.westsoft.listening.util.getIdxPreviousTo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope

@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util.toEntity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

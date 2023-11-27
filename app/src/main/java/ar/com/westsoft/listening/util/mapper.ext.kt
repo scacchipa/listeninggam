@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper
+package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util
 
 import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
 import ar.com.westsoft.listening.data.datasource.GameHeaderEntity

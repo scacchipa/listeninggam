@@ -6,7 +6,7 @@ import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
 import ar.com.westsoft.listening.di.IoDispatcher
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util.toEntity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject

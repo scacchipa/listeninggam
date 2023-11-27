@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.util.char
+package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util
 
 fun Char.normalize(): Char =
     when(this) {
