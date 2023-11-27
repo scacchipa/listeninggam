@@ -6,7 +6,6 @@ import androidx.test.core.app.ApplicationProvider
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
-import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
 import org.junit.After
 import org.junit.Before
@@ -80,12 +79,10 @@ class SavedDictationGameDaoTest {
     @Test
     fun insertGameEntity() {
         val gui = gameDao.insertGameEntity(
-            game = SavedDictationGameMapper().toDataSource(
-                origin = DictationGameRecord(
-                    gameHeader = gameHeader,
-                    dictationProgressList = progressList
-                )
-            )
+            game = DictationGameRecord(
+                gameHeader = gameHeader,
+                dictationProgressList = progressList
+            ).toEntity()
         )
 
         val actual = gameDao.getSavedDictationGameEntityList()

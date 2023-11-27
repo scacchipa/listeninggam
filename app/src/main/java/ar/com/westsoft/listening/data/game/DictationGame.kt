@@ -7,12 +7,12 @@ import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
-import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameStage
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.Keyboard
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.ReaderEngine
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.Utterance
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.VibratorEngine
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEngine
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
 import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.getIdxPreviousTo
@@ -34,7 +34,6 @@ class DictationGame @Inject constructor(
     private val readerEngine: ReaderEngine,
     private val appDatabase: AppDatabase,
     private val keyboard: Keyboard,
-    private val savedListeningGameMapper: SavedDictationGameMapper,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val settingsDataStore: DictSettingsDataStore,
@@ -55,14 +54,14 @@ class DictationGame @Inject constructor(
 
     private suspend fun getDictationGameRecord(gui: Long): DictationGameRecord =
         withContext(ioDispatcher) {
-            savedListeningGameMapper.toEngine(
-                appDatabase
-                    .getSavedListeningGameDao()
-                    .getSavedDictationGameEntityList()
-                    .find {
-                        it.gameHeaderEntity.gui == gui
-                    } ?: throw Exception("GUI didn't find in the database")
-            )
+            appDatabase
+                .getSavedListeningGameDao()
+                .getSavedDictationGameEntityList()
+                .find {
+                    it.gameHeaderEntity.gui == gui
+                }
+                ?.toEngine()
+                ?: throw Exception("GUI didn't find in the database")
         }
 
     private fun saveDictationProgress(paragraphIdx: Int, gui: Long) {
