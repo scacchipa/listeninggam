@@ -7,7 +7,6 @@ import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
 import ar.com.westsoft.listening.mapper.DictationProgressListMapper
-import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import org.junit.After
 import org.junit.Before
@@ -82,8 +81,7 @@ class SavedDictationGameDaoTest {
     fun insertGameEntity() {
         val gui = gameDao.insertGameEntity(
             game = SavedDictationGameMapper(
-                dictationProgressListMapper = DictationProgressListMapper(),
-                gameHeaderMapper = GameHeaderMapper()
+                dictationProgressListMapper = DictationProgressListMapper()
             ).toDataSource(
                 origin = DictationGameRecord(
                     gameHeader = gameHeader,
@@ -136,8 +134,7 @@ class SavedDictationGameDaoTest {
     fun deleteWhole() {
         gameDao.insertGameEntity(
             game = SavedDictationGameMapper(
-                dictationProgressListMapper = DictationProgressListMapper(),
-                gameHeaderMapper = GameHeaderMapper()
+                dictationProgressListMapper = DictationProgressListMapper()
             ).toDataSource(
                 origin = DictationGameRecord(
                     gameHeader = gameHeader,

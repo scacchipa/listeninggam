@@ -7,13 +7,13 @@ import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
-import ar.com.westsoft.listening.mapper.GameHeaderMapper
 import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameStage
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.Keyboard
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.ReaderEngine
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.Utterance
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.VibratorEngine
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.mapper.toEntity
 import ar.com.westsoft.listening.util.char.normalize
 import ar.com.westsoft.listening.util.getIdxPreviousTo
 import kotlinx.coroutines.CoroutineDispatcher
@@ -88,12 +88,11 @@ class DictationGame @Inject constructor(
             appDatabase
                 .getSavedListeningGameDao()
                 .updateHeader(
-                    GameHeaderMapper().toDataSource(
-                        gameRecord.gameHeader.copy(
-                            progressRate = gameRecord.getGlobalProgressRate()
-                        )
-                    )
+                    gameRecord.gameHeader.copy(
+                        progressRate = gameRecord.getGlobalProgressRate()
+                    ).toEntity()
                 )
+
         }
     }
 
