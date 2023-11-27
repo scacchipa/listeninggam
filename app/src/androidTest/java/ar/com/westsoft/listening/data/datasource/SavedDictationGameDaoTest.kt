@@ -6,10 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
-import ar.com.westsoft.listening.mapper.DictationProgressListMapper
-import ar.com.westsoft.listening.mapper.DictationProgressMapper
-import ar.com.westsoft.listening.mapper.GameHeaderMapper
-import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util.toEntity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -82,17 +79,10 @@ class SavedDictationGameDaoTest {
     @Test
     fun insertGameEntity() {
         val gui = gameDao.insertGameEntity(
-            game = SavedDictationGameMapper(
-                dictationProgressListMapper = DictationProgressListMapper(
-                    dictationProgressMapper = DictationProgressMapper()
-                ),
-                gameHeaderMapper = GameHeaderMapper()
-            ).toDataSource(
-                origin = DictationGameRecord(
-                    gameHeader = gameHeader,
-                    dictationProgressList = progressList
-                )
-            )
+            game = DictationGameRecord(
+                gameHeader = gameHeader,
+                dictationProgressList = progressList
+            ).toEntity()
         )
 
         val actual = gameDao.getSavedDictationGameEntityList()
@@ -114,11 +104,7 @@ class SavedDictationGameDaoTest {
     fun insertGameHeaderAndProgress() {
         val actualGui = gameDao.insertGameHeaderAndProgress(
             gameHeaderEntity = gameHeaderEntity1,
-            progressEntityList = DictationProgressListMapper(
-                dictationProgressMapper = DictationProgressMapper()
-            ).toDataSource(
-                origin = progressList
-            )
+            progressEntityList = progressList.toEntity()
         )
         val expectedGui = 234L
         val actual = gameDao.getSavedDictationGameEntityList()
@@ -140,21 +126,14 @@ class SavedDictationGameDaoTest {
     @Test
     fun deleteWhole() {
         gameDao.insertGameEntity(
-            game = SavedDictationGameMapper(
-                dictationProgressListMapper = DictationProgressListMapper(
-                    dictationProgressMapper = DictationProgressMapper()
-                ),
-                gameHeaderMapper = GameHeaderMapper()
-            ).toDataSource(
-                origin = DictationGameRecord(
-                    gameHeader = gameHeader,
-                    dictationProgressList = progressList
-                )
+            game = SavedDictationGameEntity(
+                gameHeaderEntity = gameHeader.toEntity(),
+                dictationProgressEntityLists = progressList.toEntity()
             )
         )
 
         gameDao.deleteWholeGame(
-            GameHeaderEntity(234, "New title", "address", 10.3)
+            GameHeaderEntity(1, "New title", "address", 10.3)
         )
 
         assert(gameDao.getSavedDictationGameEntityList().isEmpty())

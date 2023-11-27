@@ -6,8 +6,7 @@ import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
 import ar.com.westsoft.listening.di.IoDispatcher
-import ar.com.westsoft.listening.mapper.GameHeaderMapper
-import ar.com.westsoft.listening.mapper.SavedDictationGameMapper
+import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util.toEntity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
@@ -17,9 +16,7 @@ import javax.inject.Inject
 class DictationRepository @Inject constructor(
     private val externalApi: ExternalApi,
     private val appDatabase: AppDatabase,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    private val savedDictationGameMapper: SavedDictationGameMapper,
-    private val gameHeaderMapper: GameHeaderMapper
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend fun createADictationGame(title: String, url: String): RepoTaskResponse {
 
@@ -33,18 +30,17 @@ class DictationRepository @Inject constructor(
             val gameHeader = DictationGameHeader(0, title, url, 0.0)
 
             appDatabase.getSavedListeningGameDao().insertGameEntity(
-                savedDictationGameMapper.toDataSource(
-                    DictationGameRecord(
-                        gameHeader = gameHeader,
-                        dictationProgressList = originalText
-                            .lines()
-                            .map {
-                                DictationProgress(
-                                    progressId = null,
-                                    originalTxt = it)
-                            }
-                    )
-                )
+                DictationGameRecord(
+                    gameHeader = gameHeader,
+                    dictationProgressList = originalText
+                        .lines()
+                        .map {
+                            DictationProgress(
+                                progressId = null,
+                                originalTxt = it
+                            )
+                        }
+                ).toEntity()
             )
         }
         return RepoTaskResponse.Completed(gui)
@@ -63,6 +59,6 @@ class DictationRepository @Inject constructor(
 
     fun deleteGame(gameHeader: DictationGameHeader): Int =
         appDatabase.getSavedListeningGameDao().deleteWholeGame(
-            gameHeaderMapper.toDataSource(gameHeader)
+            gameHeader.toEntity()
         )
 }
