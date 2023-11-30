@@ -7,10 +7,10 @@ import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.util.toEntity
+import ar.com.westsoft.listening.util.toEngine
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
-
 
 // https://www.gutenberg.org/files/74/74-0.txt --> The Adventures of Tom Sawyer, by Mark Twain
 class DictationRepository @Inject constructor(
@@ -23,9 +23,7 @@ class DictationRepository @Inject constructor(
         val originalText = externalApi.downloadFile(url)
             ?: return RepoTaskResponse.Uncompleted
 
-        println(originalText)
-
-        val gui = runBlocking(ioDispatcher) {
+        val gui = withContext(ioDispatcher) {
 
             val gameHeader = DictationGameHeader(0, title, url, 0.0)
 
@@ -46,14 +44,10 @@ class DictationRepository @Inject constructor(
         return RepoTaskResponse.Completed(gui)
     }
 
-    fun getAllDictationGameLabel(): List<DictationGameHeader> =
-        runBlocking(ioDispatcher) {
+    suspend fun getAllDictationGameLabel(): List<DictationGameHeader> =
+        withContext(ioDispatcher) {
             appDatabase.getSavedListeningGameDao().getSavedDictationGameEntityList().map { game ->
-                DictationGameHeader(
-                    gui = game.gameHeaderEntity.gui,
-                    title = game.gameHeaderEntity.title,
-                    progressRate = game.gameHeaderEntity.progressRate
-                )
+                game.toEngine().gameHeader
             }
         }
 

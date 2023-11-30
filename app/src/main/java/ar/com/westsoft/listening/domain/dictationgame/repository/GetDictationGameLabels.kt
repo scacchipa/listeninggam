@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetDictationGameLabels @Inject constructor(
     private val dictationRepository: DictationRepository
 ) {
-    operator fun invoke(): List<DictationGameHeader> {
+    suspend operator fun invoke(): List<DictationGameHeader> {
         return dictationRepository.getAllDictationGameLabel()
     }
 }
