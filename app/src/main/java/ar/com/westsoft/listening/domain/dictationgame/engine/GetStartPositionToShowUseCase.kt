@@ -15,7 +15,7 @@ class GetStartPositionToShowUseCase @Inject constructor(
 ) {
     operator fun invoke(complexCursorPos: ComplexCursorPos, numberRowAbove: Int): ComplexCursorPos? {
         val rowPerParagraph =
-            runBlocking { settingsRepository.getDictGameSettingFlow().first() }.columnPerPage.value
+            runBlocking { settingsRepository.getDictGameSettingFlow().first() }.columnPerPage
 
         val gameRecord = dictationGame.dictationGameRecord ?: return null
 

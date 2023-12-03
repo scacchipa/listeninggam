@@ -9,5 +9,5 @@ class GetColumnPerPageUseCase @Inject constructor(
     val settingsRepository: SettingsRepository
 ) {
     operator fun invoke(): Int =
-        runBlocking { settingsRepository.getDictGameSettingFlow().first().columnPerPage.value }
+        runBlocking { settingsRepository.getDictGameSettingFlow().first().columnPerPage }
 }

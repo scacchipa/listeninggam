@@ -8,12 +8,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import ar.com.westsoft.listening.data.repository.SettingsField
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 
 @Composable
 fun SelectableButton(
-    settingField: SettingsField<SpeedLevelPreference>,
+    settingField: SpeedLevelPreference,
     onSelected: () -> Unit,
     value: SpeedLevelPreference,
     text: String,
@@ -21,7 +20,7 @@ fun SelectableButton(
 ) {
     Button(
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (settingField.value == value)
+            containerColor = if (settingField == value)
                 Color.Blue else Color.LightGray
         ),
         onClick = onSelected,
@@ -29,7 +28,7 @@ fun SelectableButton(
     ) {
         Text(
             style = MaterialTheme.typography.bodyMedium,
-            color = if (settingField.wasSaved) textColor else Color.Red,
+            color = textColor,
             text = text
         )
     }

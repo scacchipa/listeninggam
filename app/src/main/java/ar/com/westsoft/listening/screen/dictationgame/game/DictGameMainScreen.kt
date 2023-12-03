@@ -115,11 +115,9 @@ fun DictGameMainScreen(
                     }
 
                     Row {
-                        val settingsState = viewModel.screenStateFlow.collectAsState()
-
-                        val speedLevel = settingsState.value.speedLevelField
+                        val speedLevel = viewModel.speedLevelState.collectAsState()
                         SelectableButton(
-                            settingField = speedLevel,
+                            settingField = speedLevel.value,
                             onSelected = {
                                 viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
                             },
@@ -129,7 +127,7 @@ fun DictGameMainScreen(
                         )
 
                         SelectableButton(
-                            settingField = speedLevel,
+                            settingField = speedLevel.value,
                             onSelected = {
                                 viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
                             },
@@ -138,7 +136,7 @@ fun DictGameMainScreen(
                             textColor = Color.Yellow
                         )
                         SelectableButton(
-                            settingField = speedLevel,
+                            settingField = speedLevel.value,
                             onSelected = {
                                 viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
                             },
@@ -147,7 +145,7 @@ fun DictGameMainScreen(
                             textColor = Color.Magenta
                         )
                         SelectableButton(
-                            settingField = speedLevel,
+                            settingField = speedLevel.value,
                             onSelected = {
                                 viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
                             },
