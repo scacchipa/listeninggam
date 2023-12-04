@@ -1,9 +1,5 @@
 package ar.com.westsoft.listening.util
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-
 fun String.takeWords(count: Int?): String {
     return count?.let { _count ->
 
@@ -83,11 +79,4 @@ fun String.findLastLetterOnLeft(pos: Int, condition: (Char) -> Boolean): Int? {
     }
 
     return last
-}
-
-fun String.toAnnotatedString(wasSaved: Boolean) = buildAnnotatedString {
-    if (!wasSaved) {
-        pushStyle(SpanStyle(color = Color.Red))
-    }
-    append(this@toAnnotatedString)
 }

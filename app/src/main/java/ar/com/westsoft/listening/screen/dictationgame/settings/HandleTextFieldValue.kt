@@ -4,7 +4,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.data.repository.SettingsField
 import ar.com.westsoft.listening.data.repository.toAnnotatedString
-import ar.com.westsoft.listening.util.toAnnotatedString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,8 +37,7 @@ class HandleTextFieldValue<T>(
         .stateIn(
             scope = scope,
             started = SharingStarted.Eagerly,
-            initialValue = retainTextFieldValue
-                .updateText(preferencesKey.defaultValue.toString().toAnnotatedString(false))
+            initialValue = TextFieldValue()
         )
 
     fun saveValue(textFieldValue: TextFieldValue) {
