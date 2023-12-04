@@ -49,7 +49,7 @@ fun DictGameSettingScreen(
 
             TextField(
                 value = viewModel.getWordAfterCursorFlow().collectAsState().value,
-                onValueChange = { viewModel.setReadWordAfterCursor(it) },
+                onValueChange = { viewModel.onReadWordAfterCursorChanged(it) },
                 modifier = Modifier.width(100.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -92,7 +92,7 @@ fun DictGameSettingScreen(
 
             TextField(
                 value = viewModel.getSpeechRateFlow().collectAsState().value,
-                onValueChange = { viewModel.setSpeechRate(it) },
+                onValueChange = { viewModel.onSpeechRateChanged(it) },
                 modifier = Modifier.width(100.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -113,7 +113,7 @@ fun DictGameSettingScreen(
                 SelectableButton(
                     settingField = speedLevel,
                     onSelected = {
-                        viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
+                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.LOW_SPEED_LEVEL)
                     },
                     value = SpeedLevelPreference.LOW_SPEED_LEVEL,
                     text = "LOW (50%)",
@@ -123,7 +123,7 @@ fun DictGameSettingScreen(
                 SelectableButton(
                     settingField = speedLevel,
                     onSelected = {
-                        viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
+                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
                     },
                     value = SpeedLevelPreference.MEDIUM_SPEED_LEVEL,
                     text = "MEDIUM (75%)",
@@ -132,7 +132,7 @@ fun DictGameSettingScreen(
                 SelectableButton(
                     settingField = speedLevel,
                     onSelected = {
-                        viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
+                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
                     },
                     value = SpeedLevelPreference.NORMAL_SPEED_LEVEL,
                     text = "NORMAL (100%)",
@@ -141,7 +141,7 @@ fun DictGameSettingScreen(
                 SelectableButton(
                     settingField = speedLevel,
                     onSelected = {
-                        viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
+                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.HIGH_SPEED_LEVEL)
                     },
                     value = SpeedLevelPreference.HIGH_SPEED_LEVEL,
                     text = "HIGH (125%)",
@@ -158,7 +158,7 @@ fun DictGameSettingScreen(
 
             TextField(
                 value = viewModel.getColumnPerPageStateFlow().collectAsState().value,
-                onValueChange = { viewModel.setColumnPerPage(it) },
+                onValueChange = { viewModel.onColumnPerPageChanged(it) },
                 modifier = Modifier.width(100.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions.Default.copy(

@@ -4,6 +4,7 @@ import androidx.compose.ui.input.key.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.data.repository.SettingsField
 import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeedLevelUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetSpeedLevelUseCase
@@ -53,6 +54,6 @@ class DictGameMainViewModel @Inject constructor(
     val speedLevelState = getSpeedLevelUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = Constants.PREFERENCES_KEY_SPEED_LEVEL_DEFAULT
+        initialValue = SettingsField(Constants.PREFERENCES_KEY_SPEED_LEVEL_DEFAULT, false)
     )
 }

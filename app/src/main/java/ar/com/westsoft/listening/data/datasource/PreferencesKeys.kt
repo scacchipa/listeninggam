@@ -25,7 +25,7 @@ sealed class PreferencesKey<T>(
         : PreferencesKey<Int>(
         key = intPreferencesKey(PREFERENCES_KEY_READ_WORD_AFTER_CURSOR),
         defaultValue = PREFERENCES_KEY_READ_WORD_AFTER_CURSOR_DEFAULT,
-        convert = { it.toIntOrNull() },
+        convert = { it.trim().toIntOrNull() },
         conditionToSave = { it in 1..200 }
     )
 
@@ -33,7 +33,7 @@ sealed class PreferencesKey<T>(
         : PreferencesKey<Int>(
         key = intPreferencesKey(PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR),
         defaultValue = PREFERENCES_KEY_READ_WORD_BEFORE_CURSOR_DEFAULT,
-        convert = { it.toIntOrNull() },
+        convert = { it.trim().toIntOrNull() },
         conditionToSave = { it in 0..100 }
     )
 
@@ -41,7 +41,7 @@ sealed class PreferencesKey<T>(
         : PreferencesKey<Float>(
         key = floatPreferencesKey(PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE),
         defaultValue = PREFERENCES_KEY_SPEECH_RATE_PERCENTAGE_DEFAULT,
-        convert = { it.toFloatOrNull() },
+        convert = { it.trim().toFloatOrNull() },
         conditionToSave = { (it ?: Float.NaN) in 25.0..400.0 }
     )
 
@@ -55,7 +55,7 @@ sealed class PreferencesKey<T>(
     object ColumnPerPage : PreferencesKey<Int>(
         key = intPreferencesKey(Constants.PREFERENCES_KEY_COLUMN_PER_PAGE),
         defaultValue = PREFERENCES_KEY_COLUMN_PER_PAGE_DEFAULT,
-        convert = { it.toIntOrNull() },
+        convert = { it.trim().toIntOrNull() },
         conditionToSave = { it in 15..200 }
     )
 }
