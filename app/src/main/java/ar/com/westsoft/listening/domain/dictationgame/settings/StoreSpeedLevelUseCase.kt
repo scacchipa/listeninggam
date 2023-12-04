@@ -4,7 +4,7 @@ import ar.com.westsoft.listening.data.repository.SettingsRepository
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import javax.inject.Inject
 
-class SetSpeedLevelUseCase @Inject constructor(
+class StoreSpeedLevelUseCase @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) {
     suspend operator fun invoke(value: SpeedLevelPreference) {

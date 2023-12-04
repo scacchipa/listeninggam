@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.data.repository.SettingsField
 import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
-import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeedLevelUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetSpeedLevelUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.StoreSpeedLevelUseCase
 import ar.com.westsoft.listening.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class DictGameMainViewModel @Inject constructor(
     private val keyEventUseCase: KeyEventUseCase,
     private val getSpeedLevelUseCase: GetSpeedLevelUseCase,
-    private val setSpeedLevelUseCase: SetSpeedLevelUseCase
+    private val storeSpeedLevelUseCase: StoreSpeedLevelUseCase
 ) : ViewModel() {
 
     private val isMutableShowingPreference = MutableStateFlow(false)
@@ -47,7 +47,7 @@ class DictGameMainViewModel @Inject constructor(
 
     fun setSpeedLevel(speedLevel: SpeedLevelPreference) {
         viewModelScope.launch {
-            setSpeedLevelUseCase(speedLevel)
+            storeSpeedLevelUseCase(speedLevel)
         }
     }
 

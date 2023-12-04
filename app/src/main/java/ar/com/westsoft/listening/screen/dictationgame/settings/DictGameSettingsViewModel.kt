@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.data.repository.SettingsField
-import ar.com.westsoft.listening.domain.dictationgame.settings.SetColumnPerPageUseCase
-import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterCursorUseCase
-import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
-import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeechRateUseCase
-import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeedLevelUseCase
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.domain.dictationgame.settings.StoreColumnPerPageUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.StoreReadWordAfterCursorUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.StoreReadWordBeforeCursorUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.StoreSpeechRateUseCase
+import ar.com.westsoft.listening.domain.dictationgame.settings.StoreSpeedLevelUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.GetColumnPerPageUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.GetReadWordAfterCursorUseCase
 import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.settings.GetReadWordBeforeCursorUseCase
@@ -26,11 +26,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DictGameSettingsViewModel @Inject constructor(
-    private val setReadWordAfterCursorUseCase: SetReadWordAfterCursorUseCase,
-    private val setReadWordBeforeCursorUseCase: SetReadWordBeforeCursorUseCase,
-    private val setSpeechRateUseCase: SetSpeechRateUseCase,
-    private val setSpeedLevelUseCase: SetSpeedLevelUseCase,
-    private val setColumnPerPageUseCase: SetColumnPerPageUseCase,
+    private val storeReadWordAfterCursorUseCase: StoreReadWordAfterCursorUseCase,
+    private val storeReadWordBeforeCursorUseCase: StoreReadWordBeforeCursorUseCase,
+    private val storeSpeechRateUseCase: StoreSpeechRateUseCase,
+    private val storeSpeedLevelUseCase: StoreSpeedLevelUseCase,
+    private val storeColumnPerPageUseCase: StoreColumnPerPageUseCase,
     private val getReadWordBeforeCursorUseCase: GetReadWordBeforeCursorUseCase,
     private val getReadWordAfterCursorUseCase: GetReadWordAfterCursorUseCase,
     private val getColumnPerPageUseCase: GetColumnPerPageUseCase,
@@ -41,7 +41,7 @@ class DictGameSettingsViewModel @Inject constructor(
     private val handleWordBeforeCursor = HandleTextFieldValue(
         preferencesKey = PreferencesKey.ReadWordBeforeCursor,
         getFlow = { getReadWordBeforeCursorUseCase() },
-        saveValue = { setReadWordBeforeCursorUseCase(it) },
+        saveValue = { storeReadWordBeforeCursorUseCase(it) },
         scope = viewModelScope
     )
 
@@ -54,7 +54,7 @@ class DictGameSettingsViewModel @Inject constructor(
     private val handleWordAfterCursor = HandleTextFieldValue(
         preferencesKey = PreferencesKey.ReadWordAfterCursor,
         getFlow = { getReadWordAfterCursorUseCase() },
-        saveValue = { setReadWordAfterCursorUseCase(it) },
+        saveValue = { storeReadWordAfterCursorUseCase(it) },
         scope = viewModelScope
     )
 
@@ -67,7 +67,7 @@ class DictGameSettingsViewModel @Inject constructor(
     private val handleSpeechRate = HandleTextFieldValue(
         preferencesKey = PreferencesKey.SpeechRatePercentage,
         getFlow = { getSpeechRateUseCase() },
-        saveValue = { setSpeechRateUseCase(it) },
+        saveValue = { storeSpeechRateUseCase(it) },
         scope = viewModelScope
     )
 
@@ -86,14 +86,14 @@ class DictGameSettingsViewModel @Inject constructor(
 
     fun onSpeedLevelChanged(speedLevel: SpeedLevelPreference) {
         viewModelScope.launch {
-            setSpeedLevelUseCase.invoke(speedLevel)
+            storeSpeedLevelUseCase.invoke(speedLevel)
         }
     }
 
     private val handleColumnPerPageUseCase = HandleTextFieldValue(
         preferencesKey = PreferencesKey.ColumnPerPage,
         getFlow = { getColumnPerPageUseCase() },
-        saveValue = { setColumnPerPageUseCase(it) },
+        saveValue = { storeColumnPerPageUseCase(it) },
         scope = viewModelScope
     )
 

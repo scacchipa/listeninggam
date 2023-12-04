@@ -4,17 +4,16 @@ import ar.com.westsoft.listening.data.datasource.PreferencesKey
 import ar.com.westsoft.listening.data.repository.SettingsRepository
 import javax.inject.Inject
 
-class SetReadWordBeforeCursorUseCase @Inject constructor(
+class StoreColumnPerPageUseCase @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) {
     suspend operator fun invoke(value: String): Boolean {
-        val number = PreferencesKey.ReadWordBeforeCursor.convert(value) ?: return false
+        val number = PreferencesKey.ColumnPerPage.convert(value) ?: return false
 
-        return if (PreferencesKey.ReadWordBeforeCursor.conditionToSave(number)) {
-            settingsRepository.setReadWordBeforeCursor(number)
+        return if (PreferencesKey.ColumnPerPage.conditionToSave(number)) {
+            settingsRepository.setColumnPerPage(number)
         } else {
             false
         }
-
     }
 }
