@@ -21,12 +21,14 @@ class SettingsRepository @Inject constructor(
     fun getDictGameSettingFlow() = getStoredSettings()
 
     fun getReadWordAfterCursor() = getDictGameSettingFlow().map { it.readWordAfterCursor }
+
     suspend fun setReadWordAfterCursor(value: Int): Boolean  {
         dictSettingsDataStore.save(PreferencesKey.ReadWordAfterCursor,value)
         return true
     }
 
     fun getReadWordBeforeCursor() = getDictGameSettingFlow().map { it.readWordBeforeCursor }
+
     suspend fun setReadWordBeforeCursor(value: Int): Boolean {
         dictSettingsDataStore.save(PreferencesKey.ReadWordBeforeCursor, value)
         return true
@@ -41,8 +43,9 @@ class SettingsRepository @Inject constructor(
 
     fun getSpeedLevel(): Flow<SpeedLevelPreference> = getDictGameSettingFlow().map { it.speedLevel }
 
-    suspend fun setSpeedLevel(value: SpeedLevelPreference) {
-        emitStatesAndSave(value.name, PreferencesKey.SpeedLevel)
+    suspend fun setSpeedLevel(value: SpeedLevelPreference): Boolean {
+        dictSettingsDataStore.save(PreferencesKey.SpeedLevel, value.name)
+        return true
     }
 
     fun getColumnPerPage() = getDictGameSettingFlow().map { it.columnPerPage }
@@ -50,17 +53,5 @@ class SettingsRepository @Inject constructor(
     suspend fun setColumnPerPage(value: Int): Boolean {
         dictSettingsDataStore.save(PreferencesKey.ColumnPerPage, value)
         return false
-    }
-
-    private suspend inline fun <T> emitStatesAndSave(
-        value: String,
-        preferenceKey: PreferencesKey<T>
-    ) {
-        val number = preferenceKey.convert(value) ?: return
-
-        if (preferenceKey.conditionToSave(number)) {
-            dictSettingsDataStore.save(preferenceKey, number)
-            return
-        }
     }
 }

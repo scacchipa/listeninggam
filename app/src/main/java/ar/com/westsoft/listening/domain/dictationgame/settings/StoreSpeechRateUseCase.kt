@@ -13,8 +13,7 @@ class StoreSpeechRateUseCase @Inject constructor(
         return if (PreferencesKey.SpeechRatePercentage.conditionToSave(number)) {
             settingsRepository.setSpeechRate(number)
         } else {
-            return false
+            false
         }
-
     }
 }

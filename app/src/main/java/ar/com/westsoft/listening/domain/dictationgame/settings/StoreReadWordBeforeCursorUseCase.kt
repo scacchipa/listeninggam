@@ -15,6 +15,5 @@ class StoreReadWordBeforeCursorUseCase @Inject constructor(
         } else {
             false
         }
-
     }
 }
