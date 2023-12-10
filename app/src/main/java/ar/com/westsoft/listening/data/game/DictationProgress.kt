@@ -6,11 +6,12 @@ import ar.com.westsoft.listening.util.concatenate
 import ar.com.westsoft.listening.util.getIdxFirst
 import ar.com.westsoft.listening.util.getIdxNextTo
 import ar.com.westsoft.listening.util.getIdxPreviousTo
+import ar.com.westsoft.listening.util.hideLetters
 
 data class DictationProgress(
     var progressId: Long?,
     val originalTxt: String = "",
-    val progressTxt: CharArray = getInitialProgressText(originalTxt)
+    val progressTxt: CharArray = originalTxt.hideLetters()
 ) {
     val progressRate: Double =
         originalTxt.zip(progressTxt.concatToString()).count { (originalChar, progressChar) ->
@@ -100,16 +101,5 @@ data class DictationProgress(
         }
 
         return pos
-    }
-
-    companion object {
-        fun getInitialProgressText(origin: String): CharArray {
-            val mappedOrigin = origin.map { char ->
-                if (char.isLetter() || char.isDigit()) '_'
-                else char
-            }.toCharArray()
-            println(mappedOrigin.concatenate())
-            return mappedOrigin
-        }
     }
 }

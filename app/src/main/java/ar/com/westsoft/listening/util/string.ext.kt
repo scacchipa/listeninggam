@@ -80,3 +80,8 @@ fun String.findLastLetterOnLeft(pos: Int, condition: (Char) -> Boolean): Int? {
 
     return last
 }
+
+fun String.hideLetters(): CharArray = this.map { char ->
+    if (char.isLetter() || char.isDigit()) '_'
+    else char
+}.toCharArray()
