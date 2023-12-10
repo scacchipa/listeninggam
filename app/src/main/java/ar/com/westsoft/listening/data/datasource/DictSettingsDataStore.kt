@@ -24,7 +24,7 @@ class DictSettingsDataStore @Inject constructor(
             ?: preferenceField.defaultValue
     }
 
-    suspend inline fun <T> save(preferenceField: PreferencesKey<T>, value: T?) =
+    suspend fun <T> save(preferenceField: PreferencesKey<T>, value: T?) =
         dataStore.edit { preferences ->
             preferences[preferenceField.key] = value ?: preferenceField.defaultValue
         }

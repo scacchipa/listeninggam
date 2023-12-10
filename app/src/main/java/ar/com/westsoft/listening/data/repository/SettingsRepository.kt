@@ -52,6 +52,6 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setColumnPerPage(value: Int): Boolean {
         dictSettingsDataStore.save(PreferencesKey.ColumnPerPage, value)
-        return false
+        return true
     }
 }
