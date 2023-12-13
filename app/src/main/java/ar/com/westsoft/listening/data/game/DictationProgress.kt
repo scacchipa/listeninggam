@@ -17,8 +17,8 @@ data class DictationProgress(
     fun isCompleted(): Boolean = progressTxt.concatToString() == originalTxt
 
     fun setLetterProgress(pos: Int?) {
-        pos?.let { _pos ->
-            revealLetter(_pos)
+        pos?.let {
+            revealLetter(it)
         }
     }
 
