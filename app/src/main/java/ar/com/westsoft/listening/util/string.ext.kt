@@ -63,7 +63,7 @@ fun String.prevWord(pos: Int): Int? {
 
 fun String.firstLetterOfWord(pos: Int): Int? =
     this.findLastLetterOnLeft(pos) {
-        it.isLetter()
+        !it.isWhitespace()
     }
 
 fun String.rewindALetter(pos: Int): Int? = if (pos > 0) pos - 1 else null

@@ -3,6 +3,7 @@ package ar.com.westsoft.listening.data.game
 import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
 import ar.com.westsoft.listening.util.Field
 import ar.com.westsoft.listening.util.concatenate
+import ar.com.westsoft.listening.util.firstLetterOfWord
 import ar.com.westsoft.listening.util.getIdxFirst
 import ar.com.westsoft.listening.util.getIdxNextTo
 import ar.com.westsoft.listening.util.getIdxPreviousTo
@@ -13,11 +14,7 @@ data class DictationProgress(
     val originalTxt: String = "",
     val progressTxt: CharArray = originalTxt.hideLetters()
 ) {
-    val progressRate: Double =
-        originalTxt.zip(progressTxt.concatToString()).count { (originalChar, progressChar) ->
-            originalChar != progressChar
-        }.toDouble() / originalTxt.count { it.isLetterOrDigit() }
-    val isCompleted: Boolean = progressTxt.concatToString() == originalTxt
+    fun isCompleted(): Boolean = progressTxt.concatToString() == originalTxt
 
     fun setLetterProgress(pos: Int?) {
         pos?.let { _pos ->
@@ -26,7 +23,7 @@ data class DictationProgress(
     }
 
     fun revealParagraph() {
-        if (isCompleted.not()) {
+        if (isCompleted().not()) {
             (progressTxt.indices).forEach { idx ->
                 revealLetter(idx)
             }
@@ -34,13 +31,18 @@ data class DictationProgress(
     }
 
     fun revealWord(pos: Int) {
-        var posx = pos
-        while (posx < originalTxt.length
-            && originalTxt[posx].isLetterOrDigit()
-        ) {
+        if (isLetterRevealed(pos)) return
+
+        var posx = originalTxt.firstLetterOfWord(pos) ?: 0
+
+        while (posx < originalTxt.length && !originalTxt[posx].isWhitespace()) {
             revealLetter(posx)
             posx++
         }
+    }
+
+    private fun isLetterRevealed(pos: Int): Boolean {
+        return originalTxt[pos] == progressTxt[pos]
     }
 
     private fun revealLetter(pos: Int) {
@@ -61,6 +63,7 @@ data class DictationProgress(
 
     override fun hashCode(): Int {
         var result = originalTxt.hashCode()
+        result = 31 * result + originalTxt.hashCode()
         result = 31 * result + progressTxt.contentHashCode()
         return result
     }
@@ -93,7 +96,6 @@ data class DictationProgress(
     }
 
     fun getIdxPreviousBlank(idx: Int?): Int? {
-
         var pos = progressTxt.getIdxPreviousTo(idx, '_')
 
         while (pos != null && originalTxt[pos] == '_') {
