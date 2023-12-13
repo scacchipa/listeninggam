@@ -9,7 +9,7 @@ import ar.com.westsoft.listening.data.datasource.PreferencesKey.ReadWordBeforeCu
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.SpeechRatePercentage
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.SpeedLevel
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettings
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference.MEDIUM_SPEED_LEVEL
+import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference.MEDIUM_SPEED_LEVEL
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest

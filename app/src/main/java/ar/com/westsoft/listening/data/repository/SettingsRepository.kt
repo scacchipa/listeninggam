@@ -2,8 +2,8 @@ package ar.com.westsoft.listening.data.repository
 
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
-import ar.com.westsoft.listening.data.datasource.toSetting
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.data.datasource.toSetting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
