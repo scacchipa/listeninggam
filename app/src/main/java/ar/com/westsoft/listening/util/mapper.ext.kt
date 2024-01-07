@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.util
+package ar.com.westsoft.listening.util
 
 import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
 import ar.com.westsoft.listening.data.datasource.GameHeaderEntity
@@ -6,8 +6,6 @@ import ar.com.westsoft.listening.data.datasource.SavedDictationGameEntity
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
-import ar.com.westsoft.listening.util.Field
-import ar.com.westsoft.listening.util.concatenate
 
 fun DictationProgress.toEntity(): DictationProgressEntity =
     DictationProgressEntity(progressId, Field.unknown, originalTxt, progressTxt.concatenate())

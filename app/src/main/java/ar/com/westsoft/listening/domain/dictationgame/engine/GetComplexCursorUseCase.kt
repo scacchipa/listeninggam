@@ -1,9 +1,9 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine
+package ar.com.westsoft.listening.domain.dictationgame.engine
 
 import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.game.SimpleCursorPos
 import ar.com.westsoft.listening.data.repository.SettingsRepository
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.game.ComplexCursorPos
+import ar.com.westsoft.listening.screen.dictationgame.game.ComplexCursorPos
 import ar.com.westsoft.listening.util.calcColumn
 import ar.com.westsoft.listening.util.calcRow
 import ar.com.westsoft.listening.util.splitInRow

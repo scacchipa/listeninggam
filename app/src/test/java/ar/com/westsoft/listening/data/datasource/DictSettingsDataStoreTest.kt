@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.preferencesOf
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStoreUtils.createMockDefaultDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.ColumnPerPage
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.SpeedLevel
-import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.util.Constants
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

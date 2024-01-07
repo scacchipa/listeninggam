@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.domain.dictationgame.repository.GetDictationGameLabels
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.repository.DeleteGameUseCase
+import ar.com.westsoft.listening.domain.dictationgame.repository.DeleteGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -20,7 +20,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ar.com.westsoft.listening.screen.dictationgame.game.ConfigNewDictationGameScreen
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameMainScreen
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.navigation.NavDictationGameViewModel
 
 @Composable
 fun NavDictationGameScreen() {

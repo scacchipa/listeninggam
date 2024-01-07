@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.game
+package ar.com.westsoft.listening.screen.dictationgame.game
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
@@ -10,9 +10,9 @@ import ar.com.westsoft.listening.domain.dictationgame.engine.GetFormatTextInRowU
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetStartPositionToShowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.MoveToParagraphUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.SpeakOutUseCase
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.GetColumnPerPageUseCase
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine.GetComplexCursorUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.GetColumnPerPageUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.GetComplexCursorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

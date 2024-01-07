@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.navigation
+package ar.com.westsoft.listening.screen.dictationgame.navigation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

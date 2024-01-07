@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.domain.dictationgame.engine
+package ar.com.westsoft.listening.domain.dictationgame.engine
 
 import ar.com.westsoft.listening.data.repository.SettingsRepository
 import kotlinx.coroutines.flow.first

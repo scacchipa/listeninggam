@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.westsoft.listening.data.game.SimpleCursorPos
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.game.GameConsoleViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
