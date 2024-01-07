@@ -69,8 +69,12 @@ fun NavDictationGameScreen() {
             }
             composable(route = DictRoutes.StartNewGame.name) {
                 ConfigNewDictationGameScreen(
-                    playGame = { navController.navigate(DictRoutes.DictationGame.name) },
-                    goBack = { navController.navigateUp() }
+                    playGame = { gui ->
+                        navController.navigate(DictRoutes.DictationGame.name + "?gui=$gui")
+                               },
+                    goBack = {
+                        navController.navigateUp()
+                    }
                 )
             }
             composable(route = DictRoutes.LoadGame.name) {
