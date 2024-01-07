@@ -11,7 +11,7 @@ import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordAfterC
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetReadWordBeforeCursorUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeechRateUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.SetSpeedLevelUseCase
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

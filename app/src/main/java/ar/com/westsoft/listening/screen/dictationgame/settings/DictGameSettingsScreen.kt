@@ -19,8 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.screen.dictationgame.settings.SelectableButton
+import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

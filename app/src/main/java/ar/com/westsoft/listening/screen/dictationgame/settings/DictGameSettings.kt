@@ -6,7 +6,7 @@ import ar.com.westsoft.listening.data.datasource.PreferencesKey.ReadWordBeforeCu
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.SpeechRatePercentage
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.SpeedLevel
 import ar.com.westsoft.listening.data.repository.SettingsField
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 
 data class DictGameSettings(
     val readWordAfterCursor: SettingsField<Int>,

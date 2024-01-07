@@ -1,6 +1,6 @@
 package ar.com.westsoft.listening.screen.dictationgame.game
 
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.engine.Utterance
+import ar.com.westsoft.listening.data.engine.Utterance
 
 data class DictGameStage(
     val paragraphIdx: Int,

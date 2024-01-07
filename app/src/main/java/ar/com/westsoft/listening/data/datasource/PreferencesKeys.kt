@@ -4,7 +4,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.util.Constants
 import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_COLUMN_PER_PAGE_DEFAULT
 import ar.com.westsoft.listening.util.Constants.PREFERENCES_KEY_READ_WORD_AFTER_CURSOR

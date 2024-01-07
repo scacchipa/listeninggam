@@ -7,7 +7,8 @@ import androidx.datastore.preferences.core.preferencesOf
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStoreUtils.createMockDefaultDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.ColumnPerPage
 import ar.com.westsoft.listening.data.datasource.PreferencesKey.SpeedLevel
-import ar.com.westsoft.listening.screen.keyboard.ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.util.Constants
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -30,7 +31,7 @@ class DictSettingsDataStoreTest {
     @Test
     fun getDictGameSettingsDSOFlow_Happy_Path_Test() = runTest {
         val actualResult = subject.getDictGameSettingsDSOFlow().first()
-        val expectResult = DictSettingsDataStoreUtils.DICT_SETTINGS_DATA_STORE_DEFAULT
+        val expectResult = Constants.DICT_SETTINGS_DATA_STORE_DEFAULT
 
         assert(actualResult == expectResult)
     }
