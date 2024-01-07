@@ -18,7 +18,7 @@ class CreateNewDictationGameUseCase @Inject constructor(
         ) {
             is RepoTaskResponse.Completed -> {
                 dictationGame.setup(response.gui)
-                Completed
+                Completed(response.gui)
             }
             is RepoTaskResponse.Uncompleted -> Error
         }

@@ -2,8 +2,18 @@ package ar.com.westsoft.listening.screen.dictationgame.game
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -18,14 +28,14 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfigNewDictationGameScreen(
-    playGame: () -> Unit,
+    playGame: (gui: Long) -> Unit,
     goBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<ConfigNewDictationGameViewModel>()
 
-    when (
-        viewModel.gameCreationGameStatus.collectAsState().value
-    ) {
+    val value = viewModel.gameCreationGameStatus.collectAsState().value
+
+    when (value) {
         is GameCreationGameStatus.Uninitialized -> {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -91,7 +101,7 @@ fun ConfigNewDictationGameScreen(
 
         is GameCreationGameStatus.Completed -> {
             AdviceScreen("Stating new game ...")
-            LaunchedEffect(Unit) { playGame() }
+            LaunchedEffect(Unit) { playGame(value.gui) }
         }
 
         is GameCreationGameStatus.Error -> {
