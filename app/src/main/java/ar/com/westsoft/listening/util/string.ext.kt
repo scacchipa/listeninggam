@@ -63,14 +63,16 @@ fun String.prevWord(pos: Int): Int? {
 
 fun String.firstLetterOfWord(pos: Int): Int? =
     this.findLastLetterOnLeft(pos) {
-        it.isLetter()
+        !it.isWhitespace()
     }
 
 fun String.rewindALetter(pos: Int): Int? = if (pos > 0) pos - 1 else null
 
 fun String.findLastLetterOnLeft(pos: Int, condition: (Char) -> Boolean): Int? {
     if (isEmpty()) return null
-    var last = if (condition(this[pos])) pos else { return null }
+    var last = if (condition(this[pos])) pos else {
+        return null
+    }
 
     while (last > 0 && condition(this[last - 1])) {
         last--
@@ -78,3 +80,8 @@ fun String.findLastLetterOnLeft(pos: Int, condition: (Char) -> Boolean): Int? {
 
     return last
 }
+
+fun String.hideLetters(): CharArray = this.map { char ->
+    if (char.isLetter() || char.isDigit()) '_'
+    else char
+}.toCharArray()

@@ -8,7 +8,6 @@ fun Preferences.getDictGameSettingsDSO() = DictGameSettingsDSO(
     speechRate = this[PreferencesKey.SpeechRatePercentage],
     speedLevel = SpeedLevelPreference.fromKey(this[PreferencesKey.SpeedLevel]),
     columnPerPage = this[PreferencesKey.ColumnPerPage]
-
 )
 
 operator fun <T> Preferences.get(preferenceField: PreferencesKey<T>): T =

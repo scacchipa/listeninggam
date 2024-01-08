@@ -8,6 +8,6 @@ data class DictationGameRecord(
         val progressList = dictationProgressList.filter {
             it.originalTxt.isNotEmpty()
         }
-        return progressList.count { it.isCompleted }.toDouble() / progressList.size
+        return progressList.count { it.isCompleted() }.toDouble() / progressList.size
     }
 }

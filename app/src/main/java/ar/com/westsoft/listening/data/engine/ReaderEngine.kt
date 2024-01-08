@@ -87,10 +87,10 @@ class ReaderEngine @Inject constructor(
     }
 
     private fun calculateSpeechRate() =
-        settings.speechRatePercentage.value / 100 * getSpeedLevelFactor()
+        settings.speechRatePercentage / 100 * getSpeedLevelFactor()
 
     private fun getSpeedLevelFactor(): Float =
-        when (settings.speedLevel.value){
+        when (settings.speedLevel){
             SpeedLevelPreference.LOW_SPEED_LEVEL -> 0.50f
             SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> 0.75f
             SpeedLevelPreference.NORMAL_SPEED_LEVEL -> 1.00f

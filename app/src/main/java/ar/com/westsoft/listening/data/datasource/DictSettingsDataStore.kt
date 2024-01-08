@@ -19,12 +19,12 @@ class DictSettingsDataStore @Inject constructor(
                 preferences.getDictGameSettingsDSO()
             }
 
-    suspend inline fun <reified T> get(preferenceField: PreferencesKey<T>): T {
+    suspend fun <T> get(preferenceField: PreferencesKey<T>): T {
         return dataStore.data.first()[preferenceField.key]
             ?: preferenceField.defaultValue
     }
 
-    suspend inline fun <reified T> save(preferenceField: PreferencesKey<T>, value: T?) =
+    suspend fun <T> save(preferenceField: PreferencesKey<T>, value: T?) =
         dataStore.edit { preferences ->
             preferences[preferenceField.key] = value ?: preferenceField.defaultValue
         }

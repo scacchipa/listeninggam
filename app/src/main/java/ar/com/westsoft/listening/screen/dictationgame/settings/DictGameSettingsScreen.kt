@@ -24,11 +24,9 @@ import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DictGameSettingScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
-    val settingsViewModel = hiltViewModel<DictGameSettingsViewModel>()
-
-    val settingsState = settingsViewModel.screenStateFlow.collectAsState()
+    val viewModel = hiltViewModel<DictGameSettingsViewModel>()
 
     Column {
         Text(
@@ -50,10 +48,8 @@ fun DictGameSettingScreen(
             )
 
             TextField(
-                value = settingsState.value.readWordAfterCursor,
-                onValueChange = {
-                    settingsViewModel.setReadWordAfterCursor(it)
-                },
+                value = viewModel.getWordAfterCursorFlow().collectAsState().value,
+                onValueChange = { viewModel.onReadWordAfterCursorChanged(it) },
                 modifier = Modifier.width(100.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -74,10 +70,8 @@ fun DictGameSettingScreen(
             )
 
             TextField(
-                value = settingsState.value.readWordBeforeCursor,
-                onValueChange = {
-                    settingsViewModel.setReadWordBeforeCursor(it)
-                },
+                value = viewModel.getWordBeforeCursorFlow().collectAsState().value,
+                onValueChange = { viewModel.setReadWordBeforeCursor(it) },
                 modifier = Modifier.width(100.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -97,10 +91,8 @@ fun DictGameSettingScreen(
             )
 
             TextField(
-                value = settingsState.value.speechRate,
-                onValueChange = {
-                    settingsViewModel.setSpeechRate(it)
-                },
+                value = viewModel.getSpeechRateFlow().collectAsState().value,
+                onValueChange = { viewModel.onSpeechRateChanged(it) },
                 modifier = Modifier.width(100.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -117,11 +109,11 @@ fun DictGameSettingScreen(
         Row {
             Text("Speed Level:")
             Column {
-                val speedLevel = settingsState.value.speedLevelField
+                val speedLevel = viewModel.speedLevelStateFlow.collectAsState().value
                 SelectableButton(
                     settingField = speedLevel,
                     onSelected = {
-                        settingsViewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
+                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.LOW_SPEED_LEVEL)
                     },
                     value = SpeedLevelPreference.LOW_SPEED_LEVEL,
                     text = "LOW (50%)",
@@ -131,7 +123,7 @@ fun DictGameSettingScreen(
                 SelectableButton(
                     settingField = speedLevel,
                     onSelected = {
-                        settingsViewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
+                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
                     },
                     value = SpeedLevelPreference.MEDIUM_SPEED_LEVEL,
                     text = "MEDIUM (75%)",
@@ -140,7 +132,7 @@ fun DictGameSettingScreen(
                 SelectableButton(
                     settingField = speedLevel,
                     onSelected = {
-                        settingsViewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
+                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
                     },
                     value = SpeedLevelPreference.NORMAL_SPEED_LEVEL,
                     text = "NORMAL (100%)",
@@ -149,7 +141,7 @@ fun DictGameSettingScreen(
                 SelectableButton(
                     settingField = speedLevel,
                     onSelected = {
-                        settingsViewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
+                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.HIGH_SPEED_LEVEL)
                     },
                     value = SpeedLevelPreference.HIGH_SPEED_LEVEL,
                     text = "HIGH (125%)",
@@ -165,10 +157,8 @@ fun DictGameSettingScreen(
             )
 
             TextField(
-                value = settingsState.value.columnPerPage,
-                onValueChange = {
-                    settingsViewModel.setColumnPerPage(it)
-                },
+                value = viewModel.getColumnPerPageStateFlow().collectAsState().value,
+                onValueChange = { viewModel.onColumnPerPageChanged(it) },
                 modifier = Modifier.width(100.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions.Default.copy(

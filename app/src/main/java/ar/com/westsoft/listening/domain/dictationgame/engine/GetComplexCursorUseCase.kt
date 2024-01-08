@@ -21,7 +21,7 @@ class GetComplexCursorUseCase @Inject constructor(
         val paragraphIdx = simpleCursorPos.paragraphIdx
 
         val rowPerParagraph =
-            runBlocking { settingsRepository.getDictGameSettingFlow().first() }.columnPerPage.value
+            runBlocking { settingsRepository.getDictGameSettingFlow().first() }.columnPerPage
 
         val charsToShow = gameRecord.dictationProgressList[paragraphIdx].progressTxt.splitInRow(rowPerParagraph)
 

@@ -115,9 +115,7 @@ fun DictGameMainScreen(
                     }
 
                     Row {
-                        val settingsState = viewModel.screenStateFlow.collectAsState()
-
-                        val speedLevel = settingsState.value.speedLevelField
+                        val speedLevel = viewModel.speedLevelState.collectAsState().value
                         SelectableButton(
                             settingField = speedLevel,
                             onSelected = {
