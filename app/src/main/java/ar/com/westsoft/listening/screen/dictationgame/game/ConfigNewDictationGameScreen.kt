@@ -96,6 +96,14 @@ fun ConfigNewDictationGameScreen(
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
+                Button(
+                    onClick = { goBack() }
+                ) {
+                    Text(
+                        text = "Back",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
             }
         }
 
