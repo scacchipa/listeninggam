@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.westsoft.listening.BuildConfig
+import ar.com.westsoft.listening.R
 import ar.com.westsoft.listening.screen.dictationgame.AdviceScreen
 import ar.com.westsoft.listening.screen.dictationgame.navigation.ConfigNewDictationGameViewModel
 import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus
@@ -31,6 +32,7 @@ fun ConfigNewDictationGameScreen(
     playGame: (gui: Long) -> Unit,
     goBack: () -> Unit
 ) {
+
     val viewModel = hiltViewModel<ConfigNewDictationGameViewModel>()
 
     val value = viewModel.gameCreationGameStatus.collectAsState().value
@@ -104,6 +106,16 @@ fun ConfigNewDictationGameScreen(
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
+                Column {
+                    Button(onClick = {
+                        viewModel.onBookSelected(R.raw.ebook_the_tom_sawyer_s_adventures)
+                    }) {
+                        Text(
+                            text = "Tom Sawyer's Adventures",
+                            style = MaterialTheme.typography.labelMedium)
+                    }
+                }
+
             }
         }
 
