@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "Listening"
 include ':app'
 include ':keyboard'
-
+include ':epub'

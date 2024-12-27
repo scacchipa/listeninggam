@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.domain.dictationgame.repository.CreateNewDictationGameUseCase
-import ar.com.westsoft.listening.domain.dictationgame.repository.OpenEpubUseCase
+import ar.com.scacchipa.epub.domain.OpenEpubUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ConfigNewDictationGameViewModel @Inject constructor(
     private val createNewDictationGameUseCase: CreateNewDictationGameUseCase,
-    private val openEpubUseCase: OpenEpubUseCase,
+    private val openEpubUseCase: ar.com.scacchipa.epub.domain.OpenEpubUseCase,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
