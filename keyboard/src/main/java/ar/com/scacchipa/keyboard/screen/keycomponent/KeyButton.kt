@@ -1,8 +1,7 @@
-package ar.com.westsoft.listening.screen.keyboard
+package ar.com.scacchipa.keyboard.screen.keycomponent
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.NativeKeyEvent
+import androidx.compose.ui.input.key.nativeKeyCode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -25,11 +27,18 @@ fun KeyButton(
     text: String,
     height: Dp,
     width: Dp = height,
-    viewModel: KeyBoardViewModel,
-    action:() -> Unit =  { }
+    action: (KeyEvent) -> Unit = { },
 ) {
     OutlinedButton(
-        onClick = { viewModel.onPushedButton(key) },
+        onClick = {
+            action(
+                KeyEvent(
+                    nativeKeyEvent = android.view.KeyEvent(
+                        NativeKeyEvent.ACTION_DOWN, key.nativeKeyCode
+                    )
+                )
+            )
+        },
         modifier = modifier
             .size(width = width, height = height)
             .padding(height / 10),
@@ -47,34 +56,4 @@ fun KeyButton(
             fontSize = height.value.sp / 1.6f
         )
     }
-}
-
-@Composable
-fun InvisibleKeyButton(
-    modifier: Modifier = Modifier,
-    height: Dp,
-    width: Dp = height
-) {
-    OutlinedButton(
-        modifier = modifier
-            .size(width = width, height = height)
-            .padding(height / 10),
-        shape = RoundedCornerShape(10),
-        border = BorderStroke(height / 50, color = Color.LightGray),
-        onClick = { }
-    ) {
-
-    }
-}
-
-@Composable
-fun NullKeyButton(
-    modifier: Modifier = Modifier,
-    height: Dp,
-    width: Dp = height
-) {
-    Box(
-        modifier = modifier
-            .size(width = width, height = height)
-    )
 }
