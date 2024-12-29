@@ -29,13 +29,15 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import ar.com.scacchipa.keyboard.screen.KeyboardLayout
+import ar.com.scacchipa.keyboard.screen.KeyboardType
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
 import ar.com.westsoft.listening.screen.dictationgame.settings.SelectableButton
-import ar.com.westsoft.listening.screen.keyboard.MainKeyBoard
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -56,6 +58,7 @@ fun DictGameMainScreen(
             )
         }
     } else {
+
         val localDensity = LocalDensity.current
 
         // Create element height in pixel state
@@ -69,8 +72,6 @@ fun DictGameMainScreen(
 
         // Create element height in dp state
         var widthDp by remember { mutableStateOf(0.dp) }
-
-        val sideKey = widthDp / (10.5f + 2f)
 
         Box(
             Modifier
@@ -87,6 +88,7 @@ fun DictGameMainScreen(
                 }
         ) {
             val requester = remember { FocusRequester() }
+            var keyboardHeightDp by remember { mutableStateOf(0.dp) }
 
             Column(
                 modifier = Modifier
@@ -101,7 +103,7 @@ fun DictGameMainScreen(
                     .focusable()
                     .size(
                         width = widthDp,
-                        height = heightDp - sideKey * 5
+                        height = heightDp - keyboardHeightDp
                     )
             ) {
                 Row {
@@ -159,13 +161,18 @@ fun DictGameMainScreen(
                 GameConsoleScreen(parentWidthPx = widthPx)
             }
 
-            MainKeyBoard(
+            KeyboardLayout(
                 modifier = Modifier
                     .offset(
                         x = 0.dp,
-                        y = heightDp - sideKey * 5
-                    ),
-                sideKey = sideKey
+                        y = heightDp - keyboardHeightDp
+                    )
+                    .onSizeChanged { newSize ->
+                        keyboardHeightDp = (newSize.height / localDensity.density).dp
+                    },
+                widthDp = widthDp,
+                keyboardType = KeyboardType.BigKey,
+                action = { keyEvent -> viewModel.onKeyEvent(keyEvent) }
             )
 
             LaunchedEffect(Unit) {
