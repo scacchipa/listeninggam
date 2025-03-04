@@ -1,6 +1,7 @@
 package ar.com.scacchipa.epub.data.dtos
 
 data class EPubMetadataDto(
+    var identifier: String = "",
     val rights: String = "",
     val authors: List<String> = listOf(),
     val title: String = "",

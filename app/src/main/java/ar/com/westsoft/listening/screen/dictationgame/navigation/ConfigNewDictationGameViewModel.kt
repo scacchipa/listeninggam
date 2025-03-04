@@ -3,9 +3,10 @@ package ar.com.westsoft.listening.screen.dictationgame.navigation
 import androidx.annotation.RawRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.com.scacchipa.epub.domain.OpenEpubUseCase
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.domain.dictationgame.repository.CreateNewDictationGameUseCase
-import ar.com.scacchipa.epub.domain.OpenEpubUseCase
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ConfigNewDictationGameViewModel @Inject constructor(
     private val createNewDictationGameUseCase: CreateNewDictationGameUseCase,
-    private val openEpubUseCase: ar.com.scacchipa.epub.domain.OpenEpubUseCase,
+    private val openEpubUseCase: OpenEpubUseCase,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
