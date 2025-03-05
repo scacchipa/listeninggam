@@ -3,7 +3,7 @@ package ar.com.westsoft.listening.screen.dictationgame.navigation
 import androidx.annotation.RawRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ar.com.scacchipa.epub.domain.OpenEpubUseCase
+import ar.com.scacchipa.xmlparser.domain.OpenEpubUseCase
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.domain.dictationgame.repository.CreateNewDictationGameUseCase
 

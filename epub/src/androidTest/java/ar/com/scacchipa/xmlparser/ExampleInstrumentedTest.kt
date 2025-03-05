@@ -1,4 +1,4 @@
-package ar.com.scacchipa.epub
+package ar.com.scacchipa.xmlparser
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

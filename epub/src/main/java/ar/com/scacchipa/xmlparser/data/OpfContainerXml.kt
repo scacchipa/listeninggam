@@ -1,13 +1,13 @@
-package ar.com.scacchipa.epub.data
+package ar.com.scacchipa.xmlparser.data
 
-import ar.com.scacchipa.epub.data.dtos.EPubGuideDto
-import ar.com.scacchipa.epub.data.dtos.EPubManifestDto
-import ar.com.scacchipa.epub.data.dtos.EPubMetadataDto
-import ar.com.scacchipa.epub.data.dtos.EpubSpineDto
-import ar.com.scacchipa.epub.data.dtos.ManifestItemDto
-import ar.com.scacchipa.epub.ext.allElements
-import ar.com.scacchipa.epub.ext.allText
-import ar.com.scacchipa.epub.ext.firstText
+import ar.com.scacchipa.xmlparser.data.dtos.EPubGuideDto
+import ar.com.scacchipa.xmlparser.data.dtos.EPubManifestDto
+import ar.com.scacchipa.xmlparser.data.dtos.EPubMetadataDto
+import ar.com.scacchipa.xmlparser.data.dtos.EpubSpineDto
+import ar.com.scacchipa.xmlparser.data.dtos.ManifestItemDto
+import ar.com.scacchipa.xmlparser.ext.allElements
+import ar.com.scacchipa.xmlparser.ext.allText
+import ar.com.scacchipa.xmlparser.ext.firstText
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.nio.file.Path

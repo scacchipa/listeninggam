@@ -1,4 +1,4 @@
-package ar.com.scacchipa.epub
+package ar.com.scacchipa.xmlparser
 
 import org.junit.Test
 

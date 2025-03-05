@@ -1,4 +1,4 @@
-package ar.com.scacchipa.epub.data.dtos
+package ar.com.scacchipa.xmlparser.data.dtos
 
 data class ManifestItemDto(
     val id: String,

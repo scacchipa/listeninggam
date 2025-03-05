@@ -1,4 +1,4 @@
-package ar.com.scacchipa.epub.util
+package ar.com.scacchipa.xmlparser.util
 
 import android.content.Context
 import androidx.annotation.RawRes

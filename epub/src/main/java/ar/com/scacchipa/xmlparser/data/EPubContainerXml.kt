@@ -1,4 +1,4 @@
-package ar.com.scacchipa.epub.data
+package ar.com.scacchipa.xmlparser.data
 
 import org.w3c.dom.Document
 import org.w3c.dom.Element
