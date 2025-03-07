@@ -3,6 +3,9 @@ package ar.com.scacchipa.xmlparser.ncxfile
 import org.xml.sax.helpers.DefaultHandler
 import java.util.Stack
 
+/**
+ *  Source: https://web.archive.org/web/20090831133730/http://www.niso.org/workrooms/daisy/Z39-86-2005.html#NCX
+ */
 class NcxXmlHandler : DefaultHandler() {
     private val tagStack = Stack<NcxTag>()
 

@@ -2,8 +2,9 @@ package ar.com.scacchipa.xmlparser.domain
 
 import androidx.annotation.RawRes
 import ar.com.scacchipa.xmlparser.data.EPubContainerXml
-import ar.com.scacchipa.xmlparser.ncxfile.NcxXmlHandler
 import ar.com.scacchipa.xmlparser.data.OpfContainerXml
+import ar.com.scacchipa.xmlparser.ncxfile.NcxXmlHandler
+import ar.com.scacchipa.xmlparser.opffile.OpfXmlHandle
 import ar.com.scacchipa.xmlparser.util.ZipUtils
 import org.xml.sax.InputSource
 import javax.inject.Inject
@@ -31,16 +32,25 @@ class OpenEpubUseCase @Inject constructor(
                 .also { it.normalizeDocument() }
         )
 
-
         val factory = SAXParserFactory.newInstance()
-        val saxParser = factory.newSAXParser()
-        val handle = NcxXmlHandler()
 
-        ePubMap["/${opfContainerXml.tocNcxFullPath}"]?.byteInputStream().use { inputStream ->
-            saxParser.parse(InputSource(inputStream), handle)
+        val opfSaxParser = factory.newSAXParser()
+        val opfHandler = OpfXmlHandle()
+
+        ePubMap["/${ePubContainerXml.opfFullPath}"]?.byteInputStream().use { inputStream ->
+            opfSaxParser.parse(InputSource(inputStream), opfHandler)
         }
 
-        val ncx = handle.getNcx()
+        val opf = opfHandler.getOpf()
+
+        val ncxSaxParser = factory.newSAXParser()
+        val ncxHandler = NcxXmlHandler()
+
+        ePubMap["/${opfContainerXml.tocNcxFullPath}"]?.byteInputStream().use { inputStream ->
+            ncxSaxParser.parse(InputSource(inputStream), ncxHandler)
+        }
+
+        val ncx = ncxHandler.getNcx()
         println(ncx)
         println("tocContent")
     }
