@@ -1,0 +1,16 @@
+package ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell
+
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTbody
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlThead
+import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlTag
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlColgroup
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlCaption
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlTfoot
+
+class EpubXhtmlTable : IEpubXhtmlTag {
+    var caption: EpubXhtmlCaption? = null
+    var colgroup: EpubXhtmlColgroup? = null
+    var thead: EpubXhtmlThead? = null
+    var tfoot: EpubXhtmlTfoot? = null
+    var tbody: EpubXhtmlTbody? = null
+}

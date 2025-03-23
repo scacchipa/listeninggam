@@ -11,7 +11,7 @@ import java.util.Stack
  * source: https://idpf.org/epub/20/spec/OPF_2.0_latest.htm#Section2.1
  */
 
-class OpfXmlHandle : DefaultHandler() {
+class OpfXmlHandler : DefaultHandler() {
 
     private val tagStack = Stack<OpfTag>()
 

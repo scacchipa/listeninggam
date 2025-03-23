@@ -3,9 +3,12 @@ package ar.com.scacchipa.xmlparser.domain
 import androidx.annotation.RawRes
 import ar.com.scacchipa.xmlparser.data.EPubContainerXml
 import ar.com.scacchipa.xmlparser.data.OpfContainerXml
+import ar.com.scacchipa.xmlparser.epubcontainerfile.EpubContainerHandler
 import ar.com.scacchipa.xmlparser.ncxfile.NcxXmlHandler
-import ar.com.scacchipa.xmlparser.opffile.OpfXmlHandle
+import ar.com.scacchipa.xmlparser.opffile.OpfXmlHandler
 import ar.com.scacchipa.xmlparser.util.ZipUtils
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXHtmlHandler
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlHtml
 import org.xml.sax.InputSource
 import javax.inject.Inject
 import javax.xml.parsers.DocumentBuilderFactory
@@ -34,8 +37,19 @@ class OpenEpubUseCase @Inject constructor(
 
         val factory = SAXParserFactory.newInstance()
 
+        // Parse epub container xml file
+        val containerSaxParser = factory.newSAXParser()
+        val containerHandler = EpubContainerHandler()
+
+        ePubMap["/META-INF/container.xml"]?.byteInputStream().use { inputStream ->
+            containerSaxParser.parse(InputSource(inputStream), containerHandler)
+        }
+
+        val container = containerHandler.getContainer()
+
+        // Parse OPF xml file
         val opfSaxParser = factory.newSAXParser()
-        val opfHandler = OpfXmlHandle()
+        val opfHandler = OpfXmlHandler()
 
         ePubMap["/${ePubContainerXml.opfFullPath}"]?.byteInputStream().use { inputStream ->
             opfSaxParser.parse(InputSource(inputStream), opfHandler)
@@ -43,6 +57,7 @@ class OpenEpubUseCase @Inject constructor(
 
         val opf = opfHandler.getOpf()
 
+        // Parse NCX xml file
         val ncxSaxParser = factory.newSAXParser()
         val ncxHandler = NcxXmlHandler()
 
@@ -51,7 +66,39 @@ class OpenEpubUseCase @Inject constructor(
         }
 
         val ncx = ncxHandler.getNcx()
+
+
+        // Convert Items from Manifest
+
+        val htmlFiles = mutableListOf<EpubXhtmlHtml>()
+        opf.manifest?.items?.forEach { item ->
+            val mediaType = item.mediaType
+
+            when (mediaType) {
+                "application/xhtml+xml" -> {
+
+                    val xhtmlSaxParser = factory.newSAXParser()
+                    val xhtmlHandler = EpubXHtmlHandler()
+
+                    ePubMap["/OEBPS/${item.href}"]?.byteInputStream().use { inputStream ->
+                        println("Parsing: ${item.href}")
+                        xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
+                        val xhtml = xhtmlHandler.getXhtml()
+
+                        htmlFiles.add(xhtml)
+                    }
+
+                }
+                else -> {
+                    println("MediaType: $mediaType converter didn't found")
+                }
+            }
+
+        }
+
+
         println(ncx)
         println("tocContent")
     }
 }
+
