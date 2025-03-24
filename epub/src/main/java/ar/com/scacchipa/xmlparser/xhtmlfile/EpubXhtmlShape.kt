@@ -1,3 +1,5 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile
 
-abstract class EpubXhtmlShape : EpubXhtmlTag()
+import org.xml.sax.Attributes
+
+abstract class EpubXhtmlShape(attributes: Attributes) : EpubXhtmlTag(attributes)

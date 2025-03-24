@@ -2,19 +2,20 @@ package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlBody
+import org.xml.sax.Attributes
 
-class EpubXhtmlHtml(
-    val lang: String,
-) : EpubXhtmlTag() {
+class EpubXhtmlHtml : EpubXhtmlTag {
+
+    constructor() : super()
+    constructor(attributes: Attributes) : super(attributes)
 
     override val tagName: String = "html"
 
     var head: EpubXhtmlHead? = null
     var body: EpubXhtmlBody? = null
 
-    override fun toString(): String {
+    override fun tagWrap(): String {
         return tagWrap(
-            attributes = listOf(lang),
             content = (head?.tagWrap() ?:"") + (body?.tagWrap() ?: "")
         )
     }

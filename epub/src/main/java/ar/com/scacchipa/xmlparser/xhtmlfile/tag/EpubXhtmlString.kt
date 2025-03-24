@@ -7,7 +7,7 @@ class EpubXhtmlString(
 ) : EpubXhtmlTag() {
     override val tagName: String = "string"
 
-    override fun toString(): String {
-        return tagWrap(content = value)
+    override fun tagWrap(): String {
+        return value
     }
 }

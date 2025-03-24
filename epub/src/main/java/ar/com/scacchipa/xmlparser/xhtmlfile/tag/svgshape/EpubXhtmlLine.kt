@@ -1,13 +1,9 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag.svgshape
 
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlShape
+import org.xml.sax.Attributes
 
-class EpubXhtmlLine(
-    val x1: String,
-    val y1: String,
-    val x2: String,
-    val y2: String,
-) : EpubXhtmlShape() {
+class EpubXhtmlLine(attributes: Attributes) : EpubXhtmlShape(attributes) {
 
     override val tagName: String = "line"
 }

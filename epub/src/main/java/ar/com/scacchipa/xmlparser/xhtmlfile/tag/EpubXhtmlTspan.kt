@@ -1,16 +1,14 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
+import org.xml.sax.Attributes
 
-class EpubXhtmlTspan(
-    val x: String = "",
-    val y: String = "",
-    val dx: String = "",
-    val dy: String = "",
-    val rotate: String = "",
-    val textLength: String = "",
-    var text: String? = null
-) : EpubXhtmlTag() {
+class EpubXhtmlTspan : EpubXhtmlTag {
+
+    constructor() : super()
+    constructor(attributes: Attributes) : super(attributes)
 
     override val tagName: String = "tspan"
+
+    var text: String? = null
 }

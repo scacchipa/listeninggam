@@ -85,7 +85,7 @@ class OpenEpubUseCase @Inject constructor(
                         xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
                         val xhtml = xhtmlHandler.getXhtml()
 
-                        println(xhtml.toString())
+                        println(xhtml.tagWrap())
 
                         htmlFiles.add(xhtml)
                     }

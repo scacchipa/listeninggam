@@ -2,18 +2,15 @@ package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlShape
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
+import org.xml.sax.Attributes
 
-class EpubXhtmlSvg(
-    val width: String,
-    val height: String,
-): EpubXhtmlTag() {
+class EpubXhtmlSvg(attributes: Attributes): EpubXhtmlTag(attributes) {
 
     val shapes: MutableList<EpubXhtmlShape> = mutableListOf()
     override val tagName: String = "svg"
 
     override fun toString(): String {
         return tagWrap(
-            attributes =  listOf(width, height),
             content = shapes.joinToString { it.tagWrap() }
         )
     }

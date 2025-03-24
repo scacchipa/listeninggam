@@ -3,7 +3,7 @@ package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
 import org.xml.sax.Attributes
 
-class EpubXhtmlLink(attributes: Attributes) : EpubXhtmlTag(attributes) {
+class EpubXhtmlImg(attributes: Attributes) : EpubXhtmlTag(attributes) {
 
-    override val tagName: String = "link"
+    override val tagName: String = "img"
 }

@@ -37,7 +37,7 @@ class EpubXHtmlHandler() : DefaultHandler() {
 
     private val tagStack = Stack<EpubXhtmlTag>()
 
-    private var ePubXHtml = EpubXhtmlHtml(lang = "")
+    private var ePubXHtml = EpubXhtmlHtml(AttributesImpl())
 
     override fun startElement(
         uri: String?,
@@ -45,29 +45,23 @@ class EpubXHtmlHandler() : DefaultHandler() {
         qName: String?,
         attributes: Attributes?
     ) {
-        println("🔹 Encontrado elemento: qName=$qName, localName=$localName, uri=$uri")
-
-        if (attributes != null) {
-            for (i in 0 until attributes.length) {
-                println("   ➡ Atributo: ${attributes.getQName(i)} = ${attributes.getValue(i)}")
-            }
-        }
 
         val tag = EpubXhtmlTagsContainer.starterTagElement[qName]?.invoke(attributes ?: AttributesImpl())
-            ?: EpubXhtmlUnknown( "unknown name $qName")
+            ?: EpubXhtmlUnknown(  AttributesImpl().apply {
+                this.addAttribute("Unknown name", "Unknown name", "Unknown", "CDATA", qName)
+            })
 
         tagStack.push(tag)
 
         if (tag is EpubXhtmlUnknown) {
-            println("⚠️ Unknown tag: ${tag.tag}")
+            println("⚠️ Unknown tag: $qName")
         }
     }
 
     override fun characters(ch: CharArray?, start: Int, length: Int) {
-        val text = String(ch!!, start, length).trim()
+        val text = String(ch!!, start, length)
 
-        if (text.isNotEmpty()) {
-            println("🔹 Caracteres: ch=$text, start=$start, length=$length")
+        if (text.trim().isNotEmpty()) {
             when (val tag = tagStack.peek()) {
                 is EpubXhtmlTitle -> tag.text = EpubXhtmlString(value = text)
                 is EpubXhtmlBody -> tag.contents.add(EpubXhtmlString(value = text))
@@ -92,7 +86,9 @@ class EpubXHtmlHandler() : DefaultHandler() {
                 is EpubXhtmlTd -> tag.contents.add(EpubXhtmlString(value = text))
                 is EpubXhtmlCaption -> tag.contents.add(EpubXhtmlString(value = text))
                 is EpubXhtmlNav -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlText -> tag.text.add(EpubXhtmlTspan(text))
+                is EpubXhtmlText -> tag.text.add(EpubXhtmlTspan().apply {
+                    this.text = text
+                })
                 is EpubXhtmlTspan -> tag.text = text
 
                 else -> println("⚠️ Unknown character: $text")
@@ -101,8 +97,6 @@ class EpubXHtmlHandler() : DefaultHandler() {
     }
 
     override fun endElement(uri: String?, localName: String?, qName: String?) {
-        println("🔹 Cerrado elemento: qName=$qName, localName=$localName, uri=$uri")
-
         EpubXhtmlTagsContainer.enderTagElement[qName]?.invoke(tagStack)
             ?: println("⚠️ Unknown tag in endElement: $qName")
     }

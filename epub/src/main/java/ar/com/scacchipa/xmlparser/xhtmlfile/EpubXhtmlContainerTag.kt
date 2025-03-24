@@ -1,15 +1,12 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile
 
-abstract class EpubXhtmlContainerTag : EpubXhtmlTag() {
+import org.xml.sax.Attributes
+
+abstract class EpubXhtmlContainerTag(attributes: Attributes) : EpubXhtmlTag(attributes) {
 
     val contents: MutableList<EpubXhtmlTag> = mutableListOf()
 
-    fun tagWrap(
-        attributes: List<String> = listOf(),
-    ) = "<$tagName ${
-        attributes.joinToString(
-            separator = " ",
-            prefix = " "
-        )
-    }>${contents.joinToString()}</$tagName>"
+    override fun tagWrap() = tagWrap(contents.joinToString("") {
+        it.tagWrap()
+    })
 }

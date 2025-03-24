@@ -1,12 +1,8 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
+import org.xml.sax.Attributes
 
-class EpubXhtmlCol(
-    val span: String? = null,
-    val width: String? = null,
-    val height: String? = null,
-    val style: String? = null
-) : EpubXhtmlTag() {
+class EpubXhtmlCol(attributes: Attributes) : EpubXhtmlTag(attributes) {
     override val tagName: String = "col"
 }

@@ -3,7 +3,7 @@ package ar.com.scacchipa.xmlparser.xhtmlfile.tag.container
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlContainerTag
 import org.xml.sax.Attributes
 
-class EpubXhtmlUl(attributes: Attributes) : EpubXhtmlContainerTag(attributes) {
+class EpubXhtmlSection(attributes: Attributes): EpubXhtmlContainerTag(attributes) {
 
-    override val tagName: String = "ul"
+    override val tagName: String = "section"
 }

@@ -1,12 +1,8 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag.svgshape
 
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlShape
+import org.xml.sax.Attributes
 
-class EpubXhtmlEllipse(
-    val cx: String,
-    val cy: String,
-    val rx: String,
-    val ry: String,
-) : EpubXhtmlShape() {
+class EpubXhtmlEllipse(attributes: Attributes) : EpubXhtmlShape(attributes) {
     override val tagName: String = "ellipse"
 }
