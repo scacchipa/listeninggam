@@ -7,6 +7,7 @@ import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTspan
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlUnknown
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell.EpubXhtmlTd
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell.EpubXhtmlTh
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtml
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlA
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlBlockquote
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlBody
@@ -19,7 +20,6 @@ import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH3
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH4
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH5
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH6
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlI
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlLi
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlNav
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlOl
@@ -35,7 +35,7 @@ import java.util.Stack
 
 class EpubXHtmlHandler() : DefaultHandler() {
 
-    private val tagStack = Stack<IEpubXhtmlTag>()
+    private val tagStack = Stack<EpubXhtmlTag>()
 
     private var ePubXHtml = EpubXhtmlHtml(lang = "")
 
@@ -70,28 +70,28 @@ class EpubXHtmlHandler() : DefaultHandler() {
             println("🔹 Caracteres: ch=$text, start=$start, length=$length")
             when (val tag = tagStack.peek()) {
                 is EpubXhtmlTitle -> tag.text = EpubXhtmlString(value = text)
-                is EpubXhtmlBody -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH1 -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH2 -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH3 -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH4 -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH5 -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH6 -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlP -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlSpan -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlDiv -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlA -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlStrong -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlI -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlBr -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlBlockquote -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlUl -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlOl -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlLi -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlTh -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlTd -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlCaption -> tag.content.add(EpubXhtmlString(value = text))
-                is EpubXhtmlNav -> tag.content.add(EpubXhtmlString(value = text))
+                is EpubXhtmlBody -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlH1 -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlH2 -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlH3 -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlH4 -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlH5 -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlH6 -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlP -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlSpan -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlDiv -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlA -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlStrong -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtml -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlBr -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlBlockquote -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlUl -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlOl -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlLi -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlTh -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlTd -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlCaption -> tag.contents.add(EpubXhtmlString(value = text))
+                is EpubXhtmlNav -> tag.contents.add(EpubXhtmlString(value = text))
                 is EpubXhtmlText -> tag.text.add(EpubXhtmlTspan(text))
                 is EpubXhtmlTspan -> tag.text = text
 

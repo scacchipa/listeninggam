@@ -1,6 +1,6 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag.svgshape
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlShape
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlShape
 
 class EpubXhtmlImage(
     val width: String,
@@ -8,4 +8,7 @@ class EpubXhtmlImage(
     val href: String,
     val x: String,
     val y: String,
-) : IEpubXhtmlShape
+) : EpubXhtmlShape() {
+
+    override val tagName: String = "image"
+}

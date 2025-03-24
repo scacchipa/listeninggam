@@ -1,8 +1,14 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlContainerTag
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlTag
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlContainerTag
 
-class EpubXhtmlSection: IEpubXhtmlContainerTag {
-    override val content: MutableList<IEpubXhtmlTag> = mutableListOf()
+class EpubXhtmlSection: EpubXhtmlContainerTag() {
+
+    override val tagName: String = "section"
+
+    override fun toString(): String {
+        return "<section>" +
+                contents.fold(StringBuilder()) { acc, elem -> acc.append(elem) } +
+                "</section>"
+    }
 }

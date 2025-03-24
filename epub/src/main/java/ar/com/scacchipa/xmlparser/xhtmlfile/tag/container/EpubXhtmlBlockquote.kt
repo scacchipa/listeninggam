@@ -1,10 +1,10 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag.container
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlContainerTag
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlTag
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlContainerTag
 
 class EpubXhtmlBlockquote(
     val cite: String,
-) : IEpubXhtmlContainerTag {
-    override val content: MutableList<IEpubXhtmlTag> = mutableListOf()
+) : EpubXhtmlContainerTag() {
+
+    override val tagName: String = "blockquote"
 }

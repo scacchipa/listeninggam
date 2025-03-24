@@ -1,8 +1,11 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlTag
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
 
 class EpubXhtmlMeta(
     val httpEquiv: String,
     val content: String,
-) : IEpubXhtmlTag
+) : EpubXhtmlTag() {
+
+    override val tagName: String = "meta"
+}

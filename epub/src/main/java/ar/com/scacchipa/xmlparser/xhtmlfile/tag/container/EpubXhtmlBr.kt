@@ -1,8 +1,8 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag.container
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlContainerTag
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlTag
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlContainerTag
 
-class EpubXhtmlBr : IEpubXhtmlContainerTag {
-    override val content: MutableList<IEpubXhtmlTag> = mutableListOf()
+class EpubXhtmlBr : EpubXhtmlContainerTag() {
+
+    override val tagName: String = "br"
 }

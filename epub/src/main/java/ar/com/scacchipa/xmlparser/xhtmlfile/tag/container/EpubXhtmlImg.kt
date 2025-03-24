@@ -1,7 +1,6 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag.container
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlContainerTag
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlTag
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlContainerTag
 
 class EpubXhtmlImg(
     val alt: String,
@@ -16,6 +15,7 @@ class EpubXhtmlImg(
     val srcset: String,
     val usemap: String,
     val width: String,
-) : IEpubXhtmlContainerTag {
-    override val content: MutableList<IEpubXhtmlTag> = mutableListOf()
+) : EpubXhtmlContainerTag() {
+
+    override val tagName: String = "img"
 }

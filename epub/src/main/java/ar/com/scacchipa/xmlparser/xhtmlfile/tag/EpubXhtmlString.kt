@@ -1,7 +1,13 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlTag
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
 
 class EpubXhtmlString(
     val value: String,
-) : IEpubXhtmlTag
+) : EpubXhtmlTag() {
+    override val tagName: String = "string"
+
+    override fun toString(): String {
+        return tagWrap(content = value)
+    }
+}

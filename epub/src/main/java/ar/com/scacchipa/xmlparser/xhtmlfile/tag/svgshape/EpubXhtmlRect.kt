@@ -1,6 +1,6 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag.svgshape
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlShape
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlShape
 
 class EpubXhtmlRect(
     val x: String,
@@ -8,4 +8,7 @@ class EpubXhtmlRect(
     val width: String,
     val height: String,
     val rx: String,
-) : IEpubXhtmlShape
+) : EpubXhtmlShape() {
+
+    override val tagName: String = "rect"
+}

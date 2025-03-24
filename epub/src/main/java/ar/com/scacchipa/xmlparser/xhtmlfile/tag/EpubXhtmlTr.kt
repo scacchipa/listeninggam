@@ -1,8 +1,11 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlCell
-import ar.com.scacchipa.xmlparser.xhtmlfile.IEpubXhtmlTag
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlCell
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
 
-class EpubXhtmlTr : IEpubXhtmlTag {
-    val cells = mutableListOf<IEpubXhtmlCell>()
+class EpubXhtmlTr : EpubXhtmlTag() {
+
+    override val tagName: String = "tr"
+
+    val cells = mutableListOf<EpubXhtmlCell>()
 }

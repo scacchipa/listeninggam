@@ -1,3 +1,3 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile
 
-interface IEpubXhtmlCell : IEpubXhtmlContainerTag
+abstract class EpubXhtmlCell : EpubXhtmlContainerTag()
