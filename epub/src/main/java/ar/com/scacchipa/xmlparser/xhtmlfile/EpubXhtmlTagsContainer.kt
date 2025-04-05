@@ -1,5 +1,6 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile
 
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlBase
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlCol
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlColgroup
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlHead
@@ -7,6 +8,9 @@ import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlHtml
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlImg
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlLink
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlMeta
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlNoscript
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlScript
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlStyle
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlSvg
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTbody
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlThead
@@ -98,7 +102,11 @@ object EpubXhtmlTagsContainer {
         "path" to { attributes -> EpubXhtmlPath(attributes) },
         "text" to { attributes -> EpubXhtmlText(attributes) },
         "tspan" to { attributes -> EpubXhtmlTspan(attributes) },
-        "image" to { attributes -> EpubXhtmlImage(attributes)  }
+        "image" to { attributes -> EpubXhtmlImage(attributes) },
+        "style" to { attributes -> EpubXhtmlStyle(attributes) },
+        "base" to { attributes -> EpubXhtmlBase(attributes) },
+        "script" to { attributes -> EpubXhtmlScript(attributes) },
+        "noscript" to { attributes -> EpubXhtmlNoscript(attributes) },
     )
 
     val enderTagElement = mapOf<String, (Stack<EpubXhtmlTag>) -> Unit>(
@@ -309,6 +317,26 @@ object EpubXhtmlTagsContainer {
         },
         "image" to { tagStack: Stack<EpubXhtmlTag> ->
             pushUpShape<EpubXhtmlImage>(tagStack)
+        },
+        "style" to { tagStack: Stack<EpubXhtmlTag> ->
+            val lastTag = tagStack.pop() as EpubXhtmlStyle
+            val locationTag = tagStack.peek() as EpubXhtmlHead
+            locationTag.style.add(lastTag)
+        },
+        "base" to { tagStack: Stack<EpubXhtmlTag> ->
+            val lastTag = tagStack.pop() as EpubXhtmlBase
+            val locationTag = tagStack.peek() as EpubXhtmlHead
+            locationTag.base.add(lastTag)
+        },
+        "script" to { tagStack: Stack<EpubXhtmlTag> ->
+            val lastTag = tagStack.pop() as EpubXhtmlScript
+            val locationTag = tagStack.peek() as EpubXhtmlHead
+            locationTag.script.add(lastTag)
+        },
+        "noscript" to { tagStack: Stack<EpubXhtmlTag> ->
+            val lastTag = tagStack.pop() as EpubXhtmlNoscript
+            val locationTag = tagStack.peek() as EpubXhtmlHead
+            locationTag.noscript.add(lastTag)
         },
     )
 

@@ -17,4 +17,14 @@ class EpubXhtmlTable(attributes: Attributes): EpubXhtmlTag(attributes) {
     var thead: EpubXhtmlThead? = null
     var tfoot: EpubXhtmlTfoot? = null
     var tbody: EpubXhtmlTbody? = null
+
+    override fun tagWrap(): String {
+        return tagWrap(
+            (caption?.tagWrap() ?: "") +
+                    (colgroup?.tagWrap() ?: "") +
+                    (thead?.tagWrap() ?: "") +
+                    (tbody?.tagWrap() ?: "") +
+                    (tfoot?.tagWrap() ?: ""))
+
+    }
 }

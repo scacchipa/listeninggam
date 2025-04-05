@@ -2,6 +2,7 @@ package ar.com.scacchipa.xmlparser.xhtmlfile
 
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlHtml
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlString
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlStyle
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTitle
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTspan
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlUnknown
@@ -90,6 +91,7 @@ class EpubXHtmlHandler() : DefaultHandler() {
                     this.text = text
                 })
                 is EpubXhtmlTspan -> tag.text = text
+                is EpubXhtmlStyle -> tag.text.add(EpubXhtmlString(value = text))
 
                 else -> println("⚠️ Unknown character: $text")
             }

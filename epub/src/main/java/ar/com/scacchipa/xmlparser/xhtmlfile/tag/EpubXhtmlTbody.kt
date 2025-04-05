@@ -10,13 +10,5 @@ class EpubXhtmlTbody : EpubXhtmlRowContainerTag {
     constructor() : super()
     constructor(attributes: Attributes) : super(attributes)
 
-    override val tagName: String = "body"
-
-    override fun toString(): String {
-        return "<tbody>" +
-                rows.fold(StringBuilder()) { acc, elem ->
-                    acc.append(elem.toString())
-                } +
-                "/tbody"
-    }
+    override val tagName: String = "tbody"
 }
