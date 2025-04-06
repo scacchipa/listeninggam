@@ -51,6 +51,14 @@ class XhtmlParserTest {
         println(actualXhtml.tagWrap())
         assertEquals(expectedTable3, actualXhtml.tagWrap())
         xhtmlHandler.empty()
+
+        tableExample4.byteInputStream().use { inputStream ->
+            xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
+        }
+        actualXhtml = xhtmlHandler.getXhtml()
+        println(actualXhtml.tagWrap())
+        assertEquals(expectedTable4, actualXhtml.tagWrap())
+        xhtmlHandler.empty()
     }
 }
 
@@ -220,3 +228,26 @@ const val tableExample3 =
 </html>"""
 
 const val expectedTable3 = """<html><body><table><colgroup><col span="2" style="background-color:red"/><col style="background-color:yellow"/></colgroup><tbody><tr><th>ISBN</th><th>Title</th><th>Price</th></tr><tr><td>3476896</td><td>My first HTML</td><td>53</td></tr></tbody></table></body></html>"""
+
+const val tableExample4 = """
+<html>
+<body>
+<table>
+<col span="2" style="background-color:red"/>
+<col style="background-color:yellow"/>
+
+<tr>
+<th>ISBN</th>
+<th>Title</th>
+<th>Price</th>
+</tr>
+
+<td>3476896</td>
+<td>My first HTML</td>
+<td>53</td>
+
+</table>
+</body>
+</html>"""
+
+const val expectedTable4 = """<html><body><table><colgroup><col span="2" style="background-color:red"/><col style="background-color:yellow"/></colgroup><tbody><tr><th>ISBN</th><th>Title</th><th>Price</th></tr><tr><td>3476896</td><td>My first HTML</td><td>53</td></tr></tbody></table></body></html>"""

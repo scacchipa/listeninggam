@@ -55,58 +55,99 @@ import org.xml.sax.Attributes
 import java.util.Stack
 
 object EpubXhtmlTagsContainer {
-    val starterTagElement = mapOf<String, (Attributes) -> EpubXhtmlTag>(
-        "html" to { attributes -> EpubXhtmlHtml(attributes) },
-        "head" to { attributes -> EpubXhtmlHead(attributes) },
-        "title" to { attributes -> EpubXhtmlTitle(attributes) },
-        "meta" to { attributes -> EpubXhtmlMeta(attributes) },
-        "link" to { attributes -> EpubXhtmlLink(attributes) },
-        "body" to { attributes -> EpubXhtmlBody(attributes) },
-        "section" to { attributes -> EpubXhtmlSection(attributes) },
-        "h1" to { attributes -> EpubXhtmlH1(attributes) },
-        "h2" to { attributes -> EpubXhtmlH2(attributes) },
-        "h3" to { attributes -> EpubXhtmlH3(attributes) },
-        "h4" to { attributes -> EpubXhtmlH4(attributes) },
-        "h5" to { attributes -> EpubXhtmlH5(attributes) },
-        "h6" to { attributes -> EpubXhtmlH6(attributes) },
-        "p" to { attributes -> EpubXhtmlP(attributes) },
-        "span" to { attributes -> EpubXhtmlSpan(attributes) },
-        "div" to { attributes -> EpubXhtmlDiv(attributes) },
-        "a" to { attributes -> EpubXhtmlA(attributes) },
-        "strong" to { attributes -> EpubXhtmlStrong(attributes) },
-        "i" to { attributes -> EpubXhtml(attributes) },
-        "br" to { attributes -> EpubXhtmlBr(attributes) },
-        "blockquote" to { attributes: Attributes -> EpubXhtmlBlockquote(attributes) },
-        "img" to { attributes -> EpubXhtmlImg(attributes) },
-        "ul" to { attributes -> EpubXhtmlUl(attributes) },
-        "ol" to { attributes -> EpubXhtmlOl(attributes) },
-        "li" to { attributes -> EpubXhtmlLi(attributes) },
-        "table" to { attributes -> EpubXhtmlTable(attributes) },
-        "caption" to { attributes -> EpubXhtmlCaption(attributes) },
-        "colgroup" to { attributes -> EpubXhtmlColgroup(attributes) },
-        "col" to { attributes -> EpubXhtmlCol(attributes) },
-        "thead" to { attributes -> EpubXhtmlThead(attributes) },
-        "tbody" to { attributes -> EpubXhtmlTbody(attributes) },
-        "tfoot" to { attributes -> EpubXhtmlTfoot(attributes) },
-        "tr" to { attributes -> EpubXhtmlTr(attributes) },
-        "th" to { attributes -> EpubXhtmlTh(attributes) },
-        "td" to { attributes -> EpubXhtmlTd(attributes) },
-        "nav" to { attributes -> EpubXhtmlNav(attributes) },
-        "svg" to { attributes -> EpubXhtmlSvg(attributes) },
-        "rect" to { attributes -> EpubXhtmlRect(attributes) },
-        "circle" to { attributes -> EpubXhtmlCircle(attributes) },
-        "ellipse" to { attributes -> EpubXhtmlEllipse(attributes) },
-        "line" to { attributes -> EpubXhtmlLine(attributes) },
-        "polygon" to { attributes -> EpubXhtmlPolygon(attributes) },
-        "polyline" to { attributes -> EpubXhtmlPolyline(attributes) },
-        "path" to { attributes -> EpubXhtmlPath(attributes) },
-        "text" to { attributes -> EpubXhtmlText(attributes) },
-        "tspan" to { attributes -> EpubXhtmlTspan(attributes) },
-        "image" to { attributes -> EpubXhtmlImage(attributes) },
-        "style" to { attributes -> EpubXhtmlStyle(attributes) },
-        "base" to { attributes -> EpubXhtmlBase(attributes) },
-        "script" to { attributes -> EpubXhtmlScript(attributes) },
-        "noscript" to { attributes -> EpubXhtmlNoscript(attributes) },
+    val starterTagElement = mapOf<String, (Attributes, Stack<EpubXhtmlTag>) -> EpubXhtmlTag>(
+        "html" to { attributes, _ -> EpubXhtmlHtml(attributes) },
+        "head" to { attributes, _ -> EpubXhtmlHead(attributes) },
+        "title" to { attributes, _ -> EpubXhtmlTitle(attributes) },
+        "meta" to { attributes, _ -> EpubXhtmlMeta(attributes) },
+        "link" to { attributes, _ -> EpubXhtmlLink(attributes) },
+        "body" to { attributes, _ -> EpubXhtmlBody(attributes) },
+        "section" to { attributes, _ -> EpubXhtmlSection(attributes) },
+        "h1" to { attributes, _ -> EpubXhtmlH1(attributes) },
+        "h2" to { attributes, _ -> EpubXhtmlH2(attributes) },
+        "h3" to { attributes, _ -> EpubXhtmlH3(attributes) },
+        "h4" to { attributes, _ -> EpubXhtmlH4(attributes) },
+        "h5" to { attributes, _ -> EpubXhtmlH5(attributes) },
+        "h6" to { attributes, _ -> EpubXhtmlH6(attributes) },
+        "p" to { attributes, _ -> EpubXhtmlP(attributes) },
+        "span" to { attributes, _ -> EpubXhtmlSpan(attributes) },
+        "div" to { attributes, _ -> EpubXhtmlDiv(attributes) },
+        "a" to { attributes, _ -> EpubXhtmlA(attributes) },
+        "strong" to { attributes, _ -> EpubXhtmlStrong(attributes) },
+        "i" to { attributes, _ -> EpubXhtml(attributes) },
+        "br" to { attributes, _ -> EpubXhtmlBr(attributes) },
+        "blockquote" to { attributes, _ -> EpubXhtmlBlockquote(attributes) },
+        "img" to { attributes, _ -> EpubXhtmlImg(attributes) },
+        "ul" to { attributes, _ -> EpubXhtmlUl(attributes) },
+        "ol" to { attributes, _ -> EpubXhtmlOl(attributes) },
+        "li" to { attributes, _ -> EpubXhtmlLi(attributes) },
+        "table" to { attributes, _ -> EpubXhtmlTable(attributes) },
+        "caption" to { attributes, _ -> EpubXhtmlCaption(attributes) },
+        "colgroup" to { attributes, _ -> EpubXhtmlColgroup(attributes) },
+        "col" to { attributes, tagStack ->
+            while (
+                tagStack.peek() !is EpubXhtmlColgroup &&
+                tagStack.peek() !is EpubXhtmlTable
+            ) {
+                genericExtractUp(tagStack)
+            }
+            if (tagStack.peek() is EpubXhtmlTable) {
+                tagStack.push(EpubXhtmlColgroup())
+            }
+            EpubXhtmlCol(attributes)
+        },
+        "thead" to { attributes, _ -> EpubXhtmlThead(attributes) },
+        "tbody" to { attributes, _ -> EpubXhtmlTbody(attributes) },
+        "tfoot" to { attributes, _ -> EpubXhtmlTfoot(attributes) },
+        "tr" to { attributes, tagStack ->
+            while (
+                tagStack.peek() !is EpubXhtmlRowContainerTag &&
+                tagStack.peek() !is EpubXhtmlTable
+            ) {
+                genericExtractUp(tagStack)
+            }
+
+            if (tagStack.peek() is EpubXhtmlTable) {
+                tagStack.push(EpubXhtmlTbody())
+            }
+
+            EpubXhtmlTr(attributes)
+        },
+        "th" to { attributes, _ -> EpubXhtmlTh(attributes) },
+        "td" to { attributes, tagStack ->
+            while (
+                tagStack.peek() !is EpubXhtmlCellContainerTag &&
+                tagStack.peek() !is EpubXhtmlRowContainerTag &&
+                tagStack.peek() !is EpubXhtmlTable
+            ) {
+                genericExtractUp(tagStack)
+            }
+
+            if (tagStack.peek() is EpubXhtmlTable) {
+                tagStack.push(EpubXhtmlTbody())
+            }
+            if (tagStack.peek() is EpubXhtmlRowContainerTag) {
+                tagStack.push(EpubXhtmlTr())
+            }
+
+            EpubXhtmlTd(attributes)
+        },
+        "nav" to { attributes, _ -> EpubXhtmlNav(attributes) },
+        "svg" to { attributes, _ -> EpubXhtmlSvg(attributes) },
+        "rect" to { attributes, _ -> EpubXhtmlRect(attributes) },
+        "circle" to { attributes, _ -> EpubXhtmlCircle(attributes) },
+        "ellipse" to { attributes, _ -> EpubXhtmlEllipse(attributes) },
+        "line" to { attributes, _ -> EpubXhtmlLine(attributes) },
+        "polygon" to { attributes, _ -> EpubXhtmlPolygon(attributes) },
+        "polyline" to { attributes, _ -> EpubXhtmlPolyline(attributes) },
+        "path" to { attributes, _ -> EpubXhtmlPath(attributes) },
+        "text" to { attributes, _ -> EpubXhtmlText(attributes) },
+        "tspan" to { attributes, _ -> EpubXhtmlTspan(attributes) },
+        "image" to { attributes, _ -> EpubXhtmlImage(attributes) },
+        "style" to { attributes, _ -> EpubXhtmlStyle(attributes) },
+        "base" to { attributes, _ -> EpubXhtmlBase(attributes) },
+        "script" to { attributes, _ -> EpubXhtmlScript(attributes) },
+        "noscript" to { attributes, _ -> EpubXhtmlNoscript(attributes) },
     )
 
     val enderTagElement = mapOf<String, (Stack<EpubXhtmlTag>) -> Unit>(
@@ -256,6 +297,7 @@ object EpubXhtmlTagsContainer {
 
         "th" to { tagStack: Stack<EpubXhtmlTag> ->
             val lastTag = tagStack.pop() as EpubXhtmlTh
+
             when (val locationTag = tagStack.peek()) {
                 is EpubXhtmlTr -> locationTag.cells.add(lastTag)
                 is EpubXhtmlRowContainerTag -> {
@@ -382,6 +424,8 @@ object EpubXhtmlTagsContainer {
             is EpubXhtmlColgroup -> (locationTag as EpubXhtmlTable).colgroup = lastTag
             is EpubXhtmlCaption -> (locationTag as EpubXhtmlTable).caption = lastTag
             is EpubXhtmlTable -> (locationTag as EpubXhtmlContainerTag).contents.add(lastTag)
+
+            is EpubXhtmlCol -> (locationTag as EpubXhtmlColgroup).cols.add(lastTag)
         }
     }
 }

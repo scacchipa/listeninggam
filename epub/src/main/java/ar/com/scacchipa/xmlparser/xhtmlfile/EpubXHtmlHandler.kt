@@ -47,8 +47,9 @@ class EpubXHtmlHandler() : DefaultHandler() {
         attributes: Attributes?
     ) {
 
-        val tag = EpubXhtmlTagsContainer.starterTagElement[qName]?.invoke(attributes ?: AttributesImpl())
-            ?: EpubXhtmlUnknown(  AttributesImpl().apply {
+        val tag = EpubXhtmlTagsContainer.starterTagElement[qName]?.invoke(
+            attributes ?: AttributesImpl(), tagStack
+        ) ?: EpubXhtmlUnknown(  AttributesImpl().apply {
                 this.addAttribute("Unknown name", "Unknown name", "Unknown", "CDATA", qName)
             })
 
