@@ -12,12 +12,12 @@ import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlNoscript
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlScript
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlStyle
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlSvg
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTable
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTbody
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlThead
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTitle
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTr
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTspan
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell.EpubXhtmlTable
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell.EpubXhtmlTd
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell.EpubXhtmlTh
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtml
@@ -143,64 +143,67 @@ object EpubXhtmlTagsContainer {
         },
 
         "section" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlSection, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlSection, EpubXhtmlContainerTag>(tagStack)
         },
         "h1" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlH1, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlH1, EpubXhtmlContainerTag>(tagStack)
         },
         "h2" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlH2, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlH2, EpubXhtmlContainerTag>(tagStack)
         },
         "h3" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlH3, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlH3, EpubXhtmlContainerTag>(tagStack)
         },
         "h4" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlH4, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlH4, EpubXhtmlContainerTag>(tagStack)
         },
         "h5" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlH5, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlH5, EpubXhtmlContainerTag>(tagStack)
         },
         "h6" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlH6, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlH6, EpubXhtmlContainerTag>(tagStack)
         },
         "p" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlP, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlP, EpubXhtmlContainerTag>(tagStack)
         },
         "span" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlSpan, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlSpan, EpubXhtmlContainerTag>(tagStack)
         },
         "div" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlDiv, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlDiv, EpubXhtmlContainerTag>(tagStack)
         },
         "a" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlA, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlA, EpubXhtmlContainerTag>(tagStack)
         },
         "strong" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlStrong, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlStrong, EpubXhtmlContainerTag>(tagStack)
         },
         "i" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtml, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtml, EpubXhtmlContainerTag>(tagStack)
         },
         "br" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlBr, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlBr, EpubXhtmlContainerTag>(tagStack)
         },
         "blockquote" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlBlockquote, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlBlockquote, EpubXhtmlContainerTag>(tagStack)
         },
         "img" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlImg, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlImg, EpubXhtmlContainerTag>(tagStack)
         },
         "ul" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlUl, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlUl, EpubXhtmlContainerTag>(tagStack)
         },
         "ol" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlOl, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlOl, EpubXhtmlContainerTag>(tagStack)
         },
         "li" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlLi, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlLi, EpubXhtmlContainerTag>(tagStack)
         },
         "table" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlTable, EpubXhtmlContainerTag>(tagStack)
+            while (tagStack.peek() !is EpubXhtmlTable) {
+                genericExtractUp(tagStack)
+            }
+            extractUp<EpubXhtmlTable, EpubXhtmlContainerTag>(tagStack)
         },
         "caption" to { tagStack: Stack<EpubXhtmlTag> ->
             val lastTag = tagStack.pop() as EpubXhtmlCaption
@@ -242,8 +245,11 @@ object EpubXhtmlTagsContainer {
             val lastTag = tagStack.pop() as EpubXhtmlTr
             when (val locationTag = tagStack.peek()) {
                 is EpubXhtmlRowContainerTag -> locationTag.rows.add(lastTag)
-                is EpubXhtmlTable -> locationTag.tbody = EpubXhtmlTbody().apply {
-                    rows.add(lastTag)
+                is EpubXhtmlTable -> {
+                    val tbody = EpubXhtmlTbody().apply {
+                        rows.add(lastTag)
+                    }
+                    tagStack.push(tbody)
                 }
             }
         },
@@ -252,14 +258,22 @@ object EpubXhtmlTagsContainer {
             val lastTag = tagStack.pop() as EpubXhtmlTh
             when (val locationTag = tagStack.peek()) {
                 is EpubXhtmlTr -> locationTag.cells.add(lastTag)
-                is EpubXhtmlRowContainerTag -> locationTag.rows.add(EpubXhtmlTr().apply {
-                    cells.add(lastTag)
-                })
-
-                is EpubXhtmlTable -> locationTag.tbody = EpubXhtmlTbody().apply {
-                    rows.add(EpubXhtmlTr().apply {
+                is EpubXhtmlRowContainerTag -> {
+                    val tr = EpubXhtmlTr().apply {
                         cells.add(lastTag)
-                    })
+                    }
+                    locationTag.rows.add(tr)
+                }
+                is EpubXhtmlTable -> {
+                    tagStack.push(EpubXhtmlTbody())
+                    val row  = EpubXhtmlTr().apply {
+                        cells.add(lastTag)
+                    }
+                    val tbody = EpubXhtmlTbody().apply {
+                        rows.add(row)
+                    }
+                    tagStack.push(tbody)
+                    tagStack.push(row)
                 }
             }
         },
@@ -281,34 +295,34 @@ object EpubXhtmlTagsContainer {
         },
 
         "nav" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlNav, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlNav, EpubXhtmlContainerTag>(tagStack)
         },
         "svg" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUp<EpubXhtmlSvg, EpubXhtmlContainerTag>(tagStack)
+            extractUp<EpubXhtmlSvg, EpubXhtmlContainerTag>(tagStack)
         },
         "rect" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlRect>(tagStack)
+            extractUpShape<EpubXhtmlRect>(tagStack)
         },
         "circle" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlCircle>(tagStack)
+            extractUpShape<EpubXhtmlCircle>(tagStack)
         },
         "ellipse" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlEllipse>(tagStack)
+            extractUpShape<EpubXhtmlEllipse>(tagStack)
         },
         "line" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlLine>(tagStack)
+            extractUpShape<EpubXhtmlLine>(tagStack)
         },
         "polygon" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlPolygon>(tagStack)
+            extractUpShape<EpubXhtmlPolygon>(tagStack)
         },
         "polyline" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlPolyline>(tagStack)
+            extractUpShape<EpubXhtmlPolyline>(tagStack)
         },
         "path" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlPath>(tagStack)
+            extractUpShape<EpubXhtmlPath>(tagStack)
         },
         "text" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlText>(tagStack)
+            extractUpShape<EpubXhtmlText>(tagStack)
         },
         "tspan" to { tagStack: Stack<EpubXhtmlTag> ->
             val lastTag = tagStack.pop() as EpubXhtmlTspan
@@ -316,7 +330,7 @@ object EpubXhtmlTagsContainer {
             locationTag.text.add(lastTag)
         },
         "image" to { tagStack: Stack<EpubXhtmlTag> ->
-            pushUpShape<EpubXhtmlImage>(tagStack)
+            extractUpShape<EpubXhtmlImage>(tagStack)
         },
         "style" to { tagStack: Stack<EpubXhtmlTag> ->
             val lastTag = tagStack.pop() as EpubXhtmlStyle
@@ -340,7 +354,7 @@ object EpubXhtmlTagsContainer {
         },
     )
 
-    private inline fun <reified LastType : EpubXhtmlTag, reified LocationType : EpubXhtmlContainerTag> pushUp(
+    private inline fun <reified LastType : EpubXhtmlTag, reified LocationType : EpubXhtmlContainerTag> extractUp(
         tagStack: Stack<EpubXhtmlTag>
     ) {
         val lastTag = tagStack.pop() as LastType
@@ -348,9 +362,26 @@ object EpubXhtmlTagsContainer {
         locationTag.contents.add(lastTag)
     }
 
-    private inline fun <reified LastType : EpubXhtmlShape> pushUpShape(tagStack: Stack<EpubXhtmlTag>) {
+    private inline fun <reified LastType : EpubXhtmlShape> extractUpShape(tagStack: Stack<EpubXhtmlTag>) {
         val lastTag = tagStack.pop() as LastType
         val locationTag = tagStack.peek() as EpubXhtmlSvg
         locationTag.shapes.add(lastTag)
+    }
+
+    private fun genericExtractUp(tagStack: Stack<EpubXhtmlTag>) {
+        val lastTag = tagStack.pop()
+        val locationTag = tagStack.peek()
+
+        when (lastTag) {
+            is EpubXhtmlTd -> (locationTag as EpubXhtmlTr).cells.add(lastTag)
+            is EpubXhtmlTh -> (locationTag as EpubXhtmlTr).cells.add(lastTag)
+            is EpubXhtmlTr -> (locationTag as EpubXhtmlRowContainerTag).rows.add(lastTag)
+            is EpubXhtmlTbody -> (locationTag as EpubXhtmlTable).tbody = lastTag
+            is EpubXhtmlThead -> (locationTag as EpubXhtmlTable).thead = lastTag
+            is EpubXhtmlTfoot -> (locationTag as EpubXhtmlTable).tfoot = lastTag
+            is EpubXhtmlColgroup -> (locationTag as EpubXhtmlTable).colgroup = lastTag
+            is EpubXhtmlCaption -> (locationTag as EpubXhtmlTable).caption = lastTag
+            is EpubXhtmlTable -> (locationTag as EpubXhtmlContainerTag).contents.add(lastTag)
+        }
     }
 }

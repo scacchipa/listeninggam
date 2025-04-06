@@ -24,22 +24,33 @@ class XhtmlParserTest {
             xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
         }
         var actualXhtml = xhtmlHandler.getXhtml()
+        println(actualXhtml.tagWrap())
         assertEquals(expectedFile9077970642051048906_74_h_0htmxhtmlString, actualXhtml.tagWrap())
-
+        xhtmlHandler.empty()
 
         headerExample.byteInputStream().use { inputStream ->
             xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
         }
         actualXhtml = xhtmlHandler.getXhtml()
+        println(actualXhtml.tagWrap())
         assertEquals(expectedHeader, actualXhtml.tagWrap())
-
+        xhtmlHandler.empty()
 
         tableExample2.byteInputStream().use { inputStream ->
             xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
         }
         actualXhtml = xhtmlHandler.getXhtml()
+        println(actualXhtml.tagWrap())
         assertEquals(expectedTable2, actualXhtml.tagWrap())
+        xhtmlHandler.empty()
 
+        tableExample3.byteInputStream().use { inputStream ->
+            xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
+        }
+        actualXhtml = xhtmlHandler.getXhtml()
+        println(actualXhtml.tagWrap())
+        assertEquals(expectedTable3, actualXhtml.tagWrap())
+        xhtmlHandler.empty()
     }
 }
 
@@ -184,3 +195,28 @@ const val expectedTable2 = """<html><head><style>
 table, th, td {
   border: 1px solid black;
 }</style></head><body><h1>The thead, tbody, and tfoot elements</h1><table><thead><tr><th>Month</th><th>Savings</th></tr></thead><tbody><tr><td>January</td><td>$100</td></tr><tr><td>February</td><td>$80</td></tr></tbody><tfoot><tr><td>Sum</td><td>$180</td></tr></tfoot></table></body></html>"""
+
+
+const val tableExample3 =
+"""<html>
+  <body>
+    <table>
+      <colgroup>
+        <col span="2" style="background-color:red"/>
+        <col style="background-color:yellow"/>
+      </colgroup>
+      <tr>
+        <th>ISBN</th>
+        <th>Title</th>
+        <th>Price</th>
+      </tr>
+      <tr>
+        <td>3476896</td>
+        <td>My first HTML</td>
+        <td>53</td>
+      </tr>
+    </table>
+  </body>
+</html>"""
+
+const val expectedTable3 = """<html><body><table><colgroup><col span="2" style="background-color:red"/><col style="background-color:yellow"/></colgroup><tbody><tr><th>ISBN</th><th>Title</th><th>Price</th></tr><tr><td>3476896</td><td>My first HTML</td><td>53</td></tr></tbody></table></body></html>"""

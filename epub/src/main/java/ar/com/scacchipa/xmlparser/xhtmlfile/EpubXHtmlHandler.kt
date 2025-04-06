@@ -104,4 +104,6 @@ class EpubXHtmlHandler() : DefaultHandler() {
     }
 
     fun getXhtml() = tagStack.peek() as EpubXhtmlHtml
+
+    fun empty() { tagStack.empty() }
 }

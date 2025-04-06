@@ -1,9 +1,6 @@
-package ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell
+package ar.com.scacchipa.xmlparser.xhtmlfile.tag
 
 import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlTag
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlColgroup
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTbody
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlThead
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlCaption
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlTfoot
 import org.xml.sax.Attributes
