@@ -281,59 +281,23 @@ object EpubXhtmlTagsContainer {
             val locationTag = tagStack.peek() as EpubXhtmlTable
             locationTag.tfoot = lastTag
         },
-
         "tr" to { tagStack: Stack<EpubXhtmlTag> ->
             val lastTag = tagStack.pop() as EpubXhtmlTr
-            when (val locationTag = tagStack.peek()) {
-                is EpubXhtmlRowContainerTag -> locationTag.rows.add(lastTag)
-                is EpubXhtmlTable -> {
-                    val tbody = EpubXhtmlTbody().apply {
-                        rows.add(lastTag)
-                    }
-                    tagStack.push(tbody)
-                }
-            }
-        },
+            val locationTag = tagStack.peek() as EpubXhtmlRowContainerTag
 
+            locationTag.rows.add(lastTag)
+        },
         "th" to { tagStack: Stack<EpubXhtmlTag> ->
             val lastTag = tagStack.pop() as EpubXhtmlTh
+            val locationTag = tagStack.peek() as EpubXhtmlCellContainerTag
 
-            when (val locationTag = tagStack.peek()) {
-                is EpubXhtmlTr -> locationTag.cells.add(lastTag)
-                is EpubXhtmlRowContainerTag -> {
-                    val tr = EpubXhtmlTr().apply {
-                        cells.add(lastTag)
-                    }
-                    locationTag.rows.add(tr)
-                }
-                is EpubXhtmlTable -> {
-                    tagStack.push(EpubXhtmlTbody())
-                    val row  = EpubXhtmlTr().apply {
-                        cells.add(lastTag)
-                    }
-                    val tbody = EpubXhtmlTbody().apply {
-                        rows.add(row)
-                    }
-                    tagStack.push(tbody)
-                    tagStack.push(row)
-                }
-            }
+            locationTag.cells.add(lastTag)
         },
-
         "td" to { tagStack: Stack<EpubXhtmlTag> ->
             val lastTag = tagStack.pop() as EpubXhtmlTd
-            when (val locationTag = tagStack.peek()) {
-                is EpubXhtmlTr -> locationTag.cells.add(lastTag)
-                is EpubXhtmlRowContainerTag -> locationTag.rows.add(EpubXhtmlTr().apply {
-                    cells.add(lastTag)
-                })
+            val locationTag = tagStack.peek() as EpubXhtmlCellContainerTag
 
-                is EpubXhtmlTable -> locationTag.tbody = EpubXhtmlTbody().apply {
-                    rows.add(EpubXhtmlTr().apply {
-                        cells.add(lastTag)
-                    })
-                }
-            }
+            locationTag.cells.add(lastTag)
         },
 
         "nav" to { tagStack: Stack<EpubXhtmlTag> ->
