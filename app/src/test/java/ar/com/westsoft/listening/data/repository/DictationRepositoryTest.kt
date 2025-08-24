@@ -1,10 +1,9 @@
 package ar.com.westsoft.listening.data.repository
 
 import ar.com.westsoft.listening.data.datasource.AppDatabase
-import ar.com.westsoft.listening.data.datasource.entity.DictationProgressEntity
-import ar.com.westsoft.listening.data.datasource.ExternalApi
-import ar.com.westsoft.listening.data.datasource.entity.GameHeaderEntity
 import ar.com.westsoft.listening.data.datasource.dao.SavedDictationGameDao
+import ar.com.westsoft.listening.data.datasource.entity.DictationProgressEntity
+import ar.com.westsoft.listening.data.datasource.entity.GameHeaderEntity
 import ar.com.westsoft.listening.data.datasource.entity.SavedDictationGameEntity
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import kotlinx.coroutines.Dispatchers
@@ -22,13 +21,12 @@ import org.mockito.kotlin.mock
 
 class DictationRepositoryTest {
 
-    private val mockExternalApi = mock<ExternalApi>()
     private val mockAppDatabase = mock<AppDatabase>()
     private val mockGameDao = mock<SavedDictationGameDao>()
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val subject = DictationRepository(mockExternalApi, mockAppDatabase, testDispatcher)
+    private val subject = DictationRepository(mockAppDatabase, testDispatcher)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -46,13 +44,13 @@ class DictationRepositoryTest {
     fun subjectCreateADictationGame_FromTxt_successfully() = runTest {
         `when`(mockAppDatabase.getSavedListeningGameDao()).thenReturn(mockGameDao)
 
-        `when`(mockExternalApi.downloadFile("www.webpage.com"))
-            .thenReturn("$paragraph1\n$paragraph2\n$paragraph3")
-
         val gameCapture = argumentCaptor<SavedDictationGameEntity>()
         `when`(mockGameDao.insertGameEntity(gameCapture.capture())).thenReturn(12)
 
-        val actual = subject.createADictationGameFromTxt(title = "Title 1", url = "www.webpage.com")
+        val actual = subject.createADictationGameFromTxt(
+            title = "Title 1",
+            originalText = "$paragraph1\n$paragraph2\n$paragraph3"
+        )
         val expected = RepoTaskResponse.Completed(12)
 
         val actualGame = gameCapture.firstValue
@@ -61,7 +59,6 @@ class DictationRepositoryTest {
             with(gameHeaderEntity) {
                 assert(gui == 0L)
                 assert(title == "Title 1")
-                assert(txtAddress == "www.webpage.com")
                 assert(progressRate == 0.0)
             }
             with(dictationProgressEntityLists) {
@@ -91,16 +88,6 @@ class DictationRepositoryTest {
     }
 
     @Test
-    fun subjectCreateADictationGame_FromTxt_UnCompleted() = runTest {
-        `when`(mockExternalApi.downloadFile("www.webpage.com")).thenReturn(null)
-
-        val actual = subject.createADictationGameFromTxt(title = "Title 1", url = "www.webpage.com")
-        val expected = RepoTaskResponse.Uncompleted
-
-        assert(actual == expected)
-    }
-
-    @Test
     fun subjectGetAllDictationGameLabel_success() = runTest {
         `when`(mockAppDatabase.getSavedListeningGameDao()).thenReturn(mockGameDao)
         `when`(mockGameDao.getSavedDictationGameEntityList()).thenReturn(
@@ -112,7 +99,6 @@ class DictationRepositoryTest {
             DictationGameHeader(
                 gui = 2L,
                 title = "Title 1",
-                txtAddress = "www.webpage.com",
                 progressRate = 12.3
             )
         )
@@ -125,10 +111,10 @@ class DictationRepositoryTest {
     fun subjectDeleteGame_success() {
         `when`(mockAppDatabase.getSavedListeningGameDao()).thenReturn(mockGameDao)
         `when`(
-            mockGameDao.deleteWholeGame(GameHeaderEntity(4L, "Title 1", "www.webpage.com", 12.3))
+            mockGameDao.deleteWholeGame(GameHeaderEntity(4L, "Title 1", 12.3))
         ).thenReturn(4)
 
-        val actual = subject.deleteGame(DictationGameHeader(4L, "Title 1", "www.webpage.com", 12.3))
+        val actual = subject.deleteGame(DictationGameHeader(4L, "Title 1", 12.3))
         val expect = 4
 
         assert(actual == expect)
@@ -154,7 +140,7 @@ class DictationRepositoryTest {
         DictationProgressEntity(null, 0L, paragraph3, progress3)
     )
 
-    private val gameHeaderEntity = GameHeaderEntity(2L, "Title 1", "www.webpage.com", 12.3)
+    private val gameHeaderEntity = GameHeaderEntity(2L, "Title 1", 12.3)
 
     private val savedDictationGameEntity = SavedDictationGameEntity(
         gameHeaderEntity, dictationProgressEntityList
