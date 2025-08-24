@@ -43,13 +43,13 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.0")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
 
-    implementation("androidx.compose.material3:material3:1.0.1")
-    implementation("androidx.compose.ui:ui:1.3.3")
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
