@@ -43,7 +43,7 @@ class DictationRepositoryTest {
     }
 
     @Test
-    fun subjectCreateADictationGame_successfully() = runTest {
+    fun subjectCreateADictationGame_FromTxt_successfully() = runTest {
         `when`(mockAppDatabase.getSavedListeningGameDao()).thenReturn(mockGameDao)
 
         `when`(mockExternalApi.downloadFile("www.webpage.com"))
@@ -52,7 +52,7 @@ class DictationRepositoryTest {
         val gameCapture = argumentCaptor<SavedDictationGameEntity>()
         `when`(mockGameDao.insertGameEntity(gameCapture.capture())).thenReturn(12)
 
-        val actual = subject.createADictationGame(title = "Title 1", url = "www.webpage.com")
+        val actual = subject.createADictationGameFromTxt(title = "Title 1", url = "www.webpage.com")
         val expected = RepoTaskResponse.Completed(12)
 
         val actualGame = gameCapture.firstValue
@@ -91,10 +91,10 @@ class DictationRepositoryTest {
     }
 
     @Test
-    fun subjectCreateADictationGame_UnCompleted() = runTest {
+    fun subjectCreateADictationGame_FromTxt_UnCompleted() = runTest {
         `when`(mockExternalApi.downloadFile("www.webpage.com")).thenReturn(null)
 
-        val actual = subject.createADictationGame(title = "Title 1", url = "www.webpage.com")
+        val actual = subject.createADictationGameFromTxt(title = "Title 1", url = "www.webpage.com")
         val expected = RepoTaskResponse.Uncompleted
 
         assert(actual == expected)

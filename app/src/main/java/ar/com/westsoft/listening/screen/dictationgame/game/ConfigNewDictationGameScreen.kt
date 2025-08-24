@@ -21,8 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.westsoft.listening.BuildConfig
 import ar.com.westsoft.listening.R
+import ar.com.westsoft.listening.domain.dictationgame.repository.SourceFile
+import ar.com.westsoft.listening.domain.dictationgame.repository.SourceFile.ASSETS
+import ar.com.westsoft.listening.domain.dictationgame.repository.SourceFile.RAW
 import ar.com.westsoft.listening.screen.dictationgame.AdviceScreen
 import ar.com.westsoft.listening.screen.dictationgame.navigation.ConfigNewDictationGameViewModel
+import ar.com.westsoft.listening.screen.dictationgame.navigation.FileFormat.TXT
 import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus
 import kotlinx.coroutines.delay
 
@@ -77,18 +81,17 @@ fun ConfigNewDictationGameScreen(
                 Button(
                     onClick = {
                         if (txtAddress.isNotBlank()) {
-                            viewModel.onStartButton(title, txtAddress)
+                            viewModel.onStartButton(title, txtAddress, SourceFile.INTERNET)
                         } else {
                             viewModel.onStartButton(
                                 title = BuildConfig.DEBUG_DICTATION_TEXT_TITLE
                                     ?: title,
-                                address = BuildConfig.DEBUG_DICTATION_TEXT_ADDRESS
-                                    ?: txtAddress
 
                                 // title = "The adventure of Tom Sawyer",
                                 // address = "http://medicamentosrothlin.com.ar/app/mac/"
-                                // address = "https://www.gutenberg.org/files/74/74-0.txt"
+                                 address = "https://www.gutenberg.org/files/74/74-0.txt",
                                 //address = "http://d-scholarship.pitt.edu/5725/6/licence.txt"
+                                sourceFile = SourceFile.INTERNET
                             )
                         }
                     }
@@ -108,14 +111,26 @@ fun ConfigNewDictationGameScreen(
                 }
                 Column {
                     Button(onClick = {
-                        viewModel.onRawBookSelected(R.raw.ebook_the_tom_sawyer_s_adventures)
+                        viewModel.onStartButton(
+                            "Animals short story", "Animals short story.txt", ASSETS, TXT
+                        )
                     }) {
                         Text(
-                            text = "Tom Sawyer's Adventures.Text",
+                            text = "Animals short story.txt",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                    Button(onClick = {
+                        viewModel.onStartButton(
+                            "Animals short story.txt", R.raw.ebook_the_tom_sawyer_s_adventures,
+                            RAW, TXT)
+                    }) {
+                        Text(
+                            text = "Tom Sawyer's Adventures.epub3.raw",
                             style = MaterialTheme.typography.labelMedium)
                     }
                     Button(onClick = {
-                        viewModel.onAssetBookSelected("The Adventures of Tom Sawyer Complete by Mark Twain.epub")
+                        viewModel.onEpubAssetBookSelected("The Adventures of Tom Sawyer Complete by Mark Twain.epub")
                     }) {
                         Text(
                             text = "Tom Sawyer's Adventures.epud3",
@@ -123,7 +138,6 @@ fun ConfigNewDictationGameScreen(
                         )
                     }
                 }
-
             }
         }
 

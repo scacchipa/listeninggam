@@ -14,10 +14,10 @@ fun DictationProgressEntity.toEngine(): DictationProgress =
     DictationProgress(progressId, originalTxt, progressTxt.toCharArray())
 
 fun DictationGameHeader.toEntity(): GameHeaderEntity =
-    GameHeaderEntity(gui, title, txtAddress, progressRate)
+    GameHeaderEntity(gui, title, progressRate)
 
 fun GameHeaderEntity.toEngine(): DictationGameHeader =
-    DictationGameHeader(gui, title, txtAddress, progressRate)
+    DictationGameHeader(gui, title, progressRate)
 
 fun List<DictationProgress>.toEntity(): List<DictationProgressEntity> =
     this.map { it.toEntity() }
