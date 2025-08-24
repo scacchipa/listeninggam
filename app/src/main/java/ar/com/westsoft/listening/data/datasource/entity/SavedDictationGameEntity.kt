@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.data.datasource
+package ar.com.westsoft.listening.data.datasource.entity
 
 import androidx.room.Embedded
 import androidx.room.Relation

@@ -1,8 +1,8 @@
 package ar.com.westsoft.listening.util
 
-import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
-import ar.com.westsoft.listening.data.datasource.GameHeaderEntity
-import ar.com.westsoft.listening.data.datasource.SavedDictationGameEntity
+import ar.com.westsoft.listening.data.datasource.entity.DictationProgressEntity
+import ar.com.westsoft.listening.data.datasource.entity.GameHeaderEntity
+import ar.com.westsoft.listening.data.datasource.entity.SavedDictationGameEntity
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress

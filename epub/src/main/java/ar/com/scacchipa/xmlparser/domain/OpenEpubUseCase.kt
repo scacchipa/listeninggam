@@ -18,8 +18,16 @@ import kotlin.io.path.Path
 class OpenEpubUseCase @Inject constructor(
     private val zipUtils: ZipUtils
 ) {
+
+    operator  fun invoke(assetName: String) {
+        parse(zipUtils.unzip(assetName))
+    }
+
     operator fun invoke(@RawRes id: Int) {
-        val ePubMap = zipUtils.unzip(id)
+        parse(zipUtils.unzip(id))
+    }
+
+    private fun parse(ePubMap: Map<String, String>): MutableList<EpubXhtmlHtml> {
 
         val documentBuilder = DocumentBuilderFactory.newInstance()
             .newDocumentBuilder()
@@ -44,8 +52,6 @@ class OpenEpubUseCase @Inject constructor(
         ePubMap["/META-INF/container.xml"]?.byteInputStream().use { inputStream ->
             containerSaxParser.parse(InputSource(inputStream), containerHandler)
         }
-
-        val container = containerHandler.getContainer()
 
         // Parse OPF xml file
         val opfSaxParser = factory.newSAXParser()
@@ -95,12 +101,12 @@ class OpenEpubUseCase @Inject constructor(
                     println("MediaType: $mediaType converter didn't found")
                 }
             }
-
         }
-
 
         println(ncx)
         println("tocContent")
+
+        return htmlFiles
     }
 }
 

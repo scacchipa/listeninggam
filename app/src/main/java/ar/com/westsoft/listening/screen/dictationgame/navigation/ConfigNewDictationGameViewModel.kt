@@ -45,7 +45,15 @@ class ConfigNewDictationGameViewModel @Inject constructor(
         }
     }
 
-    fun onBookSelected(@RawRes id: Int) {
-        openEpubUseCase(id)
+    fun onRawBookSelected(@RawRes id: Int) {
+        viewModelScope.launch {
+            openEpubUseCase(id)
+        }
     }
+
+   fun onAssetBookSelected(name: String) {
+       viewModelScope.launch {
+           openEpubUseCase(name)
+       }
+   }
 }

@@ -108,11 +108,19 @@ fun ConfigNewDictationGameScreen(
                 }
                 Column {
                     Button(onClick = {
-                        viewModel.onBookSelected(R.raw.ebook_the_tom_sawyer_s_adventures)
+                        viewModel.onRawBookSelected(R.raw.ebook_the_tom_sawyer_s_adventures)
                     }) {
                         Text(
-                            text = "Tom Sawyer's Adventures",
+                            text = "Tom Sawyer's Adventures.Text",
                             style = MaterialTheme.typography.labelMedium)
+                    }
+                    Button(onClick = {
+                        viewModel.onAssetBookSelected("The Adventures of Tom Sawyer Complete by Mark Twain.epub")
+                    }) {
+                        Text(
+                            text = "Tom Sawyer's Adventures.epud3",
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                 }
 

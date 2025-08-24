@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.data.datasource
+package ar.com.westsoft.listening.data.datasource.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -7,6 +7,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import ar.com.westsoft.listening.data.datasource.entity.DictationProgressEntity
+import ar.com.westsoft.listening.data.datasource.entity.GameHeaderEntity
+import ar.com.westsoft.listening.data.datasource.entity.SavedDictationGameEntity
 
 @Dao
 interface SavedDictationGameDao {

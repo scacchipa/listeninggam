@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.data.datasource
+package ar.com.westsoft.listening.data.datasource.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -22,5 +22,5 @@ data class DictationProgressEntity(
 
     val originalTxt: String,
 
-    val progressTxt: String
+    val progressTxt: String,
 )

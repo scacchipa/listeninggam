@@ -1,11 +1,11 @@
 package ar.com.westsoft.listening.data.repository
 
 import ar.com.westsoft.listening.data.datasource.AppDatabase
-import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
+import ar.com.westsoft.listening.data.datasource.entity.DictationProgressEntity
 import ar.com.westsoft.listening.data.datasource.ExternalApi
-import ar.com.westsoft.listening.data.datasource.GameHeaderEntity
-import ar.com.westsoft.listening.data.datasource.SavedDictationGameDao
-import ar.com.westsoft.listening.data.datasource.SavedDictationGameEntity
+import ar.com.westsoft.listening.data.datasource.entity.GameHeaderEntity
+import ar.com.westsoft.listening.data.datasource.dao.SavedDictationGameDao
+import ar.com.westsoft.listening.data.datasource.entity.SavedDictationGameEntity
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
