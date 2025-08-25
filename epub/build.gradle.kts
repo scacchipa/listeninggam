@@ -1,19 +1,17 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
-    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.devtools.ksp)
+    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    namespace = "ar.com.scacchipa.epub"
-    compileSdk = 33
+    namespace = "ar.com.scacchipa.xmlparser"
+    compileSdk = 36
 
     defaultConfig {
-        minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+        minSdk = 24
     }
 
     buildTypes {
@@ -27,12 +25,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 }
 
@@ -41,8 +43,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
 
     implementation(libs.hilt.android)
-    kapt(libs.google.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.runtime)
+    ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

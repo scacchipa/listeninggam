@@ -1,14 +1,14 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.dagger.hilt.android)
-    id("kotlin-kapt")
-    id("kotlin-android")
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.devtools.ksp)
+    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "ar.com.westsoft.listening"
-    compileSdk = 33
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "ar.com.westsoft.listening"
@@ -40,12 +40,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = "21"
     }
 
     buildFeatures {
@@ -62,56 +62,49 @@ dependencies {
     implementation(project(":keyboard"))
     implementation(project(":epub"))
 
+    implementation(libs.androidx.compose.runtime)
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.hilt.android)
+
     implementation(libs.androidx.core.ktx)
-    kapt(libs.google.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.runtime.livedata)
-    implementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.ui.tooling.preview)
+    implementation(platform(libs.androidx.compose.bom))
+
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.foundation)
 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
     implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
-    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // For instrumentation tests
-    androidTestImplementation(libs.hilt.android.testing)
-    androidTestAnnotationProcessor(libs.google.hilt.compiler)
-
-    // For local unit tests
-    testImplementation(libs.hilt.android.testing)
-    testAnnotationProcessor(libs.google.hilt.compiler)
-    kaptTest(libs.hilt.android.compiler)
-
-    androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.android.compiler)
-
     testImplementation(libs.androidx.room.testing)
 
-    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
-}
-
-kapt {
-    correctErrorTypes = true
 }
