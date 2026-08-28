@@ -19,4 +19,8 @@ class EpubXhtmlHtml : EpubXhtmlTag {
             content = (head?.tagWrap() ?:"") + (body?.tagWrap() ?: "")
         )
     }
+
+    override fun getTextContained(): String {
+        return (head?.getTextContained() ?: "") + (body?.getTextContained() ?: "")
+    }
 }

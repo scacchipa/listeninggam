@@ -15,8 +15,6 @@ class EpubXhtmlHead(attributes: Attributes) : EpubXhtmlTag(attributes) {
     var script: MutableList<EpubXhtmlScript> = mutableListOf()
     var noscript: MutableList<EpubXhtmlNoscript> = mutableListOf()
 
-
-
     override fun tagWrap(): String {
         return tagWrap(
             (title?.tagWrap() ?: "") +
@@ -27,5 +25,9 @@ class EpubXhtmlHead(attributes: Attributes) : EpubXhtmlTag(attributes) {
                     (script.joinToString("") { it.tagWrap() }) +
                     (noscript.joinToString("") { it.tagWrap() })
         )
+    }
+
+    override fun getTextContained(): String {
+        return title?.getTextContained() ?: ""
     }
 }

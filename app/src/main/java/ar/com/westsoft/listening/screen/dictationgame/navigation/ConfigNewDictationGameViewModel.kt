@@ -20,7 +20,7 @@ import javax.inject.Inject
 class ConfigNewDictationGameViewModel @Inject constructor(
     private val createTxtNewDictationGameUseCase: CreateTxtNewDictationGameUseCase,
     private val openEpubUseCase: OpenEpubUseCase,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _gameCreationGameStatus = MutableStateFlow<GameCreationGameStatus>(

@@ -16,4 +16,6 @@ abstract class EpubXhtmlCellContainerTag : EpubXhtmlTag {
                 } +
                 "</$tagName>"
     }
+
+    override fun getTextContained(): String = cells.joinToString("") { it.getTextContained() }
 }

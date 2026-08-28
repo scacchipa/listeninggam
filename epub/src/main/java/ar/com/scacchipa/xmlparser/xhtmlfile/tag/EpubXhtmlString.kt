@@ -10,4 +10,8 @@ class EpubXhtmlString(
     override fun tagWrap(): String {
         return value
     }
+
+    override fun getTextContained(): String {
+        return value
+    }
 }

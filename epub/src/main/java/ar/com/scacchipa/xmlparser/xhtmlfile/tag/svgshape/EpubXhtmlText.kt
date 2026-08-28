@@ -9,4 +9,6 @@ class EpubXhtmlText(attributes: Attributes) : EpubXhtmlShape(attributes) {
     override val tagName: String = "text"
 
     val text = mutableListOf<EpubXhtmlTspan>()
+
+    override fun getTextContained(): String = text.joinToString("") { it.getTextContained() }
 }

@@ -12,4 +12,8 @@ class EpubXhtmlTitle(attributes: Attributes) : EpubXhtmlTag(attributes) {
     override fun tagWrap(): String {
         return tagWrap(content = text?.tagWrap() ?: "")
     }
+
+    override fun getTextContained(): String {
+        return "##" + (text?.getTextContained() ?: "")
+    }
 }

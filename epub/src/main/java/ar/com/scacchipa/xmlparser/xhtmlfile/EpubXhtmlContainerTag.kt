@@ -9,4 +9,6 @@ abstract class EpubXhtmlContainerTag(attributes: Attributes) : EpubXhtmlTag(attr
     override fun tagWrap() = tagWrap(contents.joinToString("") {
         it.tagWrap()
     })
+
+    override fun getTextContained(): String = contents.joinToString("") { it.getTextContained() }
 }

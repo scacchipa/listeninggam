@@ -49,7 +49,7 @@ class DictationRepositoryTest {
 
         val actual = subject.createADictationGameFromTxt(
             title = "Title 1",
-            originalText = "$paragraph1\n$paragraph2\n$paragraph3"
+            textLines = "$paragraph1\n$paragraph2\n$paragraph3"
         )
         val expected = RepoTaskResponse.Completed(12)
 

@@ -6,4 +6,6 @@ import org.xml.sax.Attributes
 class EpubXhtmlUnknown(attributes: Attributes) : EpubXhtmlTag(attributes) {
 
     override val tagName: String = "unknown"
+
+    override fun getTextContained(): String = ""
 }

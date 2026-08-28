@@ -6,4 +6,6 @@ import org.xml.sax.Attributes
 class EpubXhtmlMeta(attributes: Attributes) : EpubXhtmlTag(attributes) {
 
     override val tagName: String = "meta"
+
+    override fun getTextContained(): String = ""
 }

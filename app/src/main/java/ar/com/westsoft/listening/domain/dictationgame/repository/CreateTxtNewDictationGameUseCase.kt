@@ -1,5 +1,9 @@
 package ar.com.westsoft.listening.domain.dictationgame.repository
 
+import android.content.Context
+import ar.com.scacchipa.xmlparser.domain.OpenEpubUseCase
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlHtml
+import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlString
 import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.DictationRepository
 import ar.com.westsoft.listening.data.repository.FileRepository
@@ -15,7 +19,8 @@ class CreateTxtNewDictationGameUseCase @Inject constructor(
     private val dictationRepository: DictationRepository,
     private val dictationGame: DictationGame,
     private val fileRepository: FileRepository,
-    @ApplicationContext private val context: android.content.Context,
+    private val epubUseCase: OpenEpubUseCase,
+    @param:ApplicationContext private val context: Context,
 ) {
     suspend operator fun invoke(
         title: String,
@@ -24,7 +29,7 @@ class CreateTxtNewDictationGameUseCase @Inject constructor(
         fileFormat: FileFormat
     ): GameCreationGameStatus {
 
-        val originalText = when (source) {
+        val text = when (source) {
 
             SourceFile.ASSETS ->
                 try {
@@ -38,8 +43,22 @@ class CreateTxtNewDictationGameUseCase @Inject constructor(
             SourceFile.INTERNET -> fileRepository.downloadFile(path)
                 ?: return Error
         }
+
+        val xhtmlFile: List<EpubXhtmlHtml> = when(fileFormat) {
+
+            FileFormat.TXT -> listOf(EpubXhtmlHtml().apply {
+                text.lines().map {
+                    EpubXhtmlString(it)
+                }
+            })
+
+            FileFormat.EPUB3 -> epubUseCase.invoke(text)
+        }
+
         return when (
-            val response = dictationRepository.createADictationGameFromTxt(title, originalText)
+            val response = dictationRepository.createADictationGameFromTxt(
+                title = title,
+                textLines = xhtmlFile.flatMap { it.tagWrap().lines()})
         ) {
             is RepoTaskResponse.Completed -> {
                 dictationGame.setup(response.gui)

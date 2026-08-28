@@ -14,9 +14,11 @@ import javax.inject.Inject
 // https://www.gutenberg.org/files/74/74-0.txt --> The Adventures of Tom Sawyer, by Mark Twain
 class DictationRepository @Inject constructor(
     private val appDatabase: AppDatabase,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend fun createADictationGameFromTxt(title: String, originalText: String): RepoTaskResponse {
+    suspend fun createADictationGameFromTxt(
+        title: String, textLines: List<String>
+    ): RepoTaskResponse {
 
         return RepoTaskResponse.Completed(
 
@@ -25,8 +27,7 @@ class DictationRepository @Inject constructor(
                 appDatabase.getSavedListeningGameDao().insertGameEntity(
                     DictationGameRecord(
                         gameHeader = DictationGameHeader(0, title, 0.0),
-                        dictationProgressList = originalText
-                            .lines()
+                        dictationProgressList = textLines
                             .map {
                                 DictationProgress(
                                     progressId = null,

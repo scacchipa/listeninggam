@@ -11,7 +11,9 @@ class EpubXhtmlSvg(attributes: Attributes): EpubXhtmlTag(attributes) {
 
     override fun toString(): String {
         return tagWrap(
-            content = shapes.joinToString { it.tagWrap() }
+            content = shapes.joinToString("") { it.tagWrap() }
         )
     }
+
+    override fun getTextContained(): String = shapes.joinToString("") { it.getTextContained() }
 }

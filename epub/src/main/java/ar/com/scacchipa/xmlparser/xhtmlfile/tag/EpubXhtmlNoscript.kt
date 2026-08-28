@@ -14,4 +14,6 @@ class EpubXhtmlNoscript : EpubXhtmlTag {
     override fun tagWrap(): String {
         return tagWrap(content = text.joinToString("") { it.tagWrap() })
     }
+
+    override fun getTextContained(): String = text.joinToString("") { it.getTextContained() }
 }

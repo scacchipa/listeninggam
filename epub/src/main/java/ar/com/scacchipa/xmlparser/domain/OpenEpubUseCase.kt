@@ -18,16 +18,15 @@ import kotlin.io.path.Path
 class OpenEpubUseCase @Inject constructor(
     private val zipUtils: ZipUtils
 ) {
-
-    operator  fun invoke(assetName: String) {
-        parse(zipUtils.unzip(assetName))
+    operator  fun invoke(assetName: String): List<EpubXhtmlHtml> {
+        return parse(zipUtils.unzip(assetName))
     }
 
-    operator fun invoke(@RawRes id: Int) {
-        parse(zipUtils.unzip(id))
+    operator fun invoke(@RawRes id: Int): List<EpubXhtmlHtml> {
+        return parse(zipUtils.unzip(id))
     }
 
-    private fun parse(ePubMap: Map<String, String>): MutableList<EpubXhtmlHtml> {
+    private fun parse(ePubMap: Map<String, String>): List<EpubXhtmlHtml> {
 
         val documentBuilder = DocumentBuilderFactory.newInstance()
             .newDocumentBuilder()
@@ -106,7 +105,7 @@ class OpenEpubUseCase @Inject constructor(
         println(ncx)
         println("tocContent")
 
-        return htmlFiles
+        return htmlFiles.toList()
     }
 }
 

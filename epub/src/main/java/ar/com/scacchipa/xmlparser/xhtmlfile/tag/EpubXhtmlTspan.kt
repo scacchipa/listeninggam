@@ -11,4 +11,6 @@ class EpubXhtmlTspan : EpubXhtmlTag {
     override val tagName: String = "tspan"
 
     var text: String? = null
+
+    override fun getTextContained(): String = text ?: ""
 }

@@ -19,4 +19,6 @@ class EpubXhtmlColgroup : EpubXhtmlTag {
             }.toString()
         )
     }
+
+    override fun getTextContained(): String = cols.joinToString("") { it.getTextContained() }
 }

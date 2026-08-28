@@ -40,4 +40,6 @@ abstract class EpubXhtmlTag {
     ) = "<$tagName" + (if (attributes.isEmpty()) ""
     else " " + attributes.map { entry -> "${entry.key}=\"${entry.value}\"" }
         .joinToString(separator = " ")) + ">" + content  + "</$tagName>"
+
+    abstract fun getTextContained(): String
 }

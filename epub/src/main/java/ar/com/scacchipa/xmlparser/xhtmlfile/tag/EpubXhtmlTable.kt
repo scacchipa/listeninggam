@@ -24,4 +24,12 @@ class EpubXhtmlTable(attributes: Attributes): EpubXhtmlTag(attributes) {
                     (tfoot?.tagWrap() ?: ""))
 
     }
+
+    override fun getTextContained(): String {
+        return (caption?.getTextContained() ?: "") +
+                (colgroup?.getTextContained() ?: "") +
+                (thead?.getTextContained() ?: "") +
+                (tbody?.getTextContained() ?: "") +
+                (tfoot?.getTextContained() ?: "")
+    }
 }
