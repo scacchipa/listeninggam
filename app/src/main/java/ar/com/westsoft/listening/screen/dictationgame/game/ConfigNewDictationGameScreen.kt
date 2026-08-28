@@ -26,6 +26,7 @@ import ar.com.westsoft.listening.domain.dictationgame.repository.SourceFile.ASSE
 import ar.com.westsoft.listening.domain.dictationgame.repository.SourceFile.RAW
 import ar.com.westsoft.listening.screen.dictationgame.AdviceScreen
 import ar.com.westsoft.listening.screen.dictationgame.navigation.ConfigNewDictationGameViewModel
+import ar.com.westsoft.listening.screen.dictationgame.navigation.FileFormat.EPUB3
 import ar.com.westsoft.listening.screen.dictationgame.navigation.FileFormat.TXT
 import ar.com.westsoft.listening.screen.dictationgame.navigation.GameCreationGameStatus
 import kotlinx.coroutines.delay
@@ -36,7 +37,6 @@ fun ConfigNewDictationGameScreen(
     playGame: (gui: Long) -> Unit,
     goBack: () -> Unit
 ) {
-
     val viewModel = hiltViewModel<ConfigNewDictationGameViewModel>()
 
     val value = viewModel.gameCreationGameStatus.collectAsState().value
@@ -84,14 +84,9 @@ fun ConfigNewDictationGameScreen(
                             viewModel.onStartButton(title, txtAddress, SourceFile.INTERNET)
                         } else {
                             viewModel.onStartButton(
-                                title = BuildConfig.DEBUG_DICTATION_TEXT_TITLE
-                                    ?: title,
-
-                                // title = "The adventure of Tom Sawyer",
-                                // address = "http://medicamentosrothlin.com.ar/app/mac/"
-                                 address = "https://www.gutenberg.org/files/74/74-0.txt",
-                                //address = "http://d-scholarship.pitt.edu/5725/6/licence.txt"
-                                sourceFile = SourceFile.INTERNET
+                                title = BuildConfig.DEBUG_DICTATION_TEXT_TITLE ?: title,
+                                address = BuildConfig.DEBUG_DICTATION_TEXT_ADDRESS ?: "Animals short story.txt",
+                                sourceFile = ASSETS
                             )
                         }
                     }
@@ -122,8 +117,8 @@ fun ConfigNewDictationGameScreen(
                     }
                     Button(onClick = {
                         viewModel.onStartButton(
-                            "Animals short story.txt", R.raw.ebook_the_tom_sawyer_s_adventures,
-                            RAW, TXT)
+                            "Tom Sawyer's Adventures", R.raw.ebook_the_tom_sawyer_s_adventures,
+                            RAW, EPUB3)
                     }) {
                         Text(
                             text = "Tom Sawyer's Adventures.epub3.raw",
@@ -154,8 +149,13 @@ fun ConfigNewDictationGameScreen(
             }
         }
 
-        is GameCreationGameStatus.IsDownloading -> {
-            AdviceScreen("Downloading ...")
+        is GameCreationGameStatus.IsLoading -> {
+            val message = when (value.source) {
+                SourceFile.INTERNET -> "Downloading ..."
+                SourceFile.ASSETS -> "Opening Assets ..."
+                SourceFile.RAW -> "Loading from Raw ..."
+            }
+            AdviceScreen(message)
         }
     }
 }

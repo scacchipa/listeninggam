@@ -34,11 +34,11 @@ android {
             buildConfigField("String", "DEBUG_DICTATION_TEXT_ADDRESS", "null")
         }
         debug {
-            buildConfigField("String", "DEBUG_DICTATION_TEXT_TITLE", "\"LICENCIA\"")
+            buildConfigField("String", "DEBUG_DICTATION_TEXT_TITLE", "\"Animals short story\"")
             buildConfigField(
                 "String",
                 "DEBUG_DICTATION_TEXT_ADDRESS",
-                "\"https://d-scholarship.pitt.edu/5725/6/licence.txt\""
+                "\"Animals short story.txt\""
             )
         }
     }

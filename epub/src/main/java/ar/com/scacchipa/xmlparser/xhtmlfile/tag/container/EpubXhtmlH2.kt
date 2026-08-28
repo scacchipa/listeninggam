@@ -6,4 +6,8 @@ import org.xml.sax.Attributes
 class EpubXhtmlH2(attributes: Attributes) : EpubXhtmlContainerTag(attributes) {
 
     override val tagName: String = "h2"
+
+    override fun getTextContained(): String {
+        return super.getTextContained() + "\n"
+    }
 }
