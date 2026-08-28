@@ -5,14 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.game.SimpleCursorPos
 import ar.com.westsoft.listening.domain.dictationgame.engine.ConsoleViewState
+import ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.GetColumnPerPageUseCase
+import ar.com.westsoft.listening.domain.dictationgame.engine.GetComplexCursorUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetDictationGameStateFlowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetFormatTextInRowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.GetStartPositionToShowUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.MoveToParagraphUseCase
 import ar.com.westsoft.listening.domain.dictationgame.engine.SpeakOutUseCase
-import ar.com.westsoft.listening.domain.dictationgame.engine.DictationProgressSizeUseCase
-import ar.com.westsoft.listening.domain.dictationgame.engine.GetColumnPerPageUseCase
-import ar.com.westsoft.listening.domain.dictationgame.engine.GetComplexCursorUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -57,8 +57,8 @@ class GameConsoleViewModel @Inject constructor(
         return getDictationProgressUseCase()
     }
 
-    fun getFormatText(paragraphIdx: Int): AnnotatedString {
-        return getFormatTextInRowUseCase(paragraphIdx)
+    fun getFormatText(paragraphIdx: Int, consoleViewState: ConsoleViewState): AnnotatedString {
+        return getFormatTextInRowUseCase(paragraphIdx, consoleViewState)
     }
 
     fun getComplexCursor(simpleCursor: SimpleCursorPos): ComplexCursorPos? =
