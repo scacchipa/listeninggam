@@ -1,7 +1,8 @@
 package ar.com.westsoft.listening.screen.menu
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,8 +20,9 @@ fun SelectGameScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Divider(
+        HorizontalDivider(
             modifier = Modifier.weight(0.5f),
+            thickness = DividerDefaults.Thickness,
             color = Color.Transparent
         )
         MenuButton(
@@ -28,8 +30,9 @@ fun SelectGameScreen(
             text = "Dictation",
             action = navDictationGame
         )
-        Divider(
+        HorizontalDivider(
             modifier = Modifier.weight(0.5f),
+            thickness = DividerDefaults.Thickness,
             color = Color.Transparent
         )
     }

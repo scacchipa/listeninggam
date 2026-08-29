@@ -1,0 +1,3 @@
+package ar.com.scacchipa.xmlparser.epubcontainerfile
+
+interface EpubContainerXmlTag

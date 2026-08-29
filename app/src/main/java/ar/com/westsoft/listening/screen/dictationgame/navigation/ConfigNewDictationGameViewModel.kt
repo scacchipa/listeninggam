@@ -1,9 +1,13 @@
 package ar.com.westsoft.listening.screen.dictationgame.navigation
 
+import androidx.annotation.RawRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.com.scacchipa.xmlparser.domain.OpenEpubUseCase
 import ar.com.westsoft.listening.di.DefaultDispatcher
-import ar.com.westsoft.listening.domain.dictationgame.repository.CreateNewDictationGameUseCase
+import ar.com.westsoft.listening.domain.dictationgame.repository.CreateTxtNewDictationGameUseCase
+import ar.com.westsoft.listening.domain.dictationgame.repository.SourceFile
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -14,8 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfigNewDictationGameViewModel @Inject constructor(
-    private val createNewDictationGameUseCase: CreateNewDictationGameUseCase,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val createTxtNewDictationGameUseCase: CreateTxtNewDictationGameUseCase,
+    private val openEpubUseCase: OpenEpubUseCase,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _gameCreationGameStatus = MutableStateFlow<GameCreationGameStatus>(
@@ -25,9 +30,10 @@ class ConfigNewDictationGameViewModel @Inject constructor(
 
     fun onStartButton(
         title: String,
-        address: String
+        address: String,
+        sourceFile: SourceFile,
+        fileFormat: FileFormat = FileFormat.TXT
     ) {
-
         val coroutineExceptionHandler = CoroutineExceptionHandler {_, throwable ->
             throwable.printStackTrace()
             viewModelScope.launch {
@@ -36,8 +42,24 @@ class ConfigNewDictationGameViewModel @Inject constructor(
         }
 
         viewModelScope.launch(defaultDispatcher + coroutineExceptionHandler) {
-            _gameCreationGameStatus.emit(GameCreationGameStatus.IsDownloading)
-            _gameCreationGameStatus.emit(createNewDictationGameUseCase(title, address))
+            _gameCreationGameStatus.emit(GameCreationGameStatus.IsLoading(sourceFile))
+            _gameCreationGameStatus.emit(
+                createTxtNewDictationGameUseCase.invoke(title, address, sourceFile, fileFormat)
+            )
         }
     }
+
+    fun onStartButton(title: String,
+                      @RawRes id: Int,
+                      sourceFile: SourceFile,
+                      fileFormat: FileFormat = FileFormat.TXT) {
+        onStartButton(title, id.toString(), sourceFile, fileFormat)
+    }
+
+   fun onEpubAssetBookSelected(name: String) {
+       viewModelScope.launch(defaultDispatcher) {
+           openEpubUseCase(name)
+       }
+   }
 }
+

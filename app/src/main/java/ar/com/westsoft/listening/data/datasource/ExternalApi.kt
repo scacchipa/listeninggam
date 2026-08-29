@@ -21,6 +21,6 @@ class ExternalApi @Inject constructor(
         return@withContext client
             .newCall(request)
             .execute()
-            .body()?.string()
+            .body?.string()
     }
 }

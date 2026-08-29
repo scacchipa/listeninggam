@@ -1,0 +1,13 @@
+package ar.com.scacchipa.xmlparser.xhtmlfile.tag.container
+
+import ar.com.scacchipa.xmlparser.xhtmlfile.EpubXhtmlContainerTag
+import org.xml.sax.Attributes
+
+class EpubXhtmlP(attributes: Attributes) : EpubXhtmlContainerTag(attributes) {
+
+    override val tagName: String = "p"
+
+    override fun getTextContained(): String {
+        return super.getTextContained() + "\n"
+    }
+}

@@ -10,9 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+//        gradlePluginPortal()
     }
 }
 rootProject.name = "Listening"
 include ':app'
 include ':keyboard'
-
+include ':epub'

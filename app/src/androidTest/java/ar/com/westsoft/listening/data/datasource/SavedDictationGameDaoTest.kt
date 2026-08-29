@@ -3,6 +3,10 @@ package ar.com.westsoft.listening.data.datasource
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import ar.com.westsoft.listening.data.datasource.dao.SavedDictationGameDao
+import ar.com.westsoft.listening.data.datasource.entity.DictationProgressEntity
+import ar.com.westsoft.listening.data.datasource.entity.GameHeaderEntity
+import ar.com.westsoft.listening.data.datasource.entity.SavedDictationGameEntity
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress

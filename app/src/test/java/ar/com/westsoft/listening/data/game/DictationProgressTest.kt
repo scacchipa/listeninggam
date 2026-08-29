@@ -1,6 +1,6 @@
 package ar.com.westsoft.listening.data.game
 
-import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
+import ar.com.westsoft.listening.data.datasource.entity.DictationProgressEntity
 import ar.com.westsoft.listening.util.Field
 import ar.com.westsoft.listening.util.concatenate
 import ar.com.westsoft.listening.util.hideLetters

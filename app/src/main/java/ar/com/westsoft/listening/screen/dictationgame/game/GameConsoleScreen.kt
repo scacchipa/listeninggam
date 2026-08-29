@@ -106,7 +106,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
                     fontSize = 20.sp,
                     lineHeight = 20.sp
                 ),
-                text = viewModel.getFormatText(idx),
+                text = viewModel.getFormatText(idx, viewState),
                 onClick = {
                     viewModel.onParagraphClick(idx)
                 },

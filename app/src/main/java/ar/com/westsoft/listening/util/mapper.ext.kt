@@ -1,8 +1,8 @@
 package ar.com.westsoft.listening.util
 
-import ar.com.westsoft.listening.data.datasource.DictationProgressEntity
-import ar.com.westsoft.listening.data.datasource.GameHeaderEntity
-import ar.com.westsoft.listening.data.datasource.SavedDictationGameEntity
+import ar.com.westsoft.listening.data.datasource.entity.DictationProgressEntity
+import ar.com.westsoft.listening.data.datasource.entity.GameHeaderEntity
+import ar.com.westsoft.listening.data.datasource.entity.SavedDictationGameEntity
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 import ar.com.westsoft.listening.data.game.DictationGameRecord
 import ar.com.westsoft.listening.data.game.DictationProgress
@@ -14,10 +14,10 @@ fun DictationProgressEntity.toEngine(): DictationProgress =
     DictationProgress(progressId, originalTxt, progressTxt.toCharArray())
 
 fun DictationGameHeader.toEntity(): GameHeaderEntity =
-    GameHeaderEntity(gui, title, txtAddress, progressRate)
+    GameHeaderEntity(gui, title, progressRate)
 
 fun GameHeaderEntity.toEngine(): DictationGameHeader =
-    DictationGameHeader(gui, title, txtAddress, progressRate)
+    DictationGameHeader(gui, title, progressRate)
 
 fun List<DictationProgress>.toEntity(): List<DictationProgressEntity> =
     this.map { it.toEntity() }

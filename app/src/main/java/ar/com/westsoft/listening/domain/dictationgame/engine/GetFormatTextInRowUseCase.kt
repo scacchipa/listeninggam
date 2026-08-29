@@ -17,23 +17,22 @@ class GetFormatTextInRowUseCase @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val dictationGame: DictationGame
 ) {
-    operator fun invoke(paragraphIdx: Int): AnnotatedString {
-        val gameRecord = dictationGame.dictationGameRecord ?: return AnnotatedString("")
-
-        val utterance = dictationGame.gameStageFlow.value.utterance
+    operator fun invoke(paragraphIdx: Int, consoleViewState: ConsoleViewState): AnnotatedString {
 
         val settings = runBlocking { settingsRepository.getDictGameSettingFlow().first() }
 
+        val gameRecord = dictationGame.dictationGameRecord ?: return AnnotatedString("")
         val charsToShow = gameRecord.dictationProgressList[paragraphIdx].progressTxt
             .splitInRow(settings.columnPerPage)
 
-        val cursorPos: SimpleCursorPos = dictationGame.cursorPosStateFlow.value
+        val cursorPos: SimpleCursorPos = consoleViewState.simpleCursorPos
 
         val textByRow = charsToShow.concatToString()
 
         return buildAnnotatedString {
+            val utterance = consoleViewState.utterance
             append(textByRow)
-            if (paragraphIdx == utterance.utteranceId?.toInt()) {
+            if (paragraphIdx == utterance?.utteranceId?.toInt()) {
                 addStyle(
                     style = SpanStyle(fontWeight = FontWeight.ExtraBold),
                     start = utterance.start,
