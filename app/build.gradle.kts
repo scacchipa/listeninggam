@@ -52,6 +52,9 @@ android {
         compose = true
         buildConfig = true
     }
+    androidResources {
+        noCompress += listOf("onnx", "tflite", "vox")
+    }
 }
 
 dependencies {
@@ -87,6 +90,8 @@ dependencies {
 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+
+    implementation(libs.sherpa.onnx.android)
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
