@@ -1,3 +1,5 @@
+import java.net.URL
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -55,6 +57,39 @@ android {
     androidResources {
         noCompress += listOf("onnx", "tflite", "vox")
     }
+
+    sourceSets {
+        getByName("main") {
+            assets.srcDirs("build/generated/assets/espeak-ng-data")
+        }
+    }
+}
+
+val downloadEspeakData by tasks.registering {
+    val outputFile = file("build/intermediates/espeak-ng-data/espeak-ng-data.tar.bz2")
+    outputs.file(outputFile)
+
+    doLast {
+        outputFile.parentFile.mkdirs()
+        val url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/espeak-ng-data.tar.bz2"
+        println("Downloading $url...")
+        URL(url).openStream().use { input ->
+            outputFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+    }
+}
+
+val extractEspeakData by tasks.registering(Copy::class) {
+    dependsOn(downloadEspeakData)
+    val archive = downloadEspeakData.get().outputs.files.singleFile
+    from(tarTree(resources.bzip2(archive)))
+    into("build/generated/assets/espeak-ng-data")
+}
+
+tasks.withType<com.android.build.gradle.tasks.MergeSourceSetFolders> {
+    dependsOn(extractEspeakData)
 }
 
 dependencies {
