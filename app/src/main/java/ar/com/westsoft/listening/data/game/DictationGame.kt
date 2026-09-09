@@ -48,8 +48,10 @@ class DictationGame @Inject constructor(
     var dictationGameRecord: DictationGameRecord? = null
 
     private val _cursorPosStateFlow = MutableStateFlow(SimpleCursorPos())
-
     val cursorPosStateFlow = _cursorPosStateFlow as StateFlow<SimpleCursorPos>
+
+    private val _resetSignal = MutableStateFlow(0)
+    val resetSignal = _resetSignal as StateFlow<Int>
 
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
@@ -232,6 +234,7 @@ class DictationGame @Inject constructor(
             .setLetterProgress(currentState.letterPos)
         vibratorEngine.vibrareTick()
         saveDictationProgress(currentState.paragraphIdx, gameRecord.gameHeader.gui)
+        _resetSignal.value++
         moveNextBlank()
     }
 
@@ -242,6 +245,7 @@ class DictationGame @Inject constructor(
             ?.dictationProgressList?.get(currentState.paragraphIdx)
             ?.revealWord(cursorLetterPos)
         vibratorEngine.vibrareTick()
+        _resetSignal.value++
         moveNextBlank()
     }
 
@@ -250,6 +254,7 @@ class DictationGame @Inject constructor(
             ?.dictationProgressList?.get(paragraphIdx)
             ?.revealParagraph()
 
+        _resetSignal.value++
         moveNextBlank()
     }
 
