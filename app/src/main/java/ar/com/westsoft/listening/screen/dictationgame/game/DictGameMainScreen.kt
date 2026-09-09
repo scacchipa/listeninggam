@@ -173,7 +173,7 @@ fun DictGameMainScreen(
                 widthDp = widthDp,
                 keyboardType = KeyboardType.BigKey,
                 action = { keyEvent -> viewModel.onKeyEvent(keyEvent) },
-                resetToken = viewModel.resetSignal.collectAsState().value
+                resetToken = viewModel. resetSignal.collectAsState().value
             )
 
             LaunchedEffect(Unit) {

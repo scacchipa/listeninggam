@@ -10,3 +10,17 @@ val LocalKeyboardPressedKeys = staticCompositionLocalOf<Set<Key>> {
 val LocalKeyboardOnKeyAction = staticCompositionLocalOf<(Key) -> Unit> {
     {}
 }
+
+val Key.isFunctional: Boolean
+    get() = when (this) {
+        Key.Spacebar,
+        Key.DirectionRight,
+        Key.DirectionLeft,
+        Key.DirectionUp,
+        Key.DirectionDown,
+        Key.Enter,
+        Key.Apostrophe,
+        Key.Backslash,
+        Key.Equals -> true
+        else -> false
+    }

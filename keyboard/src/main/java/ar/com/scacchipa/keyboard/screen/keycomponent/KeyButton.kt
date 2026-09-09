@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 
 import ar.com.scacchipa.keyboard.screen.LocalKeyboardOnKeyAction
 import ar.com.scacchipa.keyboard.screen.LocalKeyboardPressedKeys
+import ar.com.scacchipa.keyboard.screen.isFunctional
 
 @Composable
 fun KeyButton(
@@ -34,11 +35,13 @@ fun KeyButton(
 ) {
     val pressedKeys = LocalKeyboardPressedKeys.current
     val onKeyAction = LocalKeyboardOnKeyAction.current
-    val isMarked = pressedKeys.contains(key)
+    val isMarked = !key.isFunctional && pressedKeys.contains(key)
 
     OutlinedButton(
         onClick = {
-            onKeyAction(key)
+            if (!key.isFunctional) {
+                onKeyAction(key)
+            }
             action(
                 KeyEvent(
                     nativeKeyEvent = android.view.KeyEvent(

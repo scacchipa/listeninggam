@@ -29,7 +29,7 @@ fun KeyboardLayout(
     CompositionLocalProvider(
         LocalKeyboardPressedKeys provides pressedKeys.value,
         LocalKeyboardOnKeyAction provides { key ->
-            pressedKeys.value = pressedKeys.value + key
+            pressedKeys.value += key
         }
     ) {
         when (keyboardType) {

@@ -21,20 +21,37 @@ fun HorizontalFunctionKeyboard(
     action: (KeyEvent) -> Unit,
 ) {
     Row(
-        modifier = Modifier.offset(offset.x, offset.y
+        modifier = Modifier.offset(
+            offset.x, offset.y
         )
     ) {
         KeyButton(
-            key = Key.Spacebar, text = "Rd", height = sideKey, width = sideKey * 2, action = action
+            key = Key.Spacebar,
+            text = "Rd",
+            height = sideKey,
+            width = sideKey * 2,
+            action = action
         )
         KeyButton(
-            key = Key.Apostrophe, text = "Lt", height = sideKey, width = sideKey * 2, action = action
+            key = Key.Apostrophe,
+            text = "Lt",
+            height = sideKey,
+            width = sideKey * 2,
+            action = action
         )
         KeyButton(
-            key = Key.Backslash, text = "Wd", height = sideKey, width = sideKey * 2, action = action
+            key = Key.Backslash,
+            text = "Wd",
+            height = sideKey,
+            width = sideKey * 2,
+            action = action
         )
         KeyButton(
-            key = Key.Equals, text = "Ph", height = sideKey, width = sideKey * 2, action = action
+            key = Key.Equals,
+            text = "Ph",
+            height = sideKey,
+            width = sideKey * 2,
+            action = action
         )
         InvisibleKeyButton(height = sideKey, width = sideKey * 3)
     }

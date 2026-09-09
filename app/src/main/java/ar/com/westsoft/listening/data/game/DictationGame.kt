@@ -39,8 +39,8 @@ class DictationGame @Inject constructor(
     private val readerEngine: ReaderEngine,
     private val appDatabase: AppDatabase,
     private val keyboard: Keyboard,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val settingsDataStore: DictSettingsDataStore,
     private val vibratorEngine: VibratorEngine,
     private var coroutineScope: CoroutineScope
@@ -48,7 +48,6 @@ class DictationGame @Inject constructor(
     var dictationGameRecord: DictationGameRecord? = null
 
     private val _cursorPosStateFlow = MutableStateFlow(SimpleCursorPos())
-    val cursorPosStateFlow = _cursorPosStateFlow as StateFlow<SimpleCursorPos>
 
     private val _resetSignal = MutableStateFlow(0)
     val resetSignal = _resetSignal as StateFlow<Int>
@@ -164,18 +163,33 @@ class DictationGame @Inject constructor(
 
             if (keyEvent.type == KeyEventType.KeyDown) {
                 when (keyEvent.key) {
-                    Key.DirectionRight -> moveNextBlank()
-                    Key.DirectionLeft -> _cursorPosStateFlow.emit(
-                        currentState.copy(
-                            letterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
-                                ?: dictationProgress.getFirstBlank()
+                    Key.DirectionRight -> {
+                        moveNextBlank()
+                        _resetSignal.value++
+                    }
+                    Key.DirectionLeft -> {
+                        _cursorPosStateFlow.emit(
+                            currentState.copy(
+                                letterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
+                                    ?: dictationProgress.getFirstBlank()
+                            )
                         )
-                    )
+                        _resetSignal.value++
+                    }
 
-                    Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
-                    Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
+                    Key.DirectionDown -> {
+                        emitNewParagraphDictationState(paragraphIdx + 1)
+                        _resetSignal.value++
+                    }
+                    Key.DirectionUp -> {
+                        emitNewParagraphDictationState(paragraphIdx - 1)
+                        _resetSignal.value++
+                    }
                     Key.Spacebar -> speakOut(offset = currentLetterPos ?: 0)
-                    Key.Enter -> moveToParagraph(paragraphIdx + 1)
+                    Key.Enter -> {
+                        moveToParagraph(paragraphIdx + 1)
+                        _resetSignal.value++
+                    }
                     Key.Zero,
                     Key.One,
                     Key.Two,
