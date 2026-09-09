@@ -33,19 +33,27 @@ class GetFormatTextInRowUseCase @Inject constructor(
             val utterance = consoleViewState.utterance
             append(textByRow)
             if (paragraphIdx == utterance?.utteranceId?.toInt()) {
-                addStyle(
-                    style = SpanStyle(fontWeight = FontWeight.ExtraBold),
-                    start = utterance.start,
-                    end = utterance.end
-                )
+                val start = utterance.start.coerceIn(0, textByRow.length)
+                val end = utterance.end.coerceIn(start, textByRow.length)
+                if (start < end) {
+                    addStyle(
+                        style = SpanStyle(fontWeight = FontWeight.ExtraBold),
+                        start = start,
+                        end = end
+                    )
+                }
             }
             if (paragraphIdx == cursorPos.paragraphIdx) {
                 cursorPos.letterPos?.let {
-                    addStyle(
-                        style = SpanStyle(color = Color.Red),
-                        start = it,
-                        end = it + 1
-                    )
+                    val start = it.coerceIn(0, textByRow.length)
+                    val end = (it + 1).coerceIn(start, textByRow.length)
+                    if (start < end) {
+                        addStyle(
+                            style = SpanStyle(color = Color.Red),
+                            start = start,
+                            end = end
+                        )
+                    }
                 }
             }
         }

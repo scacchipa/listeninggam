@@ -19,6 +19,8 @@ roomRuntime = "2.7.2"
 compose-bom = "2025.08.00"
 hiltNav = "1.2.0"
 ksp = "2.2.10-2.0.2"
+sherpa-onnx = "v1.13.1"
+onnxruntime = "1.29.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -51,6 +53,8 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+sherpa-onnx-android = { module = "com.github.k2-fsa:sherpa-onnx", version.ref = "sherpa-onnx" }
+onnxruntime-android = { module = "com.microsoft.onnxruntime:onnxruntime-android", version.ref = "onnxruntime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
