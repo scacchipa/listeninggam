@@ -3,6 +3,7 @@ package ar.com.westsoft.listening.screen.dictationgame.game
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.data.repository.SettingsField
 import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DictGameMainViewModel @Inject constructor(
+    private val dictationGame: DictationGame,
     private val keyEventUseCase: KeyEventUseCase,
     private val getSpeedLevelUseCase: GetSpeedLevelUseCase,
     private val storeSpeedLevelUseCase: StoreSpeedLevelUseCase
@@ -56,4 +58,6 @@ class DictGameMainViewModel @Inject constructor(
         started = SharingStarted.Eagerly,
         initialValue = SettingsField(Constants.PREFERENCES_KEY_SPEED_LEVEL_DEFAULT, false)
     )
+
+    val resetSignal = dictationGame.resetSignal
 }

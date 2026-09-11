@@ -39,8 +39,8 @@ class DictationGame @Inject constructor(
     private val readerEngine: ReaderEngine,
     private val appDatabase: AppDatabase,
     private val keyboard: Keyboard,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     private val settingsDataStore: DictSettingsDataStore,
     private val vibratorEngine: VibratorEngine,
     private var coroutineScope: CoroutineScope
@@ -49,12 +49,18 @@ class DictationGame @Inject constructor(
 
     private val _cursorPosStateFlow = MutableStateFlow(SimpleCursorPos())
 
-    val cursorPosStateFlow = _cursorPosStateFlow as StateFlow<SimpleCursorPos>
+    private val _resetSignal = MutableStateFlow(0)
+    val resetSignal = _resetSignal as StateFlow<Int>
 
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
-        _cursorPosStateFlow.emit(SimpleCursorPos())
+        updateCursorPos(SimpleCursorPos())
         gameStageFlow = createGameStageFlow()
+    }
+
+    private suspend fun updateCursorPos(pos: SimpleCursorPos) {
+        _cursorPosStateFlow.emit(pos)
+        _resetSignal.value++
     }
 
     private suspend fun getDictationGameRecord(gui: Long): DictationGameRecord =
@@ -163,7 +169,7 @@ class DictationGame @Inject constructor(
             if (keyEvent.type == KeyEventType.KeyDown) {
                 when (keyEvent.key) {
                     Key.DirectionRight -> moveNextBlank()
-                    Key.DirectionLeft -> _cursorPosStateFlow.emit(
+                    Key.DirectionLeft -> updateCursorPos(
                         currentState.copy(
                             letterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
                                 ?: dictationProgress.getFirstBlank()
@@ -272,12 +278,12 @@ class DictationGame @Inject constructor(
         val nextBlank = currentState.moveNextBlank(gameRecord)
 
         if (nextBlank != null) {
-            _cursorPosStateFlow.emit(nextBlank)
+            updateCursorPos(nextBlank)
         } else {
             saveGlobalProgressRate()
 
-            _cursorPosStateFlow.emit(currentState)
-            _cursorPosStateFlow.emit(
+            updateCursorPos(currentState)
+            updateCursorPos(
                 currentState.moveFirstBlankInNextParagraph(gameRecord)
             )
         }
@@ -290,7 +296,7 @@ class DictationGame @Inject constructor(
 
         if (paragraphIdx < 0 || paragraphIdx >= progressList.size) return
 
-        _cursorPosStateFlow.emit(
+        updateCursorPos(
             SimpleCursorPos(
                 letterPos = progressList[paragraphIdx].getFirstBlank(),
                 paragraphIdx = paragraphIdx
