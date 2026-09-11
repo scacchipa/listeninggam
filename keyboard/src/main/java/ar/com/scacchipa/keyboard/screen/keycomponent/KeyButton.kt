@@ -55,11 +55,11 @@ fun KeyButton(
             .padding(height / 10),
         shape = RoundedCornerShape(10),
         border = BorderStroke(
-            if (isMarked) 2.dp else (height / 50),
+            height / 50,
             color = if (isMarked) Color.Red else Color.DarkGray
         ),
         colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
-            containerColor = if (isMarked) Color(0xFFFFCDD2) else Color.Transparent
+            containerColor = if (isMarked) Color(0xFFFFEBEE) else Color.Transparent
         ),
         contentPadding = PaddingValues(top = 0.dp)
     ) {

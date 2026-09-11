@@ -54,8 +54,13 @@ class DictationGame @Inject constructor(
 
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
-        _cursorPosStateFlow.emit(SimpleCursorPos())
+        updateCursorPos(SimpleCursorPos())
         gameStageFlow = createGameStageFlow()
+    }
+
+    private suspend fun updateCursorPos(pos: SimpleCursorPos) {
+        _cursorPosStateFlow.emit(pos)
+        _resetSignal.value++
     }
 
     private suspend fun getDictationGameRecord(gui: Long): DictationGameRecord =
@@ -163,33 +168,18 @@ class DictationGame @Inject constructor(
 
             if (keyEvent.type == KeyEventType.KeyDown) {
                 when (keyEvent.key) {
-                    Key.DirectionRight -> {
-                        moveNextBlank()
-                        _resetSignal.value++
-                    }
-                    Key.DirectionLeft -> {
-                        _cursorPosStateFlow.emit(
-                            currentState.copy(
-                                letterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
-                                    ?: dictationProgress.getFirstBlank()
-                            )
+                    Key.DirectionRight -> moveNextBlank()
+                    Key.DirectionLeft -> updateCursorPos(
+                        currentState.copy(
+                            letterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
+                                ?: dictationProgress.getFirstBlank()
                         )
-                        _resetSignal.value++
-                    }
+                    )
 
-                    Key.DirectionDown -> {
-                        emitNewParagraphDictationState(paragraphIdx + 1)
-                        _resetSignal.value++
-                    }
-                    Key.DirectionUp -> {
-                        emitNewParagraphDictationState(paragraphIdx - 1)
-                        _resetSignal.value++
-                    }
+                    Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
+                    Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
                     Key.Spacebar -> speakOut(offset = currentLetterPos ?: 0)
-                    Key.Enter -> {
-                        moveToParagraph(paragraphIdx + 1)
-                        _resetSignal.value++
-                    }
+                    Key.Enter -> moveToParagraph(paragraphIdx + 1)
                     Key.Zero,
                     Key.One,
                     Key.Two,
@@ -248,7 +238,6 @@ class DictationGame @Inject constructor(
             .setLetterProgress(currentState.letterPos)
         vibratorEngine.vibrareTick()
         saveDictationProgress(currentState.paragraphIdx, gameRecord.gameHeader.gui)
-        _resetSignal.value++
         moveNextBlank()
     }
 
@@ -259,7 +248,6 @@ class DictationGame @Inject constructor(
             ?.dictationProgressList?.get(currentState.paragraphIdx)
             ?.revealWord(cursorLetterPos)
         vibratorEngine.vibrareTick()
-        _resetSignal.value++
         moveNextBlank()
     }
 
@@ -268,7 +256,6 @@ class DictationGame @Inject constructor(
             ?.dictationProgressList?.get(paragraphIdx)
             ?.revealParagraph()
 
-        _resetSignal.value++
         moveNextBlank()
     }
 
@@ -291,12 +278,12 @@ class DictationGame @Inject constructor(
         val nextBlank = currentState.moveNextBlank(gameRecord)
 
         if (nextBlank != null) {
-            _cursorPosStateFlow.emit(nextBlank)
+            updateCursorPos(nextBlank)
         } else {
             saveGlobalProgressRate()
 
-            _cursorPosStateFlow.emit(currentState)
-            _cursorPosStateFlow.emit(
+            updateCursorPos(currentState)
+            updateCursorPos(
                 currentState.moveFirstBlankInNextParagraph(gameRecord)
             )
         }
@@ -309,7 +296,7 @@ class DictationGame @Inject constructor(
 
         if (paragraphIdx < 0 || paragraphIdx >= progressList.size) return
 
-        _cursorPosStateFlow.emit(
+        updateCursorPos(
             SimpleCursorPos(
                 letterPos = progressList[paragraphIdx].getFirstBlank(),
                 paragraphIdx = paragraphIdx
