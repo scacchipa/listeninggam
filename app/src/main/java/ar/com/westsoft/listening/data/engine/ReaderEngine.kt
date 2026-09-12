@@ -168,11 +168,6 @@ class ReaderEngine @Inject constructor(
         val minVal = samples.minOrNull() ?: 0f
         Log.d("ReaderEngine", "playAudio: samples=${samples.size}, rate=$sampleRate, id=$utteranceId, max=$maxVal, min=$minVal")
 
-        // Convert FloatArray (-1.0 to 1.0) to ShortArray for PCM 16bit compatibility
-        val shortSamples = ShortArray(samples.size) { i ->
-            (samples[i].coerceIn(-1f, 1f) * 32767).toInt().toShort()
-        }
-
         val oldTrack = audioTrack
         audioTrack = null
         oldTrack?.let {
@@ -187,11 +182,10 @@ class ReaderEngine @Inject constructor(
         val minBufferSize = AudioTrack.getMinBufferSize(
             sampleRate,
             AudioFormat.CHANNEL_OUT_MONO,
-            AudioFormat.ENCODING_PCM_16BIT
+            AudioFormat.ENCODING_PCM_FLOAT
         )
 
-        val bufferSize = minBufferSize.coerceAtLeast(shortSamples.size * 2)
-        Log.d("ReaderEngine", "minBufferSize=$minBufferSize, usedBufferSize=$bufferSize")
+        val bufferSize = minBufferSize.coerceAtLeast(samples.size * 4)
 
         try {
             val track = AudioTrack.Builder()
@@ -203,7 +197,7 @@ class ReaderEngine @Inject constructor(
                 )
                 .setAudioFormat(
                     AudioFormat.Builder()
-                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                        .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
                         .setSampleRate(sampleRate)
                         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build()
@@ -214,9 +208,9 @@ class ReaderEngine @Inject constructor(
 
             track.play()
             audioTrack = track
-            Log.d("ReaderEngine", "AudioTrack started playing (PCM 16BIT)")
+            Log.d("ReaderEngine", "AudioTrack started playing (PCM FLOAT)")
 
-            val written = track.write(shortSamples, 0, shortSamples.size, AudioTrack.WRITE_BLOCKING)
+            val written = track.write(samples, 0, samples.size, AudioTrack.WRITE_BLOCKING)
             Log.d("ReaderEngine", "Written $written samples to AudioTrack")
 
             _utteranceFlow.emit(
@@ -228,7 +222,7 @@ class ReaderEngine @Inject constructor(
             )
 
             // Wait for the track to finish playing
-            val durationMs = (shortSamples.size.toFloat() / sampleRate * 1000).toLong()
+            val durationMs = (samples.size.toFloat() / sampleRate * 1000).toLong()
             delay((durationMs + 100).milliseconds)
 
             Log.d("ReaderEngine", "Playback finished")
