@@ -10,23 +10,24 @@ import androidx.compose.ui.input.key.type
 import ar.com.westsoft.listening.data.datasource.AppDatabase
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
+import ar.com.westsoft.listening.data.engine.Keyboard
 import ar.com.westsoft.listening.data.engine.ReaderEngine
+import ar.com.westsoft.listening.data.engine.Utterance
+import ar.com.westsoft.listening.data.engine.VibratorEngine
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameStage
-import ar.com.westsoft.listening.data.engine.Keyboard
-import ar.com.westsoft.listening.data.engine.Utterance
-import ar.com.westsoft.listening.data.engine.VibratorEngine
+import ar.com.westsoft.listening.util.getIdxPreviousTo
 import ar.com.westsoft.listening.util.normalize
 import ar.com.westsoft.listening.util.toEngine
 import ar.com.westsoft.listening.util.toEntity
-import ar.com.westsoft.listening.util.getIdxPreviousTo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,7 +55,6 @@ class DictationGame @Inject constructor(
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
         updateCursorPos(SimpleCursorPos())
-        gameStageFlow = createGameStageFlow()
     }
 
     private suspend fun updateCursorPos(pos: SimpleCursorPos) {
@@ -105,11 +105,13 @@ class DictationGame @Inject constructor(
         }
     }
 
-    var gameStageFlow: StateFlow<DictGameStage> = createGameStageFlow()
+    val gameStageFlow: StateFlow<DictGameStage> = createGameStageFlow()
 
-    private fun createGameStageFlow(): StateFlow<DictGameStage> = getReaderEngineFlow().combine(
-        flow = _cursorPosStateFlow
-    ) { utterance, cursorPos ->
+    private fun createGameStageFlow(): StateFlow<DictGameStage> = getReaderEngineFlow()
+        .onStart { emit(Utterance()) }
+        .combine(
+            flow = _cursorPosStateFlow
+        ) { utterance, cursorPos ->
         DictGameStage(
             cursorPos = cursorPos.letterPos,
             paragraphIdx = cursorPos.paragraphIdx,
