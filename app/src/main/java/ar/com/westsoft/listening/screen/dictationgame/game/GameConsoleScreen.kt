@@ -1,16 +1,17 @@
 package ar.com.westsoft.listening.screen.dictationgame.game
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,9 +40,9 @@ fun GameConsoleScreen(parentWidthPx: Float) {
     val horizontalScrollState = rememberScrollState()
 
     val localDensity = LocalDensity.current
-    var heightPx by remember { mutableStateOf(0f) }
+    var heightPx by remember { mutableFloatStateOf(0f) }
     var heightDp by remember { mutableStateOf(0.dp) }
-    var widthPx by remember { mutableStateOf(0f) }
+    var widthPx by remember { mutableFloatStateOf(0f) }
     var widthDp by remember { mutableStateOf(0.dp) }
 
     SideEffect {
@@ -58,7 +59,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
                 index = max(startComplexCursorPos.paragraphIdx ?: 0, 0),
                 scrollOffset = with(localDensity) {
                     (startComplexCursorPos.row ?: 0) * 20.sp.roundToPx()
-                }.toInt()
+                }
             )
 
             horizontalScrollState.scrollTo(
@@ -102,7 +103,7 @@ fun GameConsoleScreen(parentWidthPx: Float) {
             }
     ) {
         items(viewModel.getProgressListSize() ?: 0) { idx ->
-            ClickableText(
+            Text(
                 style = TextStyle(
                     fontFamily = FontFamily.Monospace,
                     fontSize = 20.sp,
@@ -116,10 +117,11 @@ fun GameConsoleScreen(parentWidthPx: Float) {
                     )
                 ),
                 text = viewModel.getFormatText(idx, viewState),
-                onClick = {
-                    viewModel.onParagraphClick(idx)
-                },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        viewModel.onParagraphClick(idx)
+                    }
             )
         }
     }
