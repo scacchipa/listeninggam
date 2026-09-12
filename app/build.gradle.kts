@@ -60,18 +60,18 @@ android {
 
     sourceSets {
         getByName("main") {
-            assets.srcDirs("build/generated/assets/espeak-ng-data")
+            assets.srcDirs("build/generated/assets/tts")
         }
     }
 }
 
-val downloadEspeakData by tasks.registering {
-    val outputFile = file("build/intermediates/espeak-ng-data/espeak-ng-data.tar.bz2")
+val downloadTtsModel by tasks.registering {
+    val outputFile = file("build/intermediates/tts/vits-piper-en_US-amy-low.tar.bz2")
     outputs.file(outputFile)
 
     doLast {
         outputFile.parentFile.mkdirs()
-        val url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/espeak-ng-data.tar.bz2"
+        val url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-amy-low.tar.bz2"
         println("Downloading $url...")
         URL(url).openStream().use { input ->
             outputFile.outputStream().use { output ->
@@ -81,15 +81,19 @@ val downloadEspeakData by tasks.registering {
     }
 }
 
-val extractEspeakData by tasks.registering(Copy::class) {
-    dependsOn(downloadEspeakData)
-    val archive = downloadEspeakData.get().outputs.files.singleFile
-    from(tarTree(resources.bzip2(archive)))
-    into("build/generated/assets/espeak-ng-data")
+val extractTtsModel by tasks.registering(Copy::class) {
+    dependsOn(downloadTtsModel)
+    val archive = downloadTtsModel.get().outputs.files.singleFile
+    from(tarTree(resources.bzip2(archive))) {
+        eachFile {
+            path = path.replaceFirst("vits-piper-en_US-amy-low/", "")
+        }
+    }
+    into("build/generated/assets/tts")
 }
 
 tasks.withType<com.android.build.gradle.tasks.MergeSourceSetFolders> {
-    dependsOn(extractEspeakData)
+    dependsOn(extractTtsModel)
 }
 
 dependencies {
