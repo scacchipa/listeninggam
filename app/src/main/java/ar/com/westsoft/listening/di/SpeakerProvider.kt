@@ -1,7 +1,6 @@
 package ar.com.westsoft.listening.di
 
 import android.content.Context
-import android.util.Log
 import com.k2fsa.sherpa.onnx.OfflineTts
 import com.k2fsa.sherpa.onnx.OfflineTtsConfig
 import com.k2fsa.sherpa.onnx.OfflineTtsModelConfig
@@ -39,7 +38,6 @@ class SpeakerProvider {
         )
         return OfflineTts(context.assets, config)
     }
-
 
     private fun copyAssets( context: Context, path: String) {
         val assets = context.assets
