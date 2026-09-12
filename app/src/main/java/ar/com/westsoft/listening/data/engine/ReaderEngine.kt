@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
 import android.util.Log
+import android.util.LruCache
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.data.datasource.toSetting
@@ -28,6 +29,7 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class ReaderEngine @Inject constructor(
@@ -42,6 +44,8 @@ class ReaderEngine @Inject constructor(
 
     private var tts: OfflineTts? = null
     private var audioTrack: AudioTrack? = null
+
+    private val audioCache = LruCache<Pair<String, Float>, TtsAudio>(20)
 
     private fun getSettingsDataStoreFlow() = settingsDataStore
         .getDictGameSettingsDSOFlow()
@@ -110,7 +114,7 @@ class ReaderEngine @Inject constructor(
         audioTrack?.release()
     }
 
-    fun speakOut(
+    suspend fun speakOut(
         message: String,
         offset: Int = 0,
         utteranceId: String = "",
@@ -122,23 +126,33 @@ class ReaderEngine @Inject constructor(
         val msgWithPunctuation = message.substring(startPos).takeWords(wordCount)
         val end = startPos + msgWithPunctuation.length
         val msg = msgWithPunctuation.replace("_", "", false)
-        
+
         Log.d("ReaderEngine", "speakOut: msg='$msg', offset=$startPos, end=$end")
 
-        coroutineScope.launch(Dispatchers.Default) {
-            val ttsInstance = tts ?: run {
-                Log.e("ReaderEngine", "TTS not initialized")
-                return@launch
-            }
+        withContext(Dispatchers.Default) {
             val speed = calculateSpeechRate()
-            
-            Log.d("ReaderEngine", "Generating audio for: '$msg' at speed $speed")
-            val audio = ttsInstance.generate(msg, 0, speed)
-            
-            if (audio.samples.isEmpty()) {
-                Log.w("ReaderEngine", "Generated audio samples are empty")
-                return@launch
-            }
+            val cacheKey = msg to speed
+
+            val audio = audioCache.get(cacheKey)
+                ?: run {
+                    val ttsInstance = tts ?: run {
+                        Log.e("ReaderEngine", "TTS not initialized")
+                        return@withContext
+                    }
+
+                    Log.d("ReaderEngine", "Generating audio for: '$msg' at speed $speed")
+                    val generated = ttsInstance.generate(msg, 0, speed)
+
+                    if (generated.samples.isEmpty()) {
+                        Log.w("ReaderEngine", "Generated audio samples are empty")
+                        return@withContext
+                    }
+
+                    val ttsAudio = TtsAudio(generated.samples, generated.sampleRate)
+                    audioCache.put(cacheKey, ttsAudio)
+
+                    ttsAudio
+                }
 
             playAudio(audio.samples, audio.sampleRate, utteranceId, end)
         }
@@ -153,7 +167,7 @@ class ReaderEngine @Inject constructor(
         val maxVal = samples.maxOrNull() ?: 0f
         val minVal = samples.minOrNull() ?: 0f
         Log.d("ReaderEngine", "playAudio: samples=${samples.size}, rate=$sampleRate, id=$utteranceId, max=$maxVal, min=$minVal")
-        
+
         // Convert FloatArray (-1.0 to 1.0) to ShortArray for PCM 16bit compatibility
         val shortSamples = ShortArray(samples.size) { i ->
             (samples[i].coerceIn(-1f, 1f) * 32767).toInt().toShort()
@@ -175,7 +189,7 @@ class ReaderEngine @Inject constructor(
             AudioFormat.CHANNEL_OUT_MONO,
             AudioFormat.ENCODING_PCM_16BIT
         )
-        
+
         val bufferSize = minBufferSize.coerceAtLeast(shortSamples.size * 2)
         Log.d("ReaderEngine", "minBufferSize=$minBufferSize, usedBufferSize=$bufferSize")
 
@@ -197,7 +211,7 @@ class ReaderEngine @Inject constructor(
                 .setBufferSizeInBytes(bufferSize)
                 .setTransferMode(AudioTrack.MODE_STREAM)
                 .build()
-            
+
             track.play()
             audioTrack = track
             Log.d("ReaderEngine", "AudioTrack started playing (PCM 16BIT)")
@@ -212,11 +226,11 @@ class ReaderEngine @Inject constructor(
                     end = end
                 )
             )
-            
+
             // Wait for the track to finish playing
             val durationMs = (shortSamples.size.toFloat() / sampleRate * 1000).toLong()
-            delay(durationMs + 100)
-            
+            delay((durationMs + 100).milliseconds)
+
             Log.d("ReaderEngine", "Playback finished")
         } catch (e: Exception) {
             Log.e("ReaderEngine", "Error during playback", e)
@@ -224,7 +238,7 @@ class ReaderEngine @Inject constructor(
     }
 
     private fun calculateSpeechRate() =
-        settings.speechRatePercentage.toFloat() / 100f * getSpeedLevelFactor()
+        settings.speechRatePercentage / 100f * getSpeedLevelFactor()
 
     private fun getSpeedLevelFactor(): Float =
         when (settings.speedLevel){
@@ -233,6 +247,29 @@ class ReaderEngine @Inject constructor(
             SpeedLevelPreference.NORMAL_SPEED_LEVEL -> 1.00f
             SpeedLevelPreference.HIGH_SPEED_LEVEL -> 1.25f
         }
+}
+
+data class TtsAudio(
+    val samples: FloatArray,
+    val sampleRate: Int
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as TtsAudio
+
+        if (sampleRate != other.sampleRate) return false
+        if (!samples.contentEquals(other.samples)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = sampleRate
+        result = 31 * result + samples.contentHashCode()
+        return result
+    }
 }
 
 data class Utterance(
