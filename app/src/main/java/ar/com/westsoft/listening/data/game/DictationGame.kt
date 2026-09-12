@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -128,25 +127,26 @@ class DictationGame @Inject constructor(
 
     private fun getReaderEngineFlow() = readerEngine.getUtteranceFlow()
 
-    fun speakOut(
+    suspend fun speakOut(
         offset: Int = 0,
-        wordCount: Int = runBlocking { settingsDataStore.get(PreferencesKey.ReadWordAfterCursor) },
-        rewindWordCount: Int = runBlocking { settingsDataStore.get(PreferencesKey.ReadWordBeforeCursor) }
-    ) {
-        runBlocking(defaultDispatcher) {
-            println("offset: $offset")
-            val gameRecord = dictationGameRecord ?: return@runBlocking
+        wordCount: Int? = null,
+        rewindWordCount: Int? = null
+    ) = withContext(defaultDispatcher) {
+        println("offset: $offset")
+        val gameRecord = dictationGameRecord ?: return@withContext
 
-            val paragraphNumber = _cursorPosStateFlow.value.paragraphIdx
-            val paragraph = gameRecord.dictationProgressList[paragraphNumber]
-            readerEngine.speakOut(
-                message = paragraph.originalTxt,
-                offset = paragraph.progressTxt.getIdxPreviousTo(offset, ' ')?.plus(1) ?: 0,
-                utteranceId = paragraphNumber.toString(),
-                wordCount = wordCount,
-                rewindWordCount = rewindWordCount
-            )
-        }
+        val actualWordCount = wordCount ?: settingsDataStore.get(PreferencesKey.ReadWordAfterCursor)
+        val actualRewindWordCount = rewindWordCount ?: settingsDataStore.get(PreferencesKey.ReadWordBeforeCursor)
+
+        val paragraphNumber = _cursorPosStateFlow.value.paragraphIdx
+        val paragraph = gameRecord.dictationProgressList[paragraphNumber]
+        readerEngine.speakOut(
+            message = paragraph.originalTxt,
+            offset = paragraph.progressTxt.getIdxPreviousTo(offset, ' ')?.plus(1) ?: 0,
+            utteranceId = paragraphNumber.toString(),
+            wordCount = actualWordCount,
+            rewindWordCount = actualRewindWordCount
+        )
     }
 
     suspend fun moveToParagraph(idx: Int) {
@@ -154,73 +154,71 @@ class DictationGame @Inject constructor(
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
-    fun onKeyEvent(keyEvent: KeyEvent) {
-        runBlocking(defaultDispatcher) {
-            val gameRecord = dictationGameRecord ?: return@runBlocking
+    suspend fun onKeyEvent(keyEvent: KeyEvent) = withContext(defaultDispatcher) {
+        val gameRecord = dictationGameRecord ?: return@withContext
 
-            val currentState = _cursorPosStateFlow.value
-            val currentLetterPos = currentState.letterPos
+        val currentState = _cursorPosStateFlow.value
+        val currentLetterPos = currentState.letterPos
 
-            val paragraphIdx = currentState.paragraphIdx
-            val dictationProgress = gameRecord.dictationProgressList[paragraphIdx]
+        val paragraphIdx = currentState.paragraphIdx
+        val dictationProgress = gameRecord.dictationProgressList[paragraphIdx]
 
-            println("key: ${keyEvent.key.nativeKeyCode}")
+        println("key: ${keyEvent.key.nativeKeyCode}")
 
-            if (keyEvent.type == KeyEventType.KeyDown) {
-                when (keyEvent.key) {
-                    Key.DirectionRight -> moveNextBlank()
-                    Key.DirectionLeft -> updateCursorPos(
-                        currentState.copy(
-                            letterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
-                                ?: dictationProgress.getFirstBlank()
-                        )
+        if (keyEvent.type == KeyEventType.KeyDown) {
+            when (keyEvent.key) {
+                Key.DirectionRight -> moveNextBlank()
+                Key.DirectionLeft -> updateCursorPos(
+                    currentState.copy(
+                        letterPos = dictationProgress.getIdxPreviousBlank(currentLetterPos)
+                            ?: dictationProgress.getFirstBlank()
                     )
+                )
 
-                    Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
-                    Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
-                    Key.Spacebar -> speakOut(offset = currentLetterPos ?: 0)
-                    Key.Enter -> moveToParagraph(paragraphIdx + 1)
-                    Key.Zero,
-                    Key.One,
-                    Key.Two,
-                    Key.Three,
-                    Key.Four,
-                    Key.Five,
-                    Key.Six,
-                    Key.Seven,
-                    Key.Eight,
-                    Key.Nine,
-                    Key.A,
-                    Key.B,
-                    Key.C,
-                    Key.D,
-                    Key.E,
-                    Key.F,
-                    Key.G,
-                    Key.H,
-                    Key.I,
-                    Key.J,
-                    Key.K,
-                    Key.L,
-                    Key.M,
-                    Key.N,
-                    Key.O,
-                    Key.P,
-                    Key.Q,
-                    Key.R,
-                    Key.S,
-                    Key.T,
-                    Key.U,
-                    Key.V,
-                    Key.W,
-                    Key.X,
-                    Key.Y,
-                    Key.Z -> checkLetterReveal(keyEvent.key, currentState)
+                Key.DirectionDown -> emitNewParagraphDictationState(paragraphIdx + 1)
+                Key.DirectionUp -> emitNewParagraphDictationState(paragraphIdx - 1)
+                Key.Spacebar -> speakOut(offset = currentLetterPos ?: 0)
+                Key.Enter -> moveToParagraph(paragraphIdx + 1)
+                Key.Zero,
+                Key.One,
+                Key.Two,
+                Key.Three,
+                Key.Four,
+                Key.Five,
+                Key.Six,
+                Key.Seven,
+                Key.Eight,
+                Key.Nine,
+                Key.A,
+                Key.B,
+                Key.C,
+                Key.D,
+                Key.E,
+                Key.F,
+                Key.G,
+                Key.H,
+                Key.I,
+                Key.J,
+                Key.K,
+                Key.L,
+                Key.M,
+                Key.N,
+                Key.O,
+                Key.P,
+                Key.Q,
+                Key.R,
+                Key.S,
+                Key.T,
+                Key.U,
+                Key.V,
+                Key.W,
+                Key.X,
+                Key.Y,
+                Key.Z -> checkLetterReveal(keyEvent.key, currentState)
 
-                    Key.Apostrophe -> revealLetter(currentState)
-                    Key.Backslash -> revealWord(currentState)
-                    Key.Equals -> revealParagraph(currentState.paragraphIdx)
-                }
+                Key.Apostrophe -> revealLetter(currentState)
+                Key.Backslash -> revealWord(currentState)
+                Key.Equals -> revealParagraph(currentState.paragraphIdx)
             }
         }
     }
