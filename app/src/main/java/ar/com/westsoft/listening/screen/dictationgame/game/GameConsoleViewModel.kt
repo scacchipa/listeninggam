@@ -47,9 +47,9 @@ class GameConsoleViewModel @Inject constructor(
         }
     }
 
-    fun onParagraphClick(paragraphIdx: Int) {
+    fun onParagraphClick(paragraphIdx: Int, letterPos: Int? = null) {
         viewModelScope.launch {
-            moveToParagraphUseCase(paragraphIdx)
+            moveToParagraphUseCase(paragraphIdx, letterPos)
         }
     }
 

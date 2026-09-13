@@ -17,6 +17,7 @@ import ar.com.westsoft.listening.data.engine.VibratorEngine
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameStage
+import ar.com.westsoft.listening.util.firstLetterOfWord
 import ar.com.westsoft.listening.util.getIdxPreviousTo
 import ar.com.westsoft.listening.util.normalize
 import ar.com.westsoft.listening.util.toEngine
@@ -151,8 +152,8 @@ class DictationGame @Inject constructor(
         )
     }
 
-    suspend fun moveToParagraph(idx: Int) {
-        emitNewParagraphDictationState(idx)
+    suspend fun moveToParagraph(idx: Int, letterPos: Int? = null) {
+        emitNewParagraphDictationState(idx, letterPos)
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -289,16 +290,23 @@ class DictationGame @Inject constructor(
         }
     }
 
-    private suspend fun emitNewParagraphDictationState(paragraphIdx: Int) {
+    private suspend fun emitNewParagraphDictationState(paragraphIdx: Int, letterPos: Int? = null) {
         val gameRecord = dictationGameRecord ?: return
 
         val progressList = gameRecord.dictationProgressList
 
         if (paragraphIdx < 0 || paragraphIdx >= progressList.size) return
 
+        val progress = progressList[paragraphIdx]
+        val targetLetterPos = if (letterPos != null) {
+            progress.originalTxt.firstLetterOfWord(letterPos) ?: progress.getFirstBlank()
+        } else {
+            progress.getFirstBlank()
+        }
+
         updateCursorPos(
             SimpleCursorPos(
-                letterPos = progressList[paragraphIdx].getFirstBlank(),
+                letterPos = targetLetterPos,
                 paragraphIdx = paragraphIdx
             )
         )

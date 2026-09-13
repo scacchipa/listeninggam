@@ -6,7 +6,7 @@ import javax.inject.Inject
 class MoveToParagraphUseCase @Inject constructor(
     private val dictationGame: DictationGame
 ) {
-    suspend operator fun invoke(paragraphIdx: Int) {
-        dictationGame.moveToParagraph(paragraphIdx)
+    suspend operator fun invoke(paragraphIdx: Int, letterPos: Int? = null) {
+        dictationGame.moveToParagraph(paragraphIdx, letterPos)
     }
 }
