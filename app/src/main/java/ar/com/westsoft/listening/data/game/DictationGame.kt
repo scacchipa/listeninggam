@@ -244,19 +244,25 @@ class DictationGame @Inject constructor(
 
     private suspend fun revealWord(currentState: SimpleCursorPos) {
         val cursorLetterPos = currentState.letterPos ?: return
+        val gameRecord = dictationGameRecord ?: return
 
-        dictationGameRecord
-            ?.dictationProgressList?.get(currentState.paragraphIdx)
-            ?.revealWord(cursorLetterPos)
+        gameRecord
+            .dictationProgressList[currentState.paragraphIdx]
+            .revealWord(cursorLetterPos)
+
         vibratorEngine.vibrareTick()
+        saveDictationProgress(currentState.paragraphIdx, gameRecord.gameHeader.gui)
         moveNextBlank()
     }
 
     private suspend fun revealParagraph(paragraphIdx: Int) {
-        dictationGameRecord
-            ?.dictationProgressList?.get(paragraphIdx)
-            ?.revealParagraph()
+        val gameRecord = dictationGameRecord ?: return
 
+        gameRecord
+            .dictationProgressList[paragraphIdx]
+            .revealParagraph()
+
+        saveDictationProgress(paragraphIdx, gameRecord.gameHeader.gui)
         moveNextBlank()
     }
 
