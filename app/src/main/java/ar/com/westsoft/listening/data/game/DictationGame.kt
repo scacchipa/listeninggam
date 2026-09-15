@@ -317,4 +317,22 @@ class DictationGame @Inject constructor(
             )
         )
     }
+
+    fun getCurrentWord(): String? {
+        val gameRecord = dictationGameRecord ?: return null
+        val pos = _cursorPosStateFlow.value
+        val letterPos = pos.letterPos ?: return null
+        val paragraph = gameRecord.dictationProgressList[pos.paragraphIdx]
+
+        var start = letterPos
+        while (start > 0 && paragraph.originalTxt[start - 1].isLetterOrDigit()) {
+            start--
+        }
+        var end = letterPos
+        while (end < paragraph.originalTxt.length && paragraph.originalTxt[end].isLetterOrDigit()) {
+            end++
+        }
+
+        return paragraph.originalTxt.substring(start, end).filter { it.isLetter() }.ifEmpty { null }
+    }
 }

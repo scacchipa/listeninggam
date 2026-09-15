@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,6 +31,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -55,9 +58,17 @@ fun DictGameMainScreen(
 ) {
     val viewModel = hiltViewModel<DictGameMainViewModel>()
     val isShowingOptions = viewModel.isShowingPreference.collectAsState()
+    val isShowingDictionary = viewModel.isShowingDictionary.collectAsState()
+    val dictionaryDefinition = viewModel.dictionaryDefinition.collectAsState()
 
     BackHandler(true) {
-        Log.d("TAG", "OnBackPressed")
+        if (isShowingOptions.value) {
+            viewModel.onPreferenceClosed()
+        } else if (isShowingDictionary.value) {
+            viewModel.onDictionaryClosed()
+        } else {
+            goBack()
+        }
     }
 
     if (isShowingOptions.value) {
@@ -66,6 +77,11 @@ fun DictGameMainScreen(
                 onBack = { viewModel.onPreferenceClosed() }
             )
         }
+    } else if (isShowingDictionary.value) {
+        DictionaryScreen(
+            definition = dictionaryDefinition.value,
+            onBack = { viewModel.onDictionaryClosed() }
+        )
     } else {
 
         val localDensity = LocalDensity.current
@@ -160,66 +176,78 @@ fun DictGameMainScreen(
                             SpeedLevelPreference.MAX_SPEED_LEVEL -> Color.Blue
                         }
 
-                        Box {
-                            Button(
-                                onClick = { speedMenuExpanded = true },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.DarkGray
-                                )
-                            ) {
-                                Text(
-                                    text = currentSpeedText,
-                                    color = currentSpeedColor,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Box {
+                                Button(
+                                    onClick = { speedMenuExpanded = true },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.DarkGray
+                                    )
+                                ) {
+                                    Text(
+                                        text = currentSpeedText,
+                                        color = currentSpeedColor,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = speedMenuExpanded,
+                                    onDismissRequest = { speedMenuExpanded = false },
+                                    modifier = Modifier.background(Color.Black)
+                                ) {
+                                    DropdownMenuItem(
+                                        text = { Text("0.5x", color = Color.Green, style = MaterialTheme.typography.titleMedium) },
+                                        onClick = {
+                                            speedMenuExpanded = false
+                                            viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("0.75x", color = Color.Yellow, style = MaterialTheme.typography.titleMedium) },
+                                        onClick = {
+                                            speedMenuExpanded = false
+                                            viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("1.0x", color = Color.Magenta, style = MaterialTheme.typography.titleMedium) },
+                                        onClick = {
+                                            speedMenuExpanded = false
+                                            viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("1.25x", color = Color.Red, style = MaterialTheme.typography.titleMedium) },
+                                        onClick = {
+                                            speedMenuExpanded = false
+                                            viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("1.5x", color = Color.Cyan, style = MaterialTheme.typography.titleMedium) },
+                                        onClick = {
+                                            speedMenuExpanded = false
+                                            viewModel.setSpeedLevel(SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL)
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("2.0x", color = Color.Blue, style = MaterialTheme.typography.titleMedium) },
+                                        onClick = {
+                                            speedMenuExpanded = false
+                                            viewModel.setSpeedLevel(SpeedLevelPreference.MAX_SPEED_LEVEL)
+                                        }
+                                    )
+                                }
                             }
-                            DropdownMenu(
-                                expanded = speedMenuExpanded,
-                                onDismissRequest = { speedMenuExpanded = false },
-                                modifier = Modifier.background(Color.Black)
+
+                            Button(
+                                onClick = { viewModel.onDictButtonClicked() },
+                                modifier = Modifier.padding(start = 8.dp)
                             ) {
-                                DropdownMenuItem(
-                                    text = { Text("0.5x", color = Color.Green, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("0.75x", color = Color.Yellow, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("1.0x", color = Color.Magenta, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("1.25x", color = Color.Red, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("1.5x", color = Color.Cyan, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("2.0x", color = Color.Blue, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.MAX_SPEED_LEVEL)
-                                    }
-                                )
+                                Text("DICT")
                             }
                         }
                     }

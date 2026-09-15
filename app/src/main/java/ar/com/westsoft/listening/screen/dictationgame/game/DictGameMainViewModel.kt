@@ -3,9 +3,10 @@ package ar.com.westsoft.listening.screen.dictationgame.game
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.SettingsField
+import ar.com.westsoft.listening.dictionary.DictionaryManager
 import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetSpeedLevelUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.StoreSpeedLevelUseCase
@@ -23,11 +24,18 @@ class DictGameMainViewModel @Inject constructor(
     private val dictationGame: DictationGame,
     private val keyEventUseCase: KeyEventUseCase,
     private val getSpeedLevelUseCase: GetSpeedLevelUseCase,
-    private val storeSpeedLevelUseCase: StoreSpeedLevelUseCase
+    private val storeSpeedLevelUseCase: StoreSpeedLevelUseCase,
+    private val dictionaryManager: DictionaryManager
 ) : ViewModel() {
 
     private val isMutableShowingPreference = MutableStateFlow(false)
     val isShowingPreference = isMutableShowingPreference as StateFlow<Boolean>
+
+    private val isMutableShowingDictionary = MutableStateFlow(false)
+    val isShowingDictionary = isMutableShowingDictionary as StateFlow<Boolean>
+
+    private val mutableDictionaryDefinition = MutableStateFlow<String?>(null)
+    val dictionaryDefinition = mutableDictionaryDefinition as StateFlow<String?>
 
     fun onSettingButtonClicked() {
         viewModelScope.launch {
@@ -38,6 +46,23 @@ class DictGameMainViewModel @Inject constructor(
     fun onPreferenceClosed() {
         viewModelScope.launch {
             isMutableShowingPreference.emit(false)
+        }
+    }
+
+    fun onDictButtonClicked() {
+        viewModelScope.launch {
+            val word = dictationGame.getCurrentWord()
+            if (word != null) {
+                mutableDictionaryDefinition.value = "Searching definition for $word..."
+                isMutableShowingDictionary.value = true
+                mutableDictionaryDefinition.value = dictionaryManager.getDefinition(word)
+            }
+        }
+    }
+
+    fun onDictionaryClosed() {
+        viewModelScope.launch {
+            isMutableShowingDictionary.emit(false)
         }
     }
 
