@@ -1,6 +1,7 @@
 package ar.com.westsoft.listening.di
 
 import android.content.Context
+import android.util.Log
 import com.k2fsa.sherpa.onnx.OfflineTts
 import com.k2fsa.sherpa.onnx.OfflineTtsConfig
 import com.k2fsa.sherpa.onnx.OfflineTtsModelConfig
@@ -22,42 +23,65 @@ class SpeakerProvider {
     fun provideOfflineTts(
         context: Context
     ): OfflineTts {
-        copyAssets(context, "espeak-ng-data")
+        val ttsDir = File(context.filesDir, "tts")
+        
+        // Ensure fresh copy if not completed
+        if (!File(ttsDir, "completed").exists()) {
+            Log.d("SpeakerProvider", "Copying TTS assets to ${ttsDir.absolutePath}")
+            ttsDir.deleteRecursively()
+            ttsDir.mkdirs()
+            copyAssetFolder(context, "tts", context.filesDir)
+            File(ttsDir, "completed").createNewFile()
+        }
 
         val config = OfflineTtsConfig(
             model = OfflineTtsModelConfig(
                 vits = OfflineTtsVitsModelConfig(
-                    model = "en_US-amy-low.onnx",
-                    lexicon = "",
-                    tokens = "tokens.txt",
-                    dataDir = "${context.filesDir.absolutePath}/espeak-ng-data"
+                    model = File(ttsDir, "en_US-amy-low.onnx").absolutePath,
+                    tokens = File(ttsDir, "tokens.txt").absolutePath,
+                    dataDir = File(ttsDir, "espeak-ng-data").absolutePath,
+                    lexicon = ""
                 ),
                 numThreads = 1,
                 debug = true
             )
         )
-        return OfflineTts(context.assets, config)
+        Log.d("SpeakerProvider", "Initializing OfflineTts with config: $config")
+        return try {
+            OfflineTts(null, config)
+        } catch (e: Exception) {
+            Log.e("SpeakerProvider", "Failed to initialize OfflineTts", e)
+            throw e
+        }
     }
 
-    private fun copyAssets( context: Context, path: String) {
-        val assets = context.assets
-        val files = assets.list(path)
-        if (files.isNullOrEmpty()) {
-            // It is a file
-            val outPath = File(context.filesDir, path)
-            if (outPath.exists()) return
-            assets.open(path).use { inputStream ->
-                FileOutputStream(outPath).use { outputStream ->
+    private fun copyAssetFolder(context: Context, assetFolderName: String, destinationDir: File) {
+        val assetManager = context.assets
+        val assets = assetManager.list(assetFolderName) ?: return
+
+        if (assets.isEmpty()) {
+            // It's a file
+            copyAssetFile(context, assetFolderName, File(destinationDir, assetFolderName))
+        } else {
+            // It's a directory
+            val dir = File(destinationDir, assetFolderName)
+            if (!dir.exists()) dir.mkdirs()
+            for (asset in assets) {
+                copyAssetFolder(context, "$assetFolderName/$asset", destinationDir)
+            }
+        }
+    }
+
+    private fun copyAssetFile(context: Context, assetFilePath: String, destinationFile: File) {
+        destinationFile.parentFile?.mkdirs()
+        try {
+            context.assets.open(assetFilePath).use { inputStream ->
+                FileOutputStream(destinationFile).use { outputStream ->
                     inputStream.copyTo(outputStream)
                 }
             }
-        } else {
-            // It is a directory
-            val outDir = File(context.filesDir, path)
-            if (!outDir.exists()) outDir.mkdirs()
-            for (file in files) {
-                copyAssets(context, "$path/$file")
-            }
+        } catch (e: Exception) {
+            Log.e("SpeakerProvider", "Error copying asset file: $assetFilePath", e)
         }
     }
 }

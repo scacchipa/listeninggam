@@ -55,12 +55,12 @@ android {
         buildConfig = true
     }
     androidResources {
-        noCompress += listOf("onnx", "tflite", "vox")
+        noCompress += listOf("onnx", "tflite", "vox", "txt", "json", "dict", "phondata", "phonindex", "phontab", "intonations")
     }
 
     sourceSets {
         getByName("main") {
-            assets.srcDirs("build/generated/assets/tts")
+            assets.srcDirs("build/generated/assets")
         }
     }
 }
@@ -84,9 +84,18 @@ val downloadTtsModel by tasks.registering {
 val extractTtsModel by tasks.registering(Copy::class) {
     dependsOn(downloadTtsModel)
     val archive = downloadTtsModel.get().outputs.files.singleFile
+    
+    doFirst {
+        delete("build/generated/assets/tts")
+    }
+    
     from(tarTree(resources.bzip2(archive))) {
+        includeEmptyDirs = false
         eachFile {
-            path = path.replaceFirst("vits-piper-en_US-amy-low/", "")
+            val parts = path.split("/")
+            if (parts.size > 1 && parts[0] == "vits-piper-en_US-amy-low") {
+                path = parts.drop(1).joinToString("/")
+            }
         }
     }
     into("build/generated/assets/tts")
@@ -130,7 +139,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-    implementation(libs.sherpa.onnx.android)
+    implementation(libs.sherpa.onnx.android) {
+        exclude(group = "com.github.k2-fsa.sherpa-onnx", module = "sherpa-onnx-jvm")
+    }
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

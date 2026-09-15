@@ -10,23 +10,25 @@ import androidx.compose.ui.input.key.type
 import ar.com.westsoft.listening.data.datasource.AppDatabase
 import ar.com.westsoft.listening.data.datasource.DictSettingsDataStore
 import ar.com.westsoft.listening.data.datasource.PreferencesKey
+import ar.com.westsoft.listening.data.engine.Keyboard
 import ar.com.westsoft.listening.data.engine.ReaderEngine
+import ar.com.westsoft.listening.data.engine.Utterance
+import ar.com.westsoft.listening.data.engine.VibratorEngine
 import ar.com.westsoft.listening.di.DefaultDispatcher
 import ar.com.westsoft.listening.di.IoDispatcher
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameStage
-import ar.com.westsoft.listening.data.engine.Keyboard
-import ar.com.westsoft.listening.data.engine.Utterance
-import ar.com.westsoft.listening.data.engine.VibratorEngine
+import ar.com.westsoft.listening.util.firstLetterOfWord
+import ar.com.westsoft.listening.util.getIdxPreviousTo
 import ar.com.westsoft.listening.util.normalize
 import ar.com.westsoft.listening.util.toEngine
 import ar.com.westsoft.listening.util.toEntity
-import ar.com.westsoft.listening.util.getIdxPreviousTo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,7 +56,6 @@ class DictationGame @Inject constructor(
     suspend fun setup(gui: Long) {
         dictationGameRecord = getDictationGameRecord(gui)
         updateCursorPos(SimpleCursorPos())
-        gameStageFlow = createGameStageFlow()
     }
 
     private suspend fun updateCursorPos(pos: SimpleCursorPos) {
@@ -105,11 +106,13 @@ class DictationGame @Inject constructor(
         }
     }
 
-    var gameStageFlow: StateFlow<DictGameStage> = createGameStageFlow()
+    val gameStageFlow: StateFlow<DictGameStage> = createGameStageFlow()
 
-    private fun createGameStageFlow(): StateFlow<DictGameStage> = getReaderEngineFlow().combine(
-        flow = _cursorPosStateFlow
-    ) { utterance, cursorPos ->
+    private fun createGameStageFlow(): StateFlow<DictGameStage> = getReaderEngineFlow()
+        .onStart { emit(Utterance()) }
+        .combine(
+            flow = _cursorPosStateFlow
+        ) { utterance, cursorPos ->
         DictGameStage(
             cursorPos = cursorPos.letterPos,
             paragraphIdx = cursorPos.paragraphIdx,
@@ -149,8 +152,8 @@ class DictationGame @Inject constructor(
         )
     }
 
-    suspend fun moveToParagraph(idx: Int) {
-        emitNewParagraphDictationState(idx)
+    suspend fun moveToParagraph(idx: Int, letterPos: Int? = null) {
+        emitNewParagraphDictationState(idx, letterPos)
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -241,19 +244,25 @@ class DictationGame @Inject constructor(
 
     private suspend fun revealWord(currentState: SimpleCursorPos) {
         val cursorLetterPos = currentState.letterPos ?: return
+        val gameRecord = dictationGameRecord ?: return
 
-        dictationGameRecord
-            ?.dictationProgressList?.get(currentState.paragraphIdx)
-            ?.revealWord(cursorLetterPos)
+        gameRecord
+            .dictationProgressList[currentState.paragraphIdx]
+            .revealWord(cursorLetterPos)
+
         vibratorEngine.vibrareTick()
+        saveDictationProgress(currentState.paragraphIdx, gameRecord.gameHeader.gui)
         moveNextBlank()
     }
 
     private suspend fun revealParagraph(paragraphIdx: Int) {
-        dictationGameRecord
-            ?.dictationProgressList?.get(paragraphIdx)
-            ?.revealParagraph()
+        val gameRecord = dictationGameRecord ?: return
 
+        gameRecord
+            .dictationProgressList[paragraphIdx]
+            .revealParagraph()
+
+        saveDictationProgress(paragraphIdx, gameRecord.gameHeader.gui)
         moveNextBlank()
     }
 
@@ -287,16 +296,23 @@ class DictationGame @Inject constructor(
         }
     }
 
-    private suspend fun emitNewParagraphDictationState(paragraphIdx: Int) {
+    private suspend fun emitNewParagraphDictationState(paragraphIdx: Int, letterPos: Int? = null) {
         val gameRecord = dictationGameRecord ?: return
 
         val progressList = gameRecord.dictationProgressList
 
         if (paragraphIdx < 0 || paragraphIdx >= progressList.size) return
 
+        val progress = progressList[paragraphIdx]
+        val targetLetterPos = if (letterPos != null) {
+            progress.originalTxt.firstLetterOfWord(letterPos) ?: progress.getFirstBlank()
+        } else {
+            progress.getFirstBlank()
+        }
+
         updateCursorPos(
             SimpleCursorPos(
-                letterPos = progressList[paragraphIdx].getFirstBlank(),
+                letterPos = targetLetterPos,
                 paragraphIdx = paragraphIdx
             )
         )

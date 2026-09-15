@@ -81,6 +81,16 @@ class ReaderEngine @Inject constructor(
         audioJob?.cancel()
 
         audioJob = coroutineScope.launch(Dispatchers.Default) {
+            if (isActive) {
+                _utteranceFlow.emit(
+                    Utterance(
+                        utteranceId = utteranceId,
+                        start = startPos,
+                        end = end
+                    )
+                )
+            }
+
             val speed = calculateSpeechRate()
             val cacheKey = msg to speed
 
@@ -98,15 +108,14 @@ class ReaderEngine @Inject constructor(
                     generatedAudio
                 }
 
-            playAudio(audio.samples, audio.sampleRate, utteranceId, end)
+            playAudio(audio.samples, audio.sampleRate, utteranceId)
         }
     }
 
     private suspend fun playAudio(
         samples: FloatArray,
         sampleRate: Int,
-        utteranceId: String,
-        end: Int
+        utteranceId: String
     ) = withContext(Dispatchers.IO) {
 
         Log.d("ReaderEngine", "playAudio: samples=${samples.size}, rate=$sampleRate, id=$utteranceId")
@@ -119,7 +128,7 @@ class ReaderEngine @Inject constructor(
             track.play()
 
             Log.d("ReaderEngine", "AudioTrack started playing (PCM FLOAT)")
-            
+
             val chunkSize = 4096
             var written = 0
             while (written < samples.size && isActive) {
@@ -130,14 +139,6 @@ class ReaderEngine @Inject constructor(
             }
 
             if (isActive) {
-                _utteranceFlow.emit(
-                    Utterance(
-                        utteranceId = utteranceId,
-                        start = this@ReaderEngine.offset,
-                        end = end
-                    )
-                )
-
                 // Wait for the track to finish playing
                 val durationMs = (samples.size.toFloat() / sampleRate * 1000).toLong()
                 delay((durationMs + 100).milliseconds)
