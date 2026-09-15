@@ -3,7 +3,7 @@ package ar.com.westsoft.listening.dictionary.repository
 import android.text.Html
 import android.util.Log
 import ar.com.westsoft.listening.dictionary.database.StoredDefinition
-import ar.com.westsoft.listening.dictionary.screen.DictionaryDao
+import ar.com.westsoft.listening.dictionary.database.DictionaryDao
 import ar.com.westsoft.listening.dictionary.source.WiktionaryService
 import javax.inject.Inject
 import javax.inject.Singleton

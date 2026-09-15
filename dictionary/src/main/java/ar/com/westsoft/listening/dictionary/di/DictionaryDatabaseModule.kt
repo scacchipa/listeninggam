@@ -3,7 +3,7 @@ package ar.com.westsoft.listening.dictionary.di
 import android.content.Context
 import androidx.room.Room
 import ar.com.westsoft.listening.dictionary.database.DictionaryDatabase
-import ar.com.westsoft.listening.dictionary.screen.DictionaryDao
+import ar.com.westsoft.listening.dictionary.database.DictionaryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

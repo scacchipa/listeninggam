@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.dictionary.screen
+package ar.com.westsoft.listening.dictionary.source
 
 import com.google.gson.annotations.SerializedName
 
