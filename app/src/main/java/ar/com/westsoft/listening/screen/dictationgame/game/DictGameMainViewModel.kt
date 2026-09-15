@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.SettingsField
-import ar.com.westsoft.listening.dictionary.DictionaryManager
+import ar.com.westsoft.listening.dictionary.repository.DictionaryManager
 import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetSpeedLevelUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.StoreSpeedLevelUseCase

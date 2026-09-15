@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.screen.dictationgame.game
+package ar.com.westsoft.listening.dictionary.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background

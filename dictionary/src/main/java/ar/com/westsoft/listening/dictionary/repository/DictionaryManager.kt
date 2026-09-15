@@ -1,7 +1,10 @@
-package ar.com.westsoft.listening.dictionary
+package ar.com.westsoft.listening.dictionary.repository
 
 import android.text.Html
 import android.util.Log
+import ar.com.westsoft.listening.dictionary.database.StoredDefinition
+import ar.com.westsoft.listening.dictionary.screen.DictionaryDao
+import ar.com.westsoft.listening.dictionary.source.WiktionaryService
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,7 +15,7 @@ class DictionaryManager @Inject constructor(
 ) {
     suspend fun getDefinition(word: String): String {
         val lowercaseWord = word.lowercase().trim()
-        
+
         // 1. Check local database first
         val cached = dictionaryDao.getDefinition(lowercaseWord)
         if (cached != null) {
@@ -31,7 +34,7 @@ class DictionaryManager @Inject constructor(
                 val validDefinitions = item.definitions
                     .map { it.definition }
                     .filter { it.isNotBlank() }
-                    .map { 
+                    .map {
                         // Strip HTML tags and normalize whitespace
                         Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY)
                             .toString()

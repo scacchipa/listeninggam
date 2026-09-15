@@ -48,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.scacchipa.keyboard.screen.KeyboardLayout
 import ar.com.scacchipa.keyboard.screen.KeyboardType
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.dictionary.screen.DictionaryScreen
 import ar.com.westsoft.listening.screen.dictationgame.navigation.DictGameTopBar
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
 

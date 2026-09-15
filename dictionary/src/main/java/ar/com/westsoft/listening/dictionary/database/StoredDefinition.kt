@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening.dictionary
+package ar.com.westsoft.listening.dictionary.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

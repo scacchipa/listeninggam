@@ -1,9 +1,10 @@
-package ar.com.westsoft.listening.dictionary
+package ar.com.westsoft.listening.dictionary.screen
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import ar.com.westsoft.listening.dictionary.database.StoredDefinition
 
 @Dao
 interface DictionaryDao {
