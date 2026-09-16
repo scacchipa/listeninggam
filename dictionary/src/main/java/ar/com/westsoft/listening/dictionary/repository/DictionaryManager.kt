@@ -1,9 +1,8 @@
 package ar.com.westsoft.listening.dictionary.repository
 
-import android.text.Html
 import android.util.Log
-import ar.com.westsoft.listening.dictionary.database.StoredDefinition
 import ar.com.westsoft.listening.dictionary.database.DictionaryDao
+import ar.com.westsoft.listening.dictionary.database.StoredDefinition
 import ar.com.westsoft.listening.dictionary.source.WiktionaryService
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,11 +34,8 @@ class DictionaryManager @Inject constructor(
                     .map { it.definition }
                     .filter { it.isNotBlank() }
                     .map {
-                        // Strip HTML tags and normalize whitespace
-                        Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY)
-                            .toString()
-                            .replace(Regex("\\s+"), " ")
-                            .trim()
+                        // Keep HTML tags but normalize whitespace
+                        it.replace(Regex("\\s+"), " ").trim()
                     }
                     .filter { it.isNotEmpty() }
 
