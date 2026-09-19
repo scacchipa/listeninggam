@@ -7,6 +7,7 @@ import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.SettingsField
 import ar.com.westsoft.listening.dictionary.repository.DictionaryManager
+import ar.com.westsoft.listening.dictionary.source.WiktionaryItem
 import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetSpeedLevelUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.StoreSpeedLevelUseCase
@@ -34,8 +35,11 @@ class DictGameMainViewModel @Inject constructor(
     private val isMutableShowingDictionary = MutableStateFlow(false)
     val isShowingDictionary = isMutableShowingDictionary as StateFlow<Boolean>
 
-    private val mutableDictionaryDefinition = MutableStateFlow<String?>(null)
-    val dictionaryDefinition = mutableDictionaryDefinition as StateFlow<String?>
+    private val mutableDictionaryDefinition = MutableStateFlow<List<WiktionaryItem>>(emptyList())
+    val dictionaryDefinition = mutableDictionaryDefinition as StateFlow<List<WiktionaryItem>>
+
+    private val mutableDictionaryError = MutableStateFlow<String?>(null)
+    val dictionaryError = mutableDictionaryError as StateFlow<String?>
 
     fun onSettingButtonClicked() {
         viewModelScope.launch {
@@ -51,12 +55,18 @@ class DictGameMainViewModel @Inject constructor(
 
     fun onDictButtonClicked() {
         viewModelScope.launch {
-            val word = dictationGame.getCurrentWord()
-            if (word != null) {
-                mutableDictionaryDefinition.value = "Searching definition for $word..."
-                isMutableShowingDictionary.value = true
-                mutableDictionaryDefinition.value = dictionaryManager.getDefinition(word)
+            val word = dictationGame.getCurrentWord() ?: return@launch
+
+            mutableDictionaryError.value = "Searching definition for $word..."
+            mutableDictionaryDefinition.value = emptyList()
+            isMutableShowingDictionary.value = true
+            val result = dictionaryManager.getDefinition(word)
+            if (result.isEmpty()) {
+                mutableDictionaryError.value = "No definitions found or error fetching data."
+            } else {
+                mutableDictionaryError.value = null
             }
+            mutableDictionaryDefinition.value = result
         }
     }
 

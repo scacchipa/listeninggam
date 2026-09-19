@@ -2,8 +2,8 @@ package ar.com.westsoft.listening.dictionary.di
 
 import android.content.Context
 import androidx.room.Room
-import ar.com.westsoft.listening.dictionary.database.DictionaryDatabase
 import ar.com.westsoft.listening.dictionary.database.DictionaryDao
+import ar.com.westsoft.listening.dictionary.database.DictionaryDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,11 +18,14 @@ object DictionaryDatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): DictionaryDatabase {
-        return Room.databaseBuilder(
-            context,
-            DictionaryDatabase::class.java,
-            "dictionary_database"
-        ).build()
+        return Room
+            .databaseBuilder(
+                context,
+                DictionaryDatabase::class.java,
+                "dictionary_database"
+            )
+            .fallbackToDestructiveMigration(false)
+            .build()
     }
 
     @Provides

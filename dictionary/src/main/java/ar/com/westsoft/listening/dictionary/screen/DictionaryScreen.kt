@@ -19,11 +19,14 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import ar.com.westsoft.listening.dictionary.source.WiktionaryItem
 
 @Composable
 fun DictionaryScreen(
-    definition: String?,
+    items: List<WiktionaryItem>,
+    error: String?,
     onBack: () -> Unit
 ) {
     BackHandler {
@@ -47,17 +50,45 @@ fun DictionaryScreen(
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
-        if (definition != null) {
-            val annotatedDefinition = remember(definition) {
-                parseHtmlToAnnotatedString(definition)
-            }
+        if (error != null) {
             Text(
-                text = annotatedDefinition,
-                style = MaterialTheme.typography.bodyLarge
+                text = error,
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (error.startsWith("Searching")) Color.Unspecified else Color.Red,
+                modifier = Modifier.padding(vertical = 4.dp)
             )
-        } else {
+        }
+
+        if (items.isNotEmpty()) {
+            items.forEach { item ->
+                Text(
+                    text = item.partOfSpeech.replaceFirstChar { it.uppercase() } + ":",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2196F3)
+                    ),
+                    modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+                )
+
+                item.definitions.forEachIndexed { index, def ->
+                    val annotatedDefinition = remember(def.definition) {
+                        parseHtmlToAnnotatedString(def.definition)
+                    }
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("  ${index + 1}. ")
+                            }
+                            append(annotatedDefinition)
+                        },
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    )
+                }
+            }
+        } else if (error == null) {
             Text(
-                text = "No definition loaded",
+                text = "No definitions loaded",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -65,22 +96,11 @@ fun DictionaryScreen(
 }
 
 private fun parseHtmlToAnnotatedString(htmlText: String): AnnotatedString {
-    if (htmlText.startsWith("Error")) {
-        return buildAnnotatedString {
-            append(htmlText)
-            addStyle(SpanStyle(color = Color.Red), 0, htmlText.length)
-        }
-    }
-
     // A quick simple stateful tag parser for <b>, <i>, etc.
     return buildAnnotatedString {
         var i = 0
         val boldStack = mutableListOf<Int>()
         val italicStack = mutableListOf<Int>()
-
-        // Pre-parse using android.text.Html to normalize entities (like &quot;, &lt;, etc.)
-        // But since we want to handle internal sub-tags customized, we can also parse line-by-line.
-        // Let's iterate through characters to build spans for simple <b> and <i> tags.
         val cleanText = StringBuilder()
 
         while (i < htmlText.length) {
@@ -107,6 +127,17 @@ private fun parseHtmlToAnnotatedString(htmlText: String): AnnotatedString {
                     }
                     i += 4
                 }
+                htmlText[i] == '<' -> {
+                    val closingIndex = htmlText.indexOf('>', i)
+                    if (closingIndex != -1) {
+                        val tag = htmlText.substring(i, closingIndex + 1)
+                        println("Unhandled HTML tag in definition: $tag")
+                        i = closingIndex + 1
+                    } else {
+                        cleanText.append(htmlText[i])
+                        i++
+                    }
+                }
                 else -> {
                     cleanText.append(htmlText[i])
                     i++
@@ -115,20 +146,5 @@ private fun parseHtmlToAnnotatedString(htmlText: String): AnnotatedString {
         }
         
         append(cleanText.toString())
-
-        // Apply a distinct style for structural headings (like "noun:", "verb:")
-        val textStr = cleanText.toString()
-        textStr.split("\n").forEach { line ->
-            if (line.endsWith(":")) {
-                val start = textStr.indexOf(line)
-                if (start != -1) {
-                    addStyle(
-                        SpanStyle(fontWeight = FontWeight.Bold, color = Color(0xFF2196F3)),
-                        start,
-                        start + line.length
-                    )
-                }
-            }
-        }
     }
 }
