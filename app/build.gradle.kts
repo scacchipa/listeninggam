@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebaseCrashlytics)
 }
 
 kotlin {
@@ -158,4 +160,7 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
 }
