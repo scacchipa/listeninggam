@@ -20,6 +20,7 @@ fun NavigationScreen() {
             .background(MaterialTheme.colorScheme.background)
     ) {
         composable(route = Routes.SelectGame.name) {
+
             SelectGameScreen(
                 navDictationGame = { navController.navigate(Routes.DictationGame.name) }
             )
