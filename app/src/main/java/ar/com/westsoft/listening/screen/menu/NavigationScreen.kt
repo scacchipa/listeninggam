@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import ar.com.westsoft.listening.screen.dictationgame.game.ConfigNewDictationGameScreen
 import ar.com.westsoft.listening.screen.dictationgame.game.DictGameMainScreen
 import ar.com.westsoft.listening.screen.dictationgame.navigation.NavDictationGameViewModel
 import ar.com.westsoft.listening.screen.dictationgame.navigation.SelectDictationGameScreen
@@ -34,6 +35,19 @@ fun NavigationScreen() {
             SelectDictationGameScreen(
                 playGame = { gui ->
                     navController.navigate(Routes.DictationGame.name + "?gui=$gui")
+                },
+                goBack = { navController.navigateUp() },
+                openConfigNewGame = {
+                    navController.navigate(Routes.ConfigNewGame.name)
+                }
+            )
+        }
+        composable(route = Routes.ConfigNewGame.name) {
+            ConfigNewDictationGameScreen(
+                playGame = { gui ->
+                    navController.navigate(Routes.DictationGame.name + "?gui=$gui") {
+                        popUpTo(Routes.SelectGame.name)
+                    }
                 },
                 goBack = { navController.navigateUp() }
             )
@@ -58,5 +72,6 @@ fun NavigationScreen() {
 
 enum class Routes {
     SelectGame,
+    ConfigNewGame,
     DictationGame,
 }
