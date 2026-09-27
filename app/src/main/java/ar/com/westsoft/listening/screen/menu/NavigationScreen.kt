@@ -36,8 +36,7 @@ fun NavigationScreen() {
                 playGame = { gui ->
                     navController.navigate(Routes.DictationGame.name + "?gui=$gui")
                 },
-                goBack = { navController.navigateUp() },
-                openConfigNewGame = {
+                onDownloadBookClicked = {
                     navController.navigate(Routes.ConfigNewGame.name)
                 }
             )

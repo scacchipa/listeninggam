@@ -30,59 +30,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun SelectDictationGameScreen(
     playGame: (gui: Long) -> Unit,
-    goBack: () -> Unit,
-    openConfigNewGame: () -> Unit
+    onDownloadBookClicked: () -> Unit
 ) {
     val viewModel = hiltViewModel<SelectDictationGameViewModel>()
 
     val games = viewModel.games.collectAsState().value
-    var menuExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize(1f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            contentAlignment = Alignment.TopStart
-        ) {
-            Button(
-                onClick = { menuExpanded = true },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black
-                )
-            ) {
-                Text(
-                    text = "Book",
-                    color = Color.White,
-                    fontSize = 28.sp,
-                    style = MaterialTheme.typography.headlineMedium
-                )
-            }
-            DropdownMenu(
-                expanded = menuExpanded,
-                onDismissRequest = { menuExpanded = false },
-                modifier = Modifier.background(Color.Black)
-            ) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = "Download",
-                            color = Color.White,
-                            fontSize = 28.sp,
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                    },
-                    onClick = {
-                        menuExpanded = false
-                        openConfigNewGame()
-                    }
-                )
-            }
-        }
+        SelectDictationGameTopMenu(
+            onDownloadClicked = onDownloadBookClicked
+        )
 
         LazyColumn(
             modifier = Modifier
@@ -98,15 +58,56 @@ fun SelectDictationGameScreen(
                         onDelete = { viewModel.onDeleteGame(games[idx]) }
                     )
                 }
-                item {
-                    Button(onClick = { goBack() }) {
-                        Text(
-                            text = "Back",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
-                }
             }
         )
+    }
+}
+
+@Composable
+fun SelectDictationGameTopMenu(
+    onDownloadClicked: () -> Unit
+) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Black)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        contentAlignment = Alignment.TopStart
+    ) {
+        Button(
+            onClick = { menuExpanded = true },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black
+            )
+        ) {
+            Text(
+                text = "Book",
+                color = Color.White,
+                fontSize = 28.sp,
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
+        DropdownMenu(
+            expanded = menuExpanded,
+            onDismissRequest = { menuExpanded = false },
+            modifier = Modifier.background(Color.Black)
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = "Download",
+                        color = Color.White,
+                        fontSize = 28.sp,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                },
+                onClick = {
+                    menuExpanded = false
+                    onDownloadClicked()
+                }
+            )
+        }
     }
 }

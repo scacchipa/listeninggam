@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ar.com.westsoft.listening.data.game.DictationGameHeader
 
 @Composable
@@ -26,6 +27,7 @@ fun SelectorGameButton(
             Text(
                 text = "${game.gui} ${game.title} " +
                         String.format("%.1f", game.progressRate * 100) + "%",
+                fontSize = 20.sp,
                 style = MaterialTheme.typography.bodyMedium
             )
             Icon(

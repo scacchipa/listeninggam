@@ -1,6 +1,7 @@
 package ar.com.westsoft.listening.screen.dictationgame.game
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,6 +45,7 @@ fun ConfigNewDictationGameScreen(
     when (value) {
         is GameCreationGameStatus.Uninitialized -> {
             Column(
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 var txtAddress by remember { mutableStateOf("") }
