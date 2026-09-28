@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -69,45 +67,41 @@ fun SelectDictationGameTopMenu(
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Black)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        contentAlignment = Alignment.TopStart
-    ) {
-        Button(
-            onClick = { menuExpanded = true },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black
-            )
-        ) {
-            Text(
-                text = "Book",
-                color = Color.White,
-                fontSize = 28.sp,
-                style = MaterialTheme.typography.headlineMedium
-            )
-        }
-        DropdownMenu(
-            expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false },
-            modifier = Modifier.background(Color.Black)
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = "Download",
-                        color = Color.White,
-                        fontSize = 28.sp,
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                },
-                onClick = {
-                    menuExpanded = false
-                    onDownloadClicked()
-                }
-            )
+    DictGameTopBar {
+        Box {
+            Button(
+                onClick = { menuExpanded = true },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black
+                )
+            ) {
+                Text(
+                    text = "Book",
+                    color = Color.White,
+                    fontSize = 28.sp,
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            }
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+                modifier = Modifier.background(Color.Black)
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = "Download",
+                            color = Color.White,
+                            fontSize = 28.sp,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    },
+                    onClick = {
+                        menuExpanded = false
+                        onDownloadClicked()
+                    }
+                )
+            }
         }
     }
 }

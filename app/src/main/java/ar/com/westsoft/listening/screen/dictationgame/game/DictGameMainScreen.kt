@@ -3,6 +3,7 @@ package ar.com.westsoft.listening.screen.dictationgame.game
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,9 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -36,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import ar.com.scacchipa.keyboard.screen.KeyboardLayout
 import ar.com.scacchipa.keyboard.screen.KeyboardType
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
+import ar.com.westsoft.listening.screen.dictationgame.navigation.DictGameTopBar
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
 import ar.com.westsoft.listening.screen.dictationgame.settings.SelectableButton
 
@@ -62,13 +67,13 @@ fun DictGameMainScreen(
         val localDensity = LocalDensity.current
 
         // Create element height in pixel state
-        var heightPx by remember { mutableStateOf(0f) }
+        var heightPx by remember { mutableFloatStateOf(0f) }
 
         // Create element height in dp state
         var heightDp by remember { mutableStateOf(0.dp) }
 
         // Create element height in pixel state
-        var widthPx by remember { mutableStateOf(0f) }
+        var widthPx by remember { mutableFloatStateOf(0f) }
 
         // Create element height in dp state
         var widthDp by remember { mutableStateOf(0.dp) }
@@ -106,57 +111,75 @@ fun DictGameMainScreen(
                         height = heightDp - keyboardHeightDp
                     )
             ) {
-                Row {
-                    IconButton(
-                        onClick = { viewModel.onSettingButtonClicked() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Settings,
-                            contentDescription = "Preference"
-                        )
-                    }
+                DictGameTopBar(
+                    leadingButton = {
+                        IconButton(
+                            onClick = { goBack() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back to main menu",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    trailingButton = {
+                        IconButton(
+                            onClick = { viewModel.onSettingButtonClicked() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Settings,
+                                contentDescription = "Preference",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    content = {
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val speedLevel = viewModel.speedLevelState.collectAsState().value
+                            SelectableButton(
+                                settingField = speedLevel,
+                                onSelected = {
+                                    viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
+                                },
+                                value = SpeedLevelPreference.LOW_SPEED_LEVEL,
+                                text = "50%",
+                                textColor = Color.Green
+                            )
 
-                    Row {
-                        val speedLevel = viewModel.speedLevelState.collectAsState().value
-                        SelectableButton(
-                            settingField = speedLevel,
-                            onSelected = {
-                                viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
-                            },
-                            value = SpeedLevelPreference.LOW_SPEED_LEVEL,
-                            text = "50%",
-                            textColor = Color.Green
-                        )
-
-                        SelectableButton(
-                            settingField = speedLevel,
-                            onSelected = {
-                                viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
-                            },
-                            value = SpeedLevelPreference.MEDIUM_SPEED_LEVEL,
-                            text = "75%",
-                            textColor = Color.Yellow
-                        )
-                        SelectableButton(
-                            settingField = speedLevel,
-                            onSelected = {
-                                viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
-                            },
-                            value = SpeedLevelPreference.NORMAL_SPEED_LEVEL,
-                            text = "100%",
-                            textColor = Color.Magenta
-                        )
-                        SelectableButton(
-                            settingField = speedLevel,
-                            onSelected = {
-                                viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
-                            },
-                            value = SpeedLevelPreference.HIGH_SPEED_LEVEL,
-                            text = "125%",
-                            textColor = Color.Red
-                        )
+                            SelectableButton(
+                                settingField = speedLevel,
+                                onSelected = {
+                                    viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
+                                },
+                                value = SpeedLevelPreference.MEDIUM_SPEED_LEVEL,
+                                text = "75%",
+                                textColor = Color.Yellow
+                            )
+                            SelectableButton(
+                                settingField = speedLevel,
+                                onSelected = {
+                                    viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
+                                },
+                                value = SpeedLevelPreference.NORMAL_SPEED_LEVEL,
+                                text = "100%",
+                                textColor = Color.Magenta
+                            )
+                            SelectableButton(
+                                settingField = speedLevel,
+                                onSelected = {
+                                    viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
+                                },
+                                value = SpeedLevelPreference.HIGH_SPEED_LEVEL,
+                                text = "125%",
+                                textColor = Color.Red
+                            )
+                        }
                     }
-                }
+                )
 
                 GameConsoleScreen(parentWidthPx = widthPx)
             }

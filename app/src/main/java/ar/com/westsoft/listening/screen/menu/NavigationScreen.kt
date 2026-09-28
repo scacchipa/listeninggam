@@ -60,7 +60,7 @@ fun NavigationScreen() {
             var isConfig by remember { mutableStateOf(false) }
             if (isConfig) {
                 DictGameMainScreen(
-                    goBack = { navController.popBackStack(Routes.DictationGame.name, false) }
+                    goBack = { navController.navigateUp() }
                 )
             } else {
                 viewModel.onSetupGame(gui) { isConfig = true }
