@@ -2,8 +2,8 @@ package ar.com.westsoft.listening.screen.dictationgame.game
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,7 +29,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -42,7 +47,6 @@ import ar.com.scacchipa.keyboard.screen.KeyboardType
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.screen.dictationgame.navigation.DictGameTopBar
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
-import ar.com.westsoft.listening.screen.dictationgame.settings.SelectableButton
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -135,48 +139,88 @@ fun DictGameMainScreen(
                         }
                     },
                     content = {
-                        Row(
-                            horizontalArrangement = Arrangement.End,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            val speedLevel = viewModel.speedLevelState.collectAsState().value
-                            SelectableButton(
-                                settingField = speedLevel,
-                                onSelected = {
-                                    viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
-                                },
-                                value = SpeedLevelPreference.LOW_SPEED_LEVEL,
-                                text = "50%",
-                                textColor = Color.Green
-                            )
+                        val speedLevel = viewModel.speedLevelState.collectAsState().value
+                        var speedMenuExpanded by remember { mutableStateOf(false) }
 
-                            SelectableButton(
-                                settingField = speedLevel,
-                                onSelected = {
-                                    viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
-                                },
-                                value = SpeedLevelPreference.MEDIUM_SPEED_LEVEL,
-                                text = "75%",
-                                textColor = Color.Yellow
-                            )
-                            SelectableButton(
-                                settingField = speedLevel,
-                                onSelected = {
-                                    viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
-                                },
-                                value = SpeedLevelPreference.NORMAL_SPEED_LEVEL,
-                                text = "100%",
-                                textColor = Color.Magenta
-                            )
-                            SelectableButton(
-                                settingField = speedLevel,
-                                onSelected = {
-                                    viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
-                                },
-                                value = SpeedLevelPreference.HIGH_SPEED_LEVEL,
-                                text = "125%",
-                                textColor = Color.Red
-                            )
+                        val currentSpeedText = when (speedLevel.value) {
+                            SpeedLevelPreference.LOW_SPEED_LEVEL -> "0.5x"
+                            SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> "0.75x"
+                            SpeedLevelPreference.NORMAL_SPEED_LEVEL -> "1.0x"
+                            SpeedLevelPreference.HIGH_SPEED_LEVEL -> "1.25x"
+                            SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> "1.5x"
+                            SpeedLevelPreference.MAX_SPEED_LEVEL -> "2.0x"
+                        }
+
+                        val currentSpeedColor = when (speedLevel.value) {
+                            SpeedLevelPreference.LOW_SPEED_LEVEL -> Color.Green
+                            SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> Color.Yellow
+                            SpeedLevelPreference.NORMAL_SPEED_LEVEL -> Color.Magenta
+                            SpeedLevelPreference.HIGH_SPEED_LEVEL -> Color.Red
+                            SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> Color.Cyan
+                            SpeedLevelPreference.MAX_SPEED_LEVEL -> Color.Blue
+                        }
+
+                        Box {
+                            Button(
+                                onClick = { speedMenuExpanded = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.DarkGray
+                                )
+                            ) {
+                                Text(
+                                    text = currentSpeedText,
+                                    color = currentSpeedColor,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = speedMenuExpanded,
+                                onDismissRequest = { speedMenuExpanded = false },
+                                modifier = Modifier.background(Color.Black)
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("0.5x", color = Color.Green, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("0.75x", color = Color.Yellow, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("1.0x", color = Color.Magenta, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("1.25x", color = Color.Red, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("1.5x", color = Color.Cyan, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("2.0x", color = Color.Blue, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.MAX_SPEED_LEVEL)
+                                    }
+                                )
+                            }
                         }
                     }
                 )
