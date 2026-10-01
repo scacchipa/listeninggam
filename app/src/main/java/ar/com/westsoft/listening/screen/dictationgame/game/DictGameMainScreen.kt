@@ -1,6 +1,5 @@
 package ar.com.westsoft.listening.screen.dictationgame.game
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -60,8 +59,7 @@ fun DictGameMainScreen(
     val viewModel = hiltViewModel<DictGameMainViewModel>()
     val isShowingOptions = viewModel.isShowingPreference.collectAsState()
     val isShowingDictionary = viewModel.isShowingDictionary.collectAsState()
-    val dictionaryDefinition = viewModel.dictionaryDefinition.collectAsState()
-    val dictionaryError = viewModel.dictionaryError.collectAsState()
+    val dictionaryStack = viewModel.dictionaryStack.collectAsState()
 
     BackHandler(true) {
         when {
@@ -79,10 +77,10 @@ fun DictGameMainScreen(
                 )
             }
         }
-        isShowingDictionary.value -> {
+        isShowingDictionary.value && dictionaryStack.value.isNotEmpty() -> {
             DictionaryScreen(
-                items = dictionaryDefinition.value,
-                error = dictionaryError.value,
+                dictionaryStack = dictionaryStack.value,
+                onWordClick = { word -> viewModel.onWordSelected(word) },
                 onBack = { viewModel.onDictionaryClosed() }
             )
         }

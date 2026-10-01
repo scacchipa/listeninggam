@@ -7,7 +7,7 @@ import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.data.game.DictationGame
 import ar.com.westsoft.listening.data.repository.SettingsField
 import ar.com.westsoft.listening.dictionary.repository.DictionaryManager
-import ar.com.westsoft.listening.dictionary.source.WiktionaryItem
+import ar.com.westsoft.listening.dictionary.screen.DictionaryScreenState
 import ar.com.westsoft.listening.domain.dictationgame.engine.KeyEventUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.GetSpeedLevelUseCase
 import ar.com.westsoft.listening.domain.dictationgame.settings.StoreSpeedLevelUseCase
@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,11 +36,8 @@ class DictGameMainViewModel @Inject constructor(
     private val isMutableShowingDictionary = MutableStateFlow(false)
     val isShowingDictionary = isMutableShowingDictionary as StateFlow<Boolean>
 
-    private val mutableDictionaryDefinition = MutableStateFlow<List<WiktionaryItem>>(emptyList())
-    val dictionaryDefinition = mutableDictionaryDefinition as StateFlow<List<WiktionaryItem>>
-
-    private val mutableDictionaryError = MutableStateFlow<String?>(null)
-    val dictionaryError = mutableDictionaryError as StateFlow<String?>
+    private val _dictionaryStack = MutableStateFlow<List<DictionaryScreenState>>(emptyList())
+    val dictionaryStack = _dictionaryStack.asStateFlow()
 
     fun onSettingButtonClicked() {
         viewModelScope.launch {
@@ -56,23 +54,42 @@ class DictGameMainViewModel @Inject constructor(
     fun onDictButtonClicked() {
         viewModelScope.launch {
             val word = dictationGame.getCurrentWord() ?: return@launch
+            pushDictionaryScreen(word)
+        }
+    }
 
-            mutableDictionaryError.value = "Searching definition for $word..."
-            mutableDictionaryDefinition.value = emptyList()
-            isMutableShowingDictionary.value = true
-            val result = dictionaryManager.getDefinition(word)
-            if (result.isEmpty()) {
-                mutableDictionaryError.value = "No definitions found or error fetching data."
-            } else {
-                mutableDictionaryError.value = null
-            }
-            mutableDictionaryDefinition.value = result
+    fun onWordSelected(word: String) {
+        viewModelScope.launch {
+            pushDictionaryScreen(word)
+        }
+    }
+
+    private suspend fun pushDictionaryScreen(word: String) {
+        val currentState = _dictionaryStack.value
+        val newState = DictionaryScreenState(word, emptyList(), "Searching definition for $word...")
+        _dictionaryStack.value = currentState + newState
+        isMutableShowingDictionary.value = true
+
+        val result = dictionaryManager.getDefinition(word)
+        val errorMsg = if (result.isEmpty()) "No definitions found or error fetching data." else null
+
+        val updatedList = _dictionaryStack.value.toMutableList()
+        if (updatedList.isNotEmpty()) {
+            val lastIndex = updatedList.size - 1
+            updatedList[lastIndex] = DictionaryScreenState(word, result, errorMsg)
+            _dictionaryStack.value = updatedList
         }
     }
 
     fun onDictionaryClosed() {
         viewModelScope.launch {
-            isMutableShowingDictionary.emit(false)
+            val stack = _dictionaryStack.value
+            if (stack.size > 1) {
+                _dictionaryStack.value = stack.dropLast(1)
+            } else {
+                _dictionaryStack.value = emptyList()
+                isMutableShowingDictionary.emit(false)
+            }
         }
     }
 
