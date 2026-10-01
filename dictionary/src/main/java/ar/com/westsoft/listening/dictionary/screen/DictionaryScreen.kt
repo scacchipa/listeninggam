@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,15 +26,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import ar.com.westsoft.listening.dictionary.source.WiktionaryItem
 
-data class DictionaryScreenState(
-    val word: String,
-    val items: List<WiktionaryItem>,
-    val error: String?
-)
-
 @Composable
 fun DictionaryScreen(
-    dictionaryStack: List<DictionaryScreenState>,
+    word: String,
+    items: List<WiktionaryItem>,
+    error: String?,
     onWordClick: (String) -> Unit,
     onBack: () -> Unit
 ) {
@@ -43,12 +38,7 @@ fun DictionaryScreen(
         onBack()
     }
 
-    val currentScreen = dictionaryStack.lastOrNull()
-    val items = currentScreen?.items ?: emptyList()
-    val error = currentScreen?.error
-    val currentWord = currentScreen?.word ?: ""
-
-    var selectedWord by remember(currentWord) { mutableStateOf<String?>(null) }
+    var selectedWord by remember(word) { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -57,16 +47,6 @@ fun DictionaryScreen(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Button(onClick = onBack) {
-            Text("Back")
-        }
-        
-        Text(
-            text = if (currentWord.isNotBlank()) "Definition: $currentWord" else "Dictionary Definition",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-
         if (error != null) {
             Text(
                 text = error,
@@ -186,7 +166,6 @@ private fun parseHtmlToAnnotatedString(htmlText: String): AnnotatedString {
                 htmlText[i] == '<' -> {
                     val closingIndex = htmlText.indexOf('>', i)
                     if (closingIndex != -1) {
-                        val tag = htmlText.substring(i, closingIndex + 1)
                         i = closingIndex + 1
                     } else {
                         cleanText.append(htmlText[i])

@@ -59,7 +59,9 @@ fun DictGameMainScreen(
     val viewModel = hiltViewModel<DictGameMainViewModel>()
     val isShowingOptions = viewModel.isShowingPreference.collectAsState()
     val isShowingDictionary = viewModel.isShowingDictionary.collectAsState()
-    val dictionaryStack = viewModel.dictionaryStack.collectAsState()
+    val dictionaryWord = viewModel.dictionaryWord.collectAsState()
+    val dictionaryDefinition = viewModel.dictionaryDefinition.collectAsState()
+    val dictionaryError = viewModel.dictionaryError.collectAsState()
 
     BackHandler(true) {
         when {
@@ -77,12 +79,43 @@ fun DictGameMainScreen(
                 )
             }
         }
-        isShowingDictionary.value && dictionaryStack.value.isNotEmpty() -> {
-            DictionaryScreen(
-                dictionaryStack = dictionaryStack.value,
-                onWordClick = { word -> viewModel.onWordSelected(word) },
-                onBack = { viewModel.onDictionaryClosed() }
-            )
+        isShowingDictionary.value -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                DictGameTopBar(
+                    leadingButton = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = { viewModel.onDictionaryClosed() }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back to game",
+                                    tint = Color.White
+                                )
+                            }
+                            Text(
+                                text = dictionaryWord.value,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = Color.White,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                )
+                DictionaryScreen(
+                    word = dictionaryWord.value,
+                    items = dictionaryDefinition.value,
+                    error = dictionaryError.value,
+                    onWordClick = { word -> viewModel.onWordSelected(word) },
+                    onBack = { viewModel.onDictionaryClosed() }
+                )
+            }
         }
         else -> {
             val localDensity = LocalDensity.current
