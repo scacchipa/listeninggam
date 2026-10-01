@@ -1,18 +1,22 @@
 package ar.com.westsoft.listening.screen.dictationgame.settings
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -107,46 +111,32 @@ fun DictGameSettingScreen(
         }
 
         Row {
-            Text("Speed Level:")
-            Column {
-                val speedLevel = viewModel.speedLevelStateFlow.collectAsState().value
-                SelectableButton(
-                    settingField = speedLevel,
-                    onSelected = {
-                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.LOW_SPEED_LEVEL)
-                    },
-                    value = SpeedLevelPreference.LOW_SPEED_LEVEL,
-                    text = "LOW (50%)",
-                    textColor = Color.Green
-                )
+            Text(
+                text = "- speed level ",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            val speedLevel = viewModel.speedLevelStateFlow.collectAsState().value
+            val items = listOf(
+                SpeedLevelPreference.LOW_SPEED_LEVEL to "50%",
+                SpeedLevelPreference.MEDIUM_SPEED_LEVEL to "75%",
+                SpeedLevelPreference.NORMAL_SPEED_LEVEL to "100%",
+                SpeedLevelPreference.HIGH_SPEED_LEVEL to "125%",
+                SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL to "150%",
+                SpeedLevelPreference.MAX_SPEED_LEVEL to "200%"
+            )
 
-                SelectableButton(
-                    settingField = speedLevel,
-                    onSelected = {
-                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
-                    },
-                    value = SpeedLevelPreference.MEDIUM_SPEED_LEVEL,
-                    text = "MEDIUM (75%)",
-                    textColor = Color.Yellow
-                )
-                SelectableButton(
-                    settingField = speedLevel,
-                    onSelected = {
-                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
-                    },
-                    value = SpeedLevelPreference.NORMAL_SPEED_LEVEL,
-                    text = "NORMAL (100%)",
-                    textColor = Color.Magenta
-                )
-                SelectableButton(
-                    settingField = speedLevel,
-                    onSelected = {
-                        viewModel.onSpeedLevelChanged(SpeedLevelPreference.HIGH_SPEED_LEVEL)
-                    },
-                    value = SpeedLevelPreference.HIGH_SPEED_LEVEL,
-                    text = "HIGH (125%)",
-                    textColor = Color.Red
-                )
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.horizontalScroll(rememberScrollState())
+            ) {
+                items.forEachIndexed { index, (pref, label) ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = items.size),
+                        onClick = { viewModel.onSpeedLevelChanged(pref) },
+                        selected = speedLevel.value == pref
+                    ) {
+                        Text(text = label)
+                    }
+                }
             }
         }
 

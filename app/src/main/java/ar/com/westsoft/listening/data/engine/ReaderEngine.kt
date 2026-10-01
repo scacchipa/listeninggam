@@ -159,6 +159,8 @@ class ReaderEngine @Inject constructor(
             SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> 0.75f
             SpeedLevelPreference.NORMAL_SPEED_LEVEL -> 1.00f
             SpeedLevelPreference.HIGH_SPEED_LEVEL -> 1.25f
+            SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> 1.50f
+            SpeedLevelPreference.MAX_SPEED_LEVEL -> 2.00f
         }
 }
 
