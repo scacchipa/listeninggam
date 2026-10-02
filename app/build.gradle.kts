@@ -110,6 +110,7 @@ tasks.withType<com.android.build.gradle.tasks.MergeSourceSetFolders> {
 dependencies {
     implementation(project(":keyboard"))
     implementation(project(":epub"))
+    implementation(project(":dictionary"))
 
     implementation(libs.androidx.compose.runtime)
 

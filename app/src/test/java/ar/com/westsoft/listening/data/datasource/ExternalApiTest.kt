@@ -51,13 +51,13 @@ class ExternalApiTest {
     fun setUp() {
         whenever(mockClient.newCall(mockRequest)).thenReturn(mockCall)
         whenever(mockCall.execute()).thenReturn(mockResponse)
-        whenever(mockResponse.body()).thenReturn(mockResponseBody)
+        whenever(mockResponse.body).thenReturn(mockResponseBody)
         whenever(mockResponseBody.string()).thenReturn("Response body")
     }
 
     @Test
     fun subjectDownloadFile_successfully() = runTest {
-        whenever(mockResponse.body()).thenReturn(mockResponseBody)
+        whenever(mockResponse.body).thenReturn(mockResponseBody)
 
         builderConstructor = mockConstruction(Request.Builder::class.java) { mock, setting ->
                 whenever(mock.url("www.pablo.com.ar")).thenReturn(mock)
@@ -75,7 +75,7 @@ class ExternalApiTest {
 
     @Test
     fun subjectDownloadFile_returnNull() = runTest {
-        whenever(mockResponse.body()).thenReturn(null)
+        whenever(mockResponse.body).thenReturn(null)
 
         builderConstructor = mockConstruction(Request.Builder::class.java) { mock, setting ->
                 whenever(mock.url("www.pablo.com.ar")).thenReturn(mock)
@@ -92,7 +92,7 @@ class ExternalApiTest {
 
     @Test
     fun subjectDownloadFile_withOriginalRequestBuild() = runTest {
-        whenever(mockResponse.body()).thenReturn(mockResponseBody)
+        whenever(mockResponse.body).thenReturn(mockResponseBody)
 
         builderConstructor = mockConstruction(Request.Builder::class.java) { mock, setting ->
             whenever(mock.url("www.pablo.com.ar")).thenReturn(mock)
