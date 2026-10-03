@@ -11,7 +11,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Singleton
 
 @Module
@@ -23,16 +22,7 @@ class SpeakerProvider {
     fun provideOfflineTts(
         context: Context
     ): OfflineTts {
-        val ttsDir = File(context.filesDir, "tts")
-        
-        // Ensure fresh copy if not completed
-        if (!File(ttsDir, "completed").exists()) {
-            Log.d("SpeakerProvider", "Copying TTS assets to ${ttsDir.absolutePath}")
-            ttsDir.deleteRecursively()
-            ttsDir.mkdirs()
-            copyAssetFolder(context, "tts", context.filesDir)
-            File(ttsDir, "completed").createNewFile()
-        }
+        val ttsDir = File(context.filesDir, "tts/vits-piper-en_US-amy-low")
 
         val config = OfflineTtsConfig(
             model = OfflineTtsModelConfig(
@@ -52,36 +42,6 @@ class SpeakerProvider {
         } catch (e: Exception) {
             Log.e("SpeakerProvider", "Failed to initialize OfflineTts", e)
             throw e
-        }
-    }
-
-    private fun copyAssetFolder(context: Context, assetFolderName: String, destinationDir: File) {
-        val assetManager = context.assets
-        val assets = assetManager.list(assetFolderName) ?: return
-
-        if (assets.isEmpty()) {
-            // It's a file
-            copyAssetFile(context, assetFolderName, File(destinationDir, assetFolderName))
-        } else {
-            // It's a directory
-            val dir = File(destinationDir, assetFolderName)
-            if (!dir.exists()) dir.mkdirs()
-            for (asset in assets) {
-                copyAssetFolder(context, "$assetFolderName/$asset", destinationDir)
-            }
-        }
-    }
-
-    private fun copyAssetFile(context: Context, assetFilePath: String, destinationFile: File) {
-        destinationFile.parentFile?.mkdirs()
-        try {
-            context.assets.open(assetFilePath).use { inputStream ->
-                FileOutputStream(destinationFile).use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("SpeakerProvider", "Error copying asset file: $assetFilePath", e)
         }
     }
 }
