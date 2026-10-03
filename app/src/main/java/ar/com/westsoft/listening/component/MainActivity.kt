@@ -30,6 +30,7 @@ import ar.com.westsoft.listening.screen.ListeningTheme
 import ar.com.westsoft.listening.screen.menu.NavigationScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -39,8 +40,9 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity() {
                 val context = applicationContext
 
                 LaunchedEffect(Unit) {
+                    val url = "https://huggingface.co/buckets/scacchipa/read_write_public/resolve/vits-piper-en_US-amy-low.tar.bz2?download=true"
                     val ttsDir = File(context.filesDir, "tts")
                     val completedFile = File(ttsDir, "completed")
 
@@ -68,100 +71,14 @@ class MainActivity : ComponentActivity() {
                         delay(1000.milliseconds)
                         isSplashing = false
                     } else {
-                        statusText = "Downloading voice model..."
-                        val downloaded = withContext(Dispatchers.IO) {
-                            try {
-                                ttsDir.deleteRecursively()
-                                ttsDir.mkdirs()
-
-                                val archiveFile = File(ttsDir, "vits-piper-en_US-amy-low.tar.bz2")
-                                val url = "https://huggingface.co/buckets/scacchipa/read_write_public/resolve/vits-piper-en_US-amy-low.tar.bz2?download=true"
-
-                                val client = OkHttpClient.Builder()
-                                    .readTimeout(120, TimeUnit.SECONDS)
-                                    .connectTimeout(30, TimeUnit.SECONDS)
-                                    .build()
-                                val request = Request.Builder().url(url).build()
-                                val response = client.newCall(request).execute()
-                                if (!response.isSuccessful) {
-                                    Log.e("MainActivity", "Download failed with code: ${response.code}")
-                                    return@withContext false
-                                }
-                                val body = response.body ?: return@withContext false
-                                val contentLength = body.contentLength()
-                                val inputStream = body.byteStream()
-                                val outputStream = FileOutputStream(archiveFile)
-
-                                val buffer = ByteArray(8192)
-                                var bytesRead: Long = 0
-                                var read: Int
-                                while (inputStream.read(buffer).also { read = it } != -1) {
-                                    outputStream.write(buffer, 0, read)
-                                    bytesRead += read
-                                    progress =
-                                        if (contentLength > 0)
-                                            (bytesRead.toFloat() / contentLength.toFloat()) * 0.8f
-                                        else
-                                            minOf(progress + 0.005f, 0.79f)
-                                }
-                                outputStream.flush()
-                                outputStream.close()
-                                inputStream.close()
-                                response.close()
-
-                                Log.d("MainActivity", "Download completed. Size: ${archiveFile.length()} bytes")
-
-                                statusText = "Extracting files..."
-                                progress = 0.85f
-
-                                BufferedInputStream(FileInputStream(archiveFile)).use { bis ->
-                                    BZip2CompressorInputStream(bis).use { bzis ->
-                                        TarArchiveInputStream(bzis).use { tais ->
-                                            var entry = tais.nextTarEntry
-                                            var count = 0
-                                            while (entry != null) {
-                                                val entryName = entry.name
-                                                if (entryName.isNotBlank() && entryName != "./") {
-                                                    val f = File(ttsDir, entryName)
-                                                    count++
-                                                    if (entry.isDirectory || entryName.endsWith("/")) {
-                                                        f.mkdirs()
-                                                        val logMsg = "Extracted Dir [$count]: $entryName"
-                                                        Log.d("MainActivity", logMsg)
-                                                        statusText = logMsg
-                                                    } else {
-                                                        val buffer = ByteArray(327680)
-                                                        var read: Int
-                                                        f.parentFile?.mkdirs()
-                                                        BufferedOutputStream(FileOutputStream(f), 327680).use { bos ->
-                                                            while (tais.read(buffer).also { read = it } != -1) {
-                                                                bos.write(buffer, 0, read)
-                                                            }
-                                                            bos.flush()
-                                                        }
-                                                        val logMsg = "Extracted File [$count]: $entryName"
-                                                        Log.d("MainActivity", logMsg)
-                                                        statusText = logMsg
-                                                        progress = 0.85f + (minOf(count.toFloat() / 150f, 1f) * 0.14f)
-                                                    }
-                                                }
-                                                entry = tais.nextTarEntry
-                                            }
-                                        }
-                                    }
-                                }
-
-                                archiveFile.delete()
-                                completedFile.createNewFile()
-                                progress = 1f
-                                true
-                            } catch (e: Exception) {
-                                Log.e("MainActivity", "Error downloading/extracting TTS model", e)
-                                e.printStackTrace()
-                                false
-                            }
-                        }
-
+                        statusText = "Downloading & Extracting..."
+                        val downloaded = downloadAndExtractTts(
+                            ttsDir = ttsDir,
+                            url = url,
+                            completedFile = completedFile,
+                            onProgressUpdate = { progress = it },
+                            onStatusUpdate = { statusText = it }
+                        )
                         if (downloaded) {
                             delay(500.milliseconds)
                             isSplashing = false
@@ -219,5 +136,146 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+private suspend fun downloadAndExtractTts(
+    ttsDir: File,
+    url: String,
+    completedFile: File,
+    onProgressUpdate: (Float) -> Unit,
+    onStatusUpdate: (String) -> Unit
+): Boolean = withContext(Dispatchers.IO) {
+    try {
+        ttsDir.deleteRecursively()
+        ttsDir.mkdirs()
+
+        val pipedIn = PipedInputStream(65536)
+        val pipedOut = PipedOutputStream(pipedIn)
+
+        val downloadJob = async(Dispatchers.IO) {
+            downloadTtsModel(url, pipedOut, onProgressUpdate)
+        }
+
+        val extractJob = async(Dispatchers.IO) {
+            extractTtsModel(ttsDir, pipedIn, onProgressUpdate, onStatusUpdate)
+        }
+
+        val downloadSuccess = downloadJob.await()
+        val extractSuccess = extractJob.await()
+
+        if (downloadSuccess && extractSuccess) {
+            completedFile.createNewFile()
+            onProgressUpdate(1f)
+            true
+        } else {
+            false
+        }
+    } catch (e: Exception) {
+        Log.e("MainActivity", "Error downloading/extracting TTS model", e)
+        e.printStackTrace()
+        false
+    }
+}
+
+private fun downloadTtsModel(
+    url: String,
+    pipedOut: PipedOutputStream,
+    onProgressUpdate: (Float) -> Unit
+): Boolean {
+    return try {
+        val client = OkHttpClient.Builder()
+            .readTimeout(120, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .build()
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).execute()
+        if (!response.isSuccessful) {
+            Log.e("MainActivity", "Download failed with code: ${response.code}")
+            try { pipedOut.close() } catch (_: Exception) {}
+            return false
+        }
+        val body = response.body
+        if (body == null) {
+            try { pipedOut.close() } catch (_: Exception) {}
+            return false
+        }
+        val contentLength = body.contentLength()
+        val inputStream = body.byteStream()
+
+        pipedOut.use { out ->
+            val buffer = ByteArray(8192)
+            var bytesRead: Long = 0
+            var read: Int
+            while (inputStream.read(buffer).also { read = it } != -1) {
+                out.write(buffer, 0, read)
+                bytesRead += read
+                if (contentLength > 0) {
+                    onProgressUpdate((bytesRead.toFloat() / contentLength.toFloat()) * 0.5f)
+                } else {
+                    onProgressUpdate(0.49f)
+                }
+            }
+            out.flush()
+        }
+        inputStream.close()
+        response.close()
+        true
+    } catch (e: Exception) {
+        Log.e("MainActivity", "Error downloading TTS model", e)
+        try { pipedOut.close() } catch (_: Exception) {}
+        false
+    }
+}
+
+private fun extractTtsModel(
+    ttsDir: File,
+    pipedIn: PipedInputStream,
+    onProgressUpdate: (Float) -> Unit,
+    onStatusUpdate: (String) -> Unit
+): Boolean {
+    return try {
+        pipedIn.use { pin ->
+            BufferedInputStream(pin, 65536).use { bis ->
+                BZip2CompressorInputStream(bis).use { bzis ->
+                    TarArchiveInputStream(bzis).use { tais ->
+                        var entry = tais.nextEntry
+                        var count = 0
+                        while (entry != null) {
+                            val entryName = entry.name
+                            if (entryName.isNotBlank() && entryName != "./") {
+                                val f = File(ttsDir, entryName)
+                                count++
+                                if (entry.isDirectory || entryName.endsWith("/")) {
+                                    f.mkdirs()
+                                    val logMsg = "Extracted Dir [$count]: $entryName"
+                                    Log.d("MainActivity", logMsg)
+                                    onStatusUpdate(logMsg)
+                                } else {
+                                    val buffer = ByteArray(327680)
+                                    var read: Int
+                                    f.parentFile?.mkdirs()
+                                    BufferedOutputStream(FileOutputStream(f), 327680).use { bos ->
+                                        while (tais.read(buffer).also { read = it } != -1) {
+                                            bos.write(buffer, 0, read)
+                                        }
+                                        bos.flush()
+                                    }
+                                    val logMsg = "Extracted File [$count]: $entryName"
+                                    Log.d("MainActivity", logMsg)
+                                    onStatusUpdate(logMsg)
+                                    onProgressUpdate(0.5f + (minOf(count.toFloat() / 150f, 1f) * 0.49f))
+                                }
+                            }
+                            entry = tais.nextEntry
+                        }
+                    }
+                }
+            }
+        }
+        true
+    } catch (e: Exception) {
+        Log.e("MainActivity", "Error extracting TTS model", e)
+        false
     }
 }
