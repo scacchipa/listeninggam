@@ -36,6 +36,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -112,8 +114,8 @@ class MainActivity : ComponentActivity() {
                                 statusText = "Extracting files..."
                                 progress = 0.85f
 
-                                FileInputStream(archiveFile).use { fis ->
-                                    BZip2CompressorInputStream(fis).use { bzis ->
+                                BufferedInputStream(FileInputStream(archiveFile)).use { bis ->
+                                    BZip2CompressorInputStream(bis).use { bzis ->
                                         TarArchiveInputStream(bzis).use { tais ->
                                             var entry = tais.nextTarEntry
                                             var count = 0
@@ -128,16 +130,14 @@ class MainActivity : ComponentActivity() {
                                                         Log.d("MainActivity", logMsg)
                                                         statusText = logMsg
                                                     } else {
+                                                        val buffer = ByteArray(327680)
+                                                        var read: Int
                                                         f.parentFile?.mkdirs()
-                                                        FileOutputStream(f).use { fos ->
-                                                            val buffer = ByteArray(8192)
-                                                            var read: Int
-                                                            var totalBytes = 0L
+                                                        BufferedOutputStream(FileOutputStream(f), 327680).use { bos ->
                                                             while (tais.read(buffer).also { read = it } != -1) {
-                                                                fos.write(buffer, 0, read)
-                                                                totalBytes += read
-                                                                Log.d("MainActivity", "Writing $entryName: $totalBytes bytes")
+                                                                bos.write(buffer, 0, read)
                                                             }
+                                                            bos.flush()
                                                         }
                                                         val logMsg = "Extracted File [$count]: $entryName"
                                                         Log.d("MainActivity", logMsg)
