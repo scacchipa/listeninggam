@@ -1,4 +1,4 @@
-package ar.com.westsoft.listening
+package ar.com.westsoft.listening.screen
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme

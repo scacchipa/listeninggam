@@ -1,5 +1,3 @@
-import java.net.URL
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -59,58 +57,14 @@ android {
     androidResources {
         noCompress += listOf("onnx", "tflite", "vox", "txt", "json", "dict", "phondata", "phonindex", "phontab", "intonations")
     }
-
-    sourceSets {
-        getByName("main") {
-            assets.srcDirs("build/generated/assets")
-        }
-    }
-}
-
-val downloadTtsModel by tasks.registering {
-    val outputFile = file("build/intermediates/tts/vits-piper-en_US-amy-low.tar.bz2")
-    outputs.file(outputFile)
-
-    doLast {
-        outputFile.parentFile.mkdirs()
-        val url = "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-amy-low.tar.bz2"
-        println("Downloading $url...")
-        URL(url).openStream().use { input ->
-            outputFile.outputStream().use { output ->
-                input.copyTo(output)
-            }
-        }
-    }
-}
-
-val extractTtsModel by tasks.registering(Copy::class) {
-    dependsOn(downloadTtsModel)
-    val archive = downloadTtsModel.get().outputs.files.singleFile
-    
-    doFirst {
-        delete("build/generated/assets/tts")
-    }
-    
-    from(tarTree(resources.bzip2(archive))) {
-        includeEmptyDirs = false
-        eachFile {
-            val parts = path.split("/")
-            if (parts.size > 1 && parts[0] == "vits-piper-en_US-amy-low") {
-                path = parts.drop(1).joinToString("/")
-            }
-        }
-    }
-    into("build/generated/assets/tts")
-}
-
-tasks.withType<com.android.build.gradle.tasks.MergeSourceSetFolders> {
-    dependsOn(extractTtsModel)
 }
 
 dependencies {
     implementation(project(":keyboard"))
     implementation(project(":epub"))
     implementation(project(":dictionary"))
+
+    implementation("org.apache.commons:commons-compress:1.26.0")
 
     implementation(libs.androidx.compose.runtime)
 
