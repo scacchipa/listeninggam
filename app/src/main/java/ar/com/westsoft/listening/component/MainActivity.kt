@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,20 +56,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             ListeningTheme {
                 var isSplashing by remember { mutableStateOf(true) }
-                var progress by remember { mutableFloatStateOf(0f) }
+                var downloadProgress by remember { mutableFloatStateOf(0f) }
+                var extractionProgress by remember { mutableFloatStateOf(0f) }
                 var statusText by remember { mutableStateOf("Checking resources...") }
 
                 val context = applicationContext
+                val ttsDir = remember { File(context.filesDir, "tts") }
+                val completedFile = remember { File(ttsDir, "completed") }
 
                 LaunchedEffect(Unit) {
                     val url = "https://huggingface.co/buckets/scacchipa/read_write_public/resolve/vits-piper-en_US-amy-low.tar.bz2?download=true"
-                    val ttsDir = File(context.filesDir, "tts")
-                    val completedFile = File(ttsDir, "completed")
 
                     if (completedFile.exists()) {
-                        statusText = "Ready"
-                        progress = 1f
-                        delay(1000.milliseconds)
+                        statusText = ""
+                        downloadProgress = 1f
+                        extractionProgress = 1f
+                        delay(3000.milliseconds) // 3 seconds pause when files already exist
                         isSplashing = false
                     } else {
                         statusText = "Downloading & Extracting..."
@@ -76,8 +79,8 @@ class MainActivity : ComponentActivity() {
                             ttsDir = ttsDir,
                             url = url,
                             completedFile = completedFile,
-                            onProgressUpdate = { progress = it },
-                            onStatusUpdate = { statusText = it }
+                            onDownloadProgress = { downloadProgress = it },
+                            onExtractionProgress = { extractionProgress = it },
                         )
                         if (downloaded) {
                             delay(500.milliseconds)
@@ -121,14 +124,39 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
-                            LinearProgressIndicator(
-                                progress = { progress },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 32.dp, vertical = 24.dp),
-                                color = Color.White,
-                                trackColor = Color.DarkGray
-                            )
+                            if (!completedFile.exists()) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 32.dp, vertical = 24.dp)
+                                ) {
+                                    Text(
+                                        text = "Download",
+                                        color = Color.Gray,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(bottom = 4.dp)
+                                    )
+                                    LinearProgressIndicator(
+                                        progress = { downloadProgress },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        color = Color.White,
+                                        trackColor = Color.DarkGray
+                                    )
+
+                                    Text(
+                                        text = "Extraction",
+                                        color = Color.Gray,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+                                    )
+                                    LinearProgressIndicator(
+                                        progress = { extractionProgress },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        color = Color.White,
+                                        trackColor = Color.DarkGray
+                                    )
+                                }
+                            }
                         }
                     }
                 } else {
@@ -143,8 +171,8 @@ private suspend fun downloadAndExtractTts(
     ttsDir: File,
     url: String,
     completedFile: File,
-    onProgressUpdate: (Float) -> Unit,
-    onStatusUpdate: (String) -> Unit
+    onDownloadProgress: (Float) -> Unit,
+    onExtractionProgress: (Float) -> Unit
 ): Boolean = withContext(Dispatchers.IO) {
     try {
         ttsDir.deleteRecursively()
@@ -154,11 +182,11 @@ private suspend fun downloadAndExtractTts(
         val pipedOut = PipedOutputStream(pipedIn)
 
         val downloadJob = async(Dispatchers.IO) {
-            downloadTtsModel(url, pipedOut, onProgressUpdate)
+            downloadTtsModel(url, pipedOut, onDownloadProgress)
         }
 
         val extractJob = async(Dispatchers.IO) {
-            extractTtsModel(ttsDir, pipedIn, onProgressUpdate, onStatusUpdate)
+            extractTtsModel(ttsDir, pipedIn, onExtractionProgress)
         }
 
         val downloadSuccess = downloadJob.await()
@@ -166,7 +194,8 @@ private suspend fun downloadAndExtractTts(
 
         if (downloadSuccess && extractSuccess) {
             completedFile.createNewFile()
-            onProgressUpdate(1f)
+            onDownloadProgress(1f)
+            onExtractionProgress(1f)
             true
         } else {
             false
@@ -181,7 +210,7 @@ private suspend fun downloadAndExtractTts(
 private fun downloadTtsModel(
     url: String,
     pipedOut: PipedOutputStream,
-    onProgressUpdate: (Float) -> Unit
+    onDownloadProgress: (Float) -> Unit
 ): Boolean {
     return try {
         val client = OkHttpClient.Builder()
@@ -211,15 +240,16 @@ private fun downloadTtsModel(
                 out.write(buffer, 0, read)
                 bytesRead += read
                 if (contentLength > 0) {
-                    onProgressUpdate((bytesRead.toFloat() / contentLength.toFloat()) * 0.5f)
+                    onDownloadProgress(bytesRead.toFloat() / contentLength.toFloat())
                 } else {
-                    onProgressUpdate(0.49f)
+                    onDownloadProgress(0.5f)
                 }
             }
             out.flush()
         }
         inputStream.close()
         response.close()
+        onDownloadProgress(1f)
         true
     } catch (e: Exception) {
         Log.e("MainActivity", "Error downloading TTS model", e)
@@ -231,8 +261,7 @@ private fun downloadTtsModel(
 private fun extractTtsModel(
     ttsDir: File,
     pipedIn: PipedInputStream,
-    onProgressUpdate: (Float) -> Unit,
-    onStatusUpdate: (String) -> Unit
+    onExtractionProgress: (Float) -> Unit,
 ): Boolean {
     return try {
         pipedIn.use { pin ->
@@ -250,7 +279,6 @@ private fun extractTtsModel(
                                     f.mkdirs()
                                     val logMsg = "Extracted Dir [$count]: $entryName"
                                     Log.d("MainActivity", logMsg)
-                                    onStatusUpdate(logMsg)
                                 } else {
                                     val buffer = ByteArray(327680)
                                     var read: Int
@@ -263,8 +291,7 @@ private fun extractTtsModel(
                                     }
                                     val logMsg = "Extracted File [$count]: $entryName"
                                     Log.d("MainActivity", logMsg)
-                                    onStatusUpdate(logMsg)
-                                    onProgressUpdate(0.5f + (minOf(count.toFloat() / 150f, 1f) * 0.49f))
+                                    onExtractionProgress(minOf(count.toFloat() / 150f, 1f))
                                 }
                             }
                             entry = tais.nextEntry
@@ -273,6 +300,7 @@ private fun extractTtsModel(
                 }
             }
         }
+        onExtractionProgress(1f)
         true
     } catch (e: Exception) {
         Log.e("MainActivity", "Error extracting TTS model", e)
