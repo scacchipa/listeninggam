@@ -77,9 +77,7 @@ class OpenEpubUseCase @Inject constructor(
 
         val htmlFiles = mutableListOf<EpubXhtmlHtml>()
         opf.manifest?.items?.forEach { item ->
-            val mediaType = item.mediaType
-
-            when (mediaType) {
+            when (val mediaType = item.mediaType) {
                 "application/xhtml+xml" -> {
 
                     val xhtmlSaxParser = factory.newSAXParser()
@@ -90,7 +88,7 @@ class OpenEpubUseCase @Inject constructor(
                         xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
                         val xhtml = xhtmlHandler.getXhtml()
 
-                        println(xhtml.tagWrap())
+                        println(xhtml.getTextContained())
 
                         htmlFiles.add(xhtml)
                     }
@@ -108,4 +106,3 @@ class OpenEpubUseCase @Inject constructor(
         return htmlFiles.toList()
     }
 }
-
