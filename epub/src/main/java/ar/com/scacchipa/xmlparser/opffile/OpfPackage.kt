@@ -9,4 +9,8 @@ class OpfPackage(
     var manifest : OpfManifest? = null,
     var spine : OpfSpine? = null,
     var guide : OpfGuide? = null,
-) : OpfTag
+) : OpfTag {
+
+    val spineRefs: List<OpfItemRef>
+        get(): List<OpfItemRef> = spine?.data ?: emptyList()
+}

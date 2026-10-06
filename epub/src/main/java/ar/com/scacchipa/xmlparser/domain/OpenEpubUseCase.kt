@@ -31,14 +31,21 @@ class OpenEpubUseCase @Inject constructor(
         val documentBuilder = DocumentBuilderFactory.newInstance()
             .newDocumentBuilder()
 
+        val containerXmlStr = ePubMap["/META-INF/container.xml"] ?: ePubMap["META-INF/container.xml"]
+            ?: throw IllegalStateException("container.xml not found in EPUB")
+
         val ePubContainerXml = EPubContainerXml(
-            document = documentBuilder.parse(ePubMap["/META-INF/container.xml"]?.byteInputStream())
+            document = documentBuilder.parse(containerXmlStr.byteInputStream())
                 .also { it.normalizeDocument() }
         )
 
+        val opfPath = ePubContainerXml.opfFullPath
+        val opfXmlStr = ePubMap["/$opfPath"] ?: ePubMap[opfPath]
+            ?: throw IllegalStateException("OPF file $opfPath not found in EPUB")
+
         val opfContainerXml = OpfContainerXml(
-            path = Path(ePubContainerXml.opfFullPath),
-            document = documentBuilder.parse(ePubMap["/${ePubContainerXml.opfFullPath}"]?.byteInputStream())
+            path = Path(opfPath),
+            document = documentBuilder.parse(opfXmlStr.byteInputStream())
                 .also { it.normalizeDocument() }
         )
 
@@ -48,7 +55,7 @@ class OpenEpubUseCase @Inject constructor(
         val containerSaxParser = factory.newSAXParser()
         val containerHandler = EpubContainerHandler()
 
-        ePubMap["/META-INF/container.xml"]?.byteInputStream().use { inputStream ->
+        containerXmlStr.byteInputStream().use { inputStream ->
             containerSaxParser.parse(InputSource(inputStream), containerHandler)
         }
 
@@ -56,7 +63,7 @@ class OpenEpubUseCase @Inject constructor(
         val opfSaxParser = factory.newSAXParser()
         val opfHandler = OpfXmlHandler()
 
-        ePubMap["/${ePubContainerXml.opfFullPath}"]?.byteInputStream().use { inputStream ->
+        opfXmlStr.byteInputStream().use { inputStream ->
             opfSaxParser.parse(InputSource(inputStream), opfHandler)
         }
 
@@ -66,7 +73,9 @@ class OpenEpubUseCase @Inject constructor(
         val ncxSaxParser = factory.newSAXParser()
         val ncxHandler = NcxXmlHandler()
 
-        ePubMap["/${opfContainerXml.tocNcxFullPath}"]?.byteInputStream().use { inputStream ->
+        val ncxPath = opfContainerXml.tocNcxFullPath
+        val ncxXmlStr = ePubMap["/$ncxPath"] ?: ePubMap[ncxPath]
+        ncxXmlStr?.byteInputStream()?.use { inputStream ->
             ncxSaxParser.parse(InputSource(inputStream), ncxHandler)
         }
 
@@ -76,15 +85,22 @@ class OpenEpubUseCase @Inject constructor(
         // Convert Items from Manifest
 
         val htmlFiles = mutableListOf<EpubXhtmlHtml>()
-        opf.manifest?.items?.forEach { item ->
-            when (val mediaType = item.mediaType) {
-                "application/xhtml+xml" -> {
 
-                    val xhtmlSaxParser = factory.newSAXParser()
-                    val xhtmlHandler = EpubXHtmlHandler()
+        val opfParentDir = if (opfPath.contains("/")) opfPath.substringBeforeLast("/") else ""
 
-                    ePubMap["/OEBPS/${item.href}"]?.byteInputStream().use { inputStream ->
-                        println("Parsing: ${item.href}")
+        opf.spineRefs
+            .mapNotNull { spineRef -> opf.manifest?.items?.find { it.id == spineRef.id } }
+            .forEach { item ->
+                val xhtmlSaxParser = factory.newSAXParser()
+                val xhtmlHandler = EpubXHtmlHandler()
+
+                val href = item.href
+                val fullPath = if (opfParentDir.isNotEmpty()) "$opfParentDir/$href" else href
+                val xhtmlXmlStr = ePubMap["/$fullPath"] ?: ePubMap[fullPath] ?: ePubMap["/OEBPS/$href"] ?: ePubMap["OEBPS/$href"] ?: ePubMap[href]
+
+                if (xhtmlXmlStr != null) {
+                    println("Parsing: $fullPath")
+                    xhtmlXmlStr.byteInputStream().use { inputStream ->
                         xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
                         val xhtml = xhtmlHandler.getXhtml()
 
@@ -92,13 +108,10 @@ class OpenEpubUseCase @Inject constructor(
 
                         htmlFiles.add(xhtml)
                     }
-
-                }
-                else -> {
-                    println("MediaType: $mediaType converter didn't found")
+                } else {
+                    println("⚠️ No se encontró el archivo xhtml: $fullPath")
                 }
             }
-        }
 
         println(ncx)
         println("tocContent")
