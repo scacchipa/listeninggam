@@ -81,36 +81,30 @@ class OpenEpubUseCase @Inject constructor(
 
         val ncx = ncxHandler.getNcx()
 
-
-        // Convert Items from Manifest
-
-        val htmlFiles = mutableListOf<EpubXhtmlHtml>()
-
         val opfParentDir = if (opfPath.contains("/")) opfPath.substringBeforeLast("/") else ""
 
-        opf.spineRefs
+        val htmlFiles: List<EpubXhtmlHtml> = opf.spineRefs
             .mapNotNull { spineRef -> opf.manifest?.items?.find { it.id == spineRef.id } }
-            .forEach { item ->
+            .mapNotNull { item ->
                 val xhtmlSaxParser = factory.newSAXParser()
                 val xhtmlHandler = EpubXHtmlHandler()
 
                 val href = item.href
                 val fullPath = if (opfParentDir.isNotEmpty()) "$opfParentDir/$href" else href
-                val xhtmlXmlStr = ePubMap["/$fullPath"] ?: ePubMap[fullPath] ?: ePubMap["/OEBPS/$href"] ?: ePubMap["OEBPS/$href"] ?: ePubMap[href]
+                val xhtmlXmlStr =
+                    ePubMap["/$fullPath"] ?: ePubMap[fullPath] ?: ePubMap["/OEBPS/$href"]
+                    ?: ePubMap["OEBPS/$href"] ?: ePubMap[href]
+                    ?: return@mapNotNull null
 
-                if (xhtmlXmlStr != null) {
-                    println("Parsing: $fullPath")
-                    xhtmlXmlStr.byteInputStream().use { inputStream ->
-                        xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
-                        val xhtml = xhtmlHandler.getXhtml()
+                println("Parsing: $fullPath")
 
-                        println(xhtml.getTextContained())
-
-                        htmlFiles.add(xhtml)
-                    }
-                } else {
-                    println("⚠️ No se encontró el archivo xhtml: $fullPath")
+                val xhtml:  EpubXhtmlHtml
+                xhtmlXmlStr.byteInputStream().use { inputStream ->
+                    xhtmlSaxParser.parse(InputSource(inputStream), xhtmlHandler)
+                    xhtml = xhtmlHandler.getXhtml()
+                    println("xhtml " + xhtml.getTextContained())
                 }
+                return@mapNotNull xhtml
             }
 
         println(ncx)

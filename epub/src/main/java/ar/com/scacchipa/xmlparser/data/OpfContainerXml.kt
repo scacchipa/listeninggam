@@ -1,5 +1,7 @@
 package ar.com.scacchipa.xmlparser.data
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import ar.com.scacchipa.xmlparser.data.dtos.EPubGuideDto
 import ar.com.scacchipa.xmlparser.data.dtos.EPubManifestDto
 import ar.com.scacchipa.xmlparser.data.dtos.EPubMetadataDto
@@ -13,8 +15,9 @@ import org.w3c.dom.Element
 import java.nio.file.Path
 import javax.inject.Inject
 
-class OpfContainerXml @Inject constructor(
-    private val path: Path,
+class OpfContainerXml
+@Inject constructor(
+    private path: Path,
     document: Document
 ) {
     val uniqueIdentifier = document.documentElement.getAttribute("unique-identifier")
