@@ -41,6 +41,7 @@ import ar.com.scacchipa.keyboard.screen.KeyboardLayout
 import ar.com.scacchipa.keyboard.screen.KeyboardType
 import ar.com.westsoft.listening.data.datasource.SpeedLevelPreference
 import ar.com.westsoft.listening.dictionary.screen.DictionaryScreen
+import ar.com.westsoft.listening.dictionary.source.WiktionaryItem
 import ar.com.westsoft.listening.screen.dictationgame.navigation.DictGameTopBar
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
 
@@ -65,230 +66,261 @@ fun DictGameMainScreen(
     }
 
     when {
-        isShowingOptions.value -> {
-            Row {
-                DictGameSettingScreen(
-                    onBack = { viewModel.onPreferenceClosed() }
-                )
-            }
-        }
-        isShowingDictionary.value -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                DictGameTopBar(
-                    leadingButton = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(
-                                onClick = { viewModel.onDictionaryClosed() }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back to game",
-                                    tint = Color.White
-                                )
-                            }
-                            Text(
-                                text = dictionaryWord.value,
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = Color.White,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-                    }
-                )
-                DictionaryScreen(
-                    word = dictionaryWord.value,
-                    items = dictionaryDefinition.value,
-                    error = dictionaryError.value,
-                    onWordClick = { word -> viewModel.onWordSelected(word) },
-                    onBack = { viewModel.onDictionaryClosed() }
-                )
-            }
-        }
-        else -> {
-            val localDensity = LocalDensity.current
+        isShowingOptions.value -> DictGameOptionsContent(
+            onPreferenceClosed = { viewModel.onPreferenceClosed() }
+        )
+        isShowingDictionary.value -> DictGameDictionaryContent(
+            dictionaryWord = dictionaryWord.value,
+            dictionaryDefinition = dictionaryDefinition.value,
+            dictionaryError = dictionaryError.value,
+            onDictionaryClosed = { viewModel.onDictionaryClosed() },
+            onWordSelected = { word -> viewModel.onWordSelected(word) }
+        )
+        else -> DictGamePlayContent(
+            goBack = goBack,
+            viewModel = viewModel
+        )
+    }
+}
 
-            // Create element height in pixel state
-            var heightPx by remember { mutableFloatStateOf(0f) }
+@Composable
+private fun DictGameOptionsContent(
+    onPreferenceClosed: () -> Unit
+) {
+    Row {
+        DictGameSettingScreen(
+            onBack = onPreferenceClosed
+        )
+    }
+}
 
-            // Create element height in dp state
-            var heightDp by remember { mutableStateOf(0.dp) }
-
-            // Create element height in pixel state
-            var widthPx by remember { mutableFloatStateOf(0f) }
-
-            // Create element height in dp state
-            var widthDp by remember { mutableStateOf(0.dp) }
-
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .onGloballyPositioned { coordinates ->
-                        heightPx = coordinates.size.height.toFloat()
-                        heightDp = with(localDensity) {
-                            coordinates.size.height.toDp()
-                        }
-                        widthPx = coordinates.size.width.toFloat()
-                        widthDp = with(localDensity) {
-                            coordinates.size.width.toDp()
-                        }
-                    }
-            ) {
-                var keyboardHeightDp by remember { mutableStateOf(0.dp) }
-
-                Column(
-                    modifier = Modifier
-                        .size(
-                            width = widthDp,
-                            height = heightDp - keyboardHeightDp
-                        )
+@Composable
+private fun DictGameDictionaryContent(
+    dictionaryWord: String,
+    dictionaryDefinition: List<WiktionaryItem>,
+    dictionaryError: String?,
+    onDictionaryClosed: () -> Unit,
+    onWordSelected: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        DictGameTopBar(
+            leadingButton = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    DictGameTopBar(
-                        leadingButton = {
-                            IconButton(
-                                onClick = { goBack() }
+                    IconButton(
+                        onClick = onDictionaryClosed
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back to game",
+                            tint = Color.White
+                        )
+                    }
+                    Text(
+                        text = dictionaryWord,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+        )
+        DictionaryScreen(
+            word = dictionaryWord,
+            items = dictionaryDefinition,
+            error = dictionaryError,
+            onWordClick = onWordSelected,
+            onBack = onDictionaryClosed
+        )
+    }
+}
+
+@Composable
+private fun DictGamePlayContent(
+    goBack: () -> Unit,
+    viewModel: DictGameMainViewModel
+) {
+    val localDensity = LocalDensity.current
+
+    // Create element height in pixel state
+    var heightPx by remember { mutableFloatStateOf(0f) }
+
+    // Create element height in dp state
+    var heightDp by remember { mutableStateOf(0.dp) }
+
+    // Create element height in pixel state
+    var widthPx by remember { mutableFloatStateOf(0f) }
+
+    // Create element height in dp state
+    var widthDp by remember { mutableStateOf(0.dp) }
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .onGloballyPositioned { coordinates ->
+                heightPx = coordinates.size.height.toFloat()
+                heightDp = with(localDensity) {
+                    coordinates.size.height.toDp()
+                }
+                widthPx = coordinates.size.width.toFloat()
+                widthDp = with(localDensity) {
+                    coordinates.size.width.toDp()
+                }
+            }
+    ) {
+        var keyboardHeightDp by remember { mutableStateOf(0.dp) }
+
+        Column(
+            modifier = Modifier
+                .size(
+                    width = widthDp,
+                    height = heightDp - keyboardHeightDp
+                )
+        ) {
+            DictGameTopBar(
+                leadingButton = {
+                    IconButton(
+                        onClick = goBack
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back to main menu",
+                            tint = Color.White
+                        )
+                    }
+                },
+                trailingButton = {
+                    IconButton(
+                        onClick = { viewModel.onSettingButtonClicked() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = "Preference",
+                            tint = Color.White
+                        )
+                    }
+                },
+                content = {
+                    val speedLevel = viewModel.speedLevelState.collectAsState().value
+                    var speedMenuExpanded by remember { mutableStateOf(false) }
+
+                    val currentSpeedText = when (speedLevel.value) {
+                        SpeedLevelPreference.LOW_SPEED_LEVEL -> "0.5x"
+                        SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> "0.75x"
+                        SpeedLevelPreference.NORMAL_SPEED_LEVEL -> "1.0x"
+                        SpeedLevelPreference.HIGH_SPEED_LEVEL -> "1.25x"
+                        SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> "1.5x"
+                        SpeedLevelPreference.MAX_SPEED_LEVEL -> "2.0x"
+                    }
+
+                    val currentSpeedColor = when (speedLevel.value) {
+                        SpeedLevelPreference.LOW_SPEED_LEVEL -> Color.Green
+                        SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> Color.Yellow
+                        SpeedLevelPreference.NORMAL_SPEED_LEVEL -> Color.Magenta
+                        SpeedLevelPreference.HIGH_SPEED_LEVEL -> Color.Red
+                        SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> Color.Cyan
+                        SpeedLevelPreference.MAX_SPEED_LEVEL -> Color.Blue
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Box {
+                            Button(
+                                onClick = { speedMenuExpanded = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.DarkGray
+                                )
                             ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back to main menu",
-                                    tint = Color.White
+                                Text(
+                                    text = currentSpeedText,
+                                    color = currentSpeedColor,
+                                    style = MaterialTheme.typography.titleMedium
                                 )
                             }
-                        },
-                        trailingButton = {
-                            IconButton(
-                                onClick = { viewModel.onSettingButtonClicked() }
+                            DropdownMenu(
+                                expanded = speedMenuExpanded,
+                                onDismissRequest = { speedMenuExpanded = false },
+                                modifier = Modifier.background(Color.Black)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Settings,
-                                    contentDescription = "Preference",
-                                    tint = Color.White
+                                DropdownMenuItem(
+                                    text = { Text("0.5x", color = Color.Green, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
+                                    }
                                 )
-                            }
-                        },
-                        content = {
-                            val speedLevel = viewModel.speedLevelState.collectAsState().value
-                            var speedMenuExpanded by remember { mutableStateOf(false) }
-
-                            val currentSpeedText = when (speedLevel.value) {
-                                SpeedLevelPreference.LOW_SPEED_LEVEL -> "0.5x"
-                                SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> "0.75x"
-                                SpeedLevelPreference.NORMAL_SPEED_LEVEL -> "1.0x"
-                                SpeedLevelPreference.HIGH_SPEED_LEVEL -> "1.25x"
-                                SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> "1.5x"
-                                SpeedLevelPreference.MAX_SPEED_LEVEL -> "2.0x"
-                            }
-
-                            val currentSpeedColor = when (speedLevel.value) {
-                                SpeedLevelPreference.LOW_SPEED_LEVEL -> Color.Green
-                                SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> Color.Yellow
-                                SpeedLevelPreference.NORMAL_SPEED_LEVEL -> Color.Magenta
-                                SpeedLevelPreference.HIGH_SPEED_LEVEL -> Color.Red
-                                SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> Color.Cyan
-                                SpeedLevelPreference.MAX_SPEED_LEVEL -> Color.Blue
-                            }
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                Box {
-                                    Button(
-                                        onClick = { speedMenuExpanded = true },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color.DarkGray
-                                        )
-                                    ) {
-                                        Text(
-                                            text = currentSpeedText,
-                                            color = currentSpeedColor,
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
+                                DropdownMenuItem(
+                                    text = { Text("0.75x", color = Color.Yellow, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
                                     }
-                                    DropdownMenu(
-                                        expanded = speedMenuExpanded,
-                                        onDismissRequest = { speedMenuExpanded = false },
-                                        modifier = Modifier.background(Color.Black)
-                                    ) {
-                                        DropdownMenuItem(
-                                            text = { Text("0.5x", color = Color.Green, style = MaterialTheme.typography.titleMedium) },
-                                            onClick = {
-                                                speedMenuExpanded = false
-                                                viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
-                                            }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text("0.75x", color = Color.Yellow, style = MaterialTheme.typography.titleMedium) },
-                                            onClick = {
-                                                speedMenuExpanded = false
-                                                viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
-                                            }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text("1.0x", color = Color.Magenta, style = MaterialTheme.typography.titleMedium) },
-                                            onClick = {
-                                                speedMenuExpanded = false
-                                                viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
-                                            }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text("1.25x", color = Color.Red, style = MaterialTheme.typography.titleMedium) },
-                                            onClick = {
-                                                speedMenuExpanded = false
-                                                viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
-                                            }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text("1.5x", color = Color.Cyan, style = MaterialTheme.typography.titleMedium) },
-                                            onClick = {
-                                                speedMenuExpanded = false
-                                                viewModel.setSpeedLevel(SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL)
-                                            }
-                                        )
-                                        DropdownMenuItem(
-                                            text = { Text("2.0x", color = Color.Blue, style = MaterialTheme.typography.titleMedium) },
-                                            onClick = {
-                                                speedMenuExpanded = false
-                                                viewModel.setSpeedLevel(SpeedLevelPreference.MAX_SPEED_LEVEL)
-                                            }
-                                        )
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("1.0x", color = Color.Magenta, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
                                     }
-                                }
-
-                                Button(
-                                    onClick = { viewModel.onDictButtonClicked() },
-                                    modifier = Modifier.padding(start = 8.dp)
-                                ) {
-                                    Text("DICT")
-                                }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("1.25x", color = Color.Red, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("1.5x", color = Color.Cyan, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("2.0x", color = Color.Blue, style = MaterialTheme.typography.titleMedium) },
+                                    onClick = {
+                                        speedMenuExpanded = false
+                                        viewModel.setSpeedLevel(SpeedLevelPreference.MAX_SPEED_LEVEL)
+                                    }
+                                )
                             }
                         }
-                    )
 
-                    GameConsoleScreen(parentWidthPx = widthPx)
+                        Button(
+                            onClick = { viewModel.onDictButtonClicked() },
+                            modifier = Modifier.padding(start = 8.dp)
+                        ) {
+                            Text("DICT")
+                        }
+                    }
                 }
+            )
 
-                KeyboardLayout(
-                    modifier = Modifier
-                        .offset(
-                            x = 0.dp,
-                            y = heightDp - keyboardHeightDp
-                        )
-                        .onSizeChanged { newSize ->
-                            keyboardHeightDp = (newSize.height / localDensity.density).dp
-                        },
-                    widthDp = widthDp,
-                    keyboardType = KeyboardType.BigKey,
-                    action = { keyEvent -> viewModel.onKeyEvent(keyEvent) },
-                    onBack = { goBack() },
-                    resetToken = viewModel.resetSignal.collectAsState().value
-                )
-            }
+            GameConsoleScreen(parentWidthPx = widthPx)
         }
+
+        KeyboardLayout(
+            modifier = Modifier
+                .offset(
+                    x = 0.dp,
+                    y = heightDp - keyboardHeightDp
+                )
+                .onSizeChanged { newSize ->
+                    keyboardHeightDp = (newSize.height / localDensity.density).dp
+                },
+            widthDp = widthDp,
+            keyboardType = KeyboardType.BigKey,
+            action = { keyEvent -> viewModel.onKeyEvent(keyEvent) },
+            onBack = goBack,
+            resetToken = viewModel.resetSignal.collectAsState().value
+        )
     }
 }
