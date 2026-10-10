@@ -18,6 +18,6 @@ abstract class EpubXhtmlRowContainerTag : EpubXhtmlTag {
                 "</$tagName>"
     }
 
-    override fun getTextContained(): String = rows.joinToString("") { it.getTextContained() }
+    override fun getTextContained(): String = rows.joinToString("\n") { it.getTextContained() }
 }
 

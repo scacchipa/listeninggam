@@ -26,10 +26,12 @@ class EpubXhtmlTable(attributes: Attributes): EpubXhtmlTag(attributes) {
     }
 
     override fun getTextContained(): String {
-        return (caption?.getTextContained() ?: "") +
-                (colgroup?.getTextContained() ?: "") +
-                (thead?.getTextContained() ?: "") +
-                (tbody?.getTextContained() ?: "") +
-                (tfoot?.getTextContained() ?: "")
+        return listOfNotNull(
+            caption?.getTextContained()?.takeIf { it.isNotBlank() },
+            colgroup?.getTextContained()?.takeIf { it.isNotBlank() },
+            thead?.getTextContained()?.takeIf { it.isNotBlank() },
+            tbody?.getTextContained()?.takeIf { it.isNotBlank() },
+            tfoot?.getTextContained()?.takeIf { it.isNotBlank() }
+        ).joinToString("\n")
     }
 }
