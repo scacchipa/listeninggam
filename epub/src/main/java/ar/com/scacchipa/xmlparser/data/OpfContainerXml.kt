@@ -10,11 +10,10 @@ import ar.com.scacchipa.xmlparser.ext.allText
 import ar.com.scacchipa.xmlparser.ext.firstText
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import java.nio.file.Path
 import javax.inject.Inject
 
 class OpfContainerXml @Inject constructor(
-    private val path: Path,
+    private val path: String,
     document: Document
 ) {
     val uniqueIdentifier = document.documentElement.getAttribute("unique-identifier")
@@ -24,7 +23,11 @@ class OpfContainerXml @Inject constructor(
     val spine = buildSpine(document)
     val guide = buildGuide(document)
 
-    val tocNcxFullPath =  path.parent.toString() + "/" + manifest.items[spine.toc]?.href.orEmpty()
+    val tocNcxFullPath = run {
+        val parent = if (path.contains("/")) path.substringBeforeLast("/") else ""
+        val href = manifest.items[spine.toc]?.href.orEmpty()
+        if (parent.isNotEmpty()) "$parent/$href" else href
+    }
 
 
     private fun buildMetadata(document: Document): EPubMetadataDto {

@@ -9,4 +9,20 @@ class OpfPackage(
     var manifest : OpfManifest? = null,
     var spine : OpfSpine? = null,
     var guide : OpfGuide? = null,
-) : OpfTag
+
+) : OpfTag {
+
+    val spineRefs: List<OpfItemRef>
+        get(): List<OpfItemRef> = spine?.data ?: emptyList()
+
+    val tocNcxFullPath: String
+        get(): String {
+            val tocPath = spine?.toc ?: return ""
+            return manifest?.getByHRef(tocPath)?.href.orEmpty()
+        }
+
+    val opfParentDir =
+        if (tocNcxFullPath.contains("/"))
+            tocNcxFullPath.substringBeforeLast("/")
+        else ""
+}

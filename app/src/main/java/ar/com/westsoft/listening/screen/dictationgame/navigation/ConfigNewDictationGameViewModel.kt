@@ -58,7 +58,7 @@ class ConfigNewDictationGameViewModel @Inject constructor(
 
    fun onEpubAssetBookSelected(name: String) {
        viewModelScope.launch(defaultDispatcher) {
-           openEpubUseCase(name)
+           createTxtNewDictationGameUseCase(name, name, SourceFile.ASSETS, FileFormat.EPUB3)
        }
    }
 }

@@ -21,6 +21,6 @@ class EpubXhtmlHtml : EpubXhtmlTag {
     }
 
     override fun getTextContained(): String {
-        return (head?.getTextContained() ?: "") + (body?.getTextContained() ?: "")
+        return body?.getTextContained() ?: ""
     }
 }

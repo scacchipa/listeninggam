@@ -19,33 +19,22 @@ class ZipUtils @Inject constructor(
     }
 
     fun unzip(inputStream: InputStream): Map<String,String> {
-
         val destMap = mutableMapOf<String, String>()
-
-        ZipInputStream(inputStream)
-            .use { stream ->
-
-                var directory = ""
-                var entry = stream.nextEntry
-                while(entry != null) {
-
-                    if (entry.isDirectory) {
-                        directory = entry.name
-                    } else {
-                        val fileSize = entry.size.toInt()
-                        val byteIn = ByteArray(fileSize)
-                        var offset = 0
-
-                        while(offset < entry.size) {
-                            offset += stream.read(byteIn, offset, fileSize - offset)
-                        }
-
-
-                        destMap[directory + "/" + entry.name] = String(byteIn)
+        ZipInputStream(inputStream).use { stream ->
+            var entry = stream.nextEntry
+            while (entry != null) {
+                if (!entry.isDirectory) {
+                    val content = String(stream.readBytes())
+                    val name = entry.name
+                    destMap[name] = content
+                    destMap["/$name"] = content
+                    if (name.startsWith("/")) {
+                        destMap[name.removePrefix("/")] = content
                     }
-                    entry = stream.nextEntry
                 }
+                entry = stream.nextEntry
             }
+        }
         return destMap
     }
 }
