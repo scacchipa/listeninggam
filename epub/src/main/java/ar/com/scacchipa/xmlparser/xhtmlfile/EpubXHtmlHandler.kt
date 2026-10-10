@@ -1,33 +1,12 @@
 package ar.com.scacchipa.xmlparser.xhtmlfile
 
+import ar.com.scacchipa.exts.collapseWhitespace
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlHtml
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlString
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlStyle
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTitle
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlTspan
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.EpubXhtmlUnknown
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell.EpubXhtmlTd
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.cell.EpubXhtmlTh
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtml
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlA
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlBlockquote
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlBody
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlBr
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlCaption
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlDiv
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH1
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH2
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH3
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH4
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH5
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlH6
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlLi
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlNav
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlOl
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlP
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlSpan
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlStrong
-import ar.com.scacchipa.xmlparser.xhtmlfile.tag.container.EpubXhtmlUl
 import ar.com.scacchipa.xmlparser.xhtmlfile.tag.svgshape.EpubXhtmlText
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.AttributesImpl
@@ -39,6 +18,30 @@ class EpubXHtmlHandler() : DefaultHandler() {
     private val tagStack = Stack<EpubXhtmlTag>()
 
     private var ePubXHtml = EpubXhtmlHtml(AttributesImpl())
+    private val textBuffer = StringBuilder()
+
+    private fun flushTextBuffer() {
+        if (textBuffer.isNotEmpty()) {
+            val text = textBuffer.toString()
+            textBuffer.clear()
+            if (text.isNotBlank()) {
+                addTextToCurrentTag(text)
+            }
+        }
+    }
+
+    private fun addTextToCurrentTag(text: String) {
+        when (val tag = tagStack.peek()) {
+            is EpubXhtmlTitle -> tag.text = EpubXhtmlString(value = text)
+            is EpubXhtmlContainerTag -> tag.contents.add(EpubXhtmlString(value = text))
+            is EpubXhtmlText -> tag.text.add(EpubXhtmlTspan().apply {
+                this.text = text.collapseWhitespace()
+            })
+            is EpubXhtmlTspan -> tag.text = text.collapseWhitespace()
+            is EpubXhtmlStyle -> tag.text.add(EpubXhtmlString(value = text, normalize = false))
+            else -> println("⚠️ Unknown character container: $text")
+        }
+    }
 
     override fun startElement(
         uri: String?,
@@ -46,6 +49,7 @@ class EpubXHtmlHandler() : DefaultHandler() {
         qName: String?,
         attributes: Attributes?
     ) {
+        flushTextBuffer()
 
         val tag = EpubXhtmlTagsContainer.starterTagElement[qName]?.invoke(
             attributes ?: AttributesImpl(), tagStack
@@ -62,44 +66,11 @@ class EpubXHtmlHandler() : DefaultHandler() {
 
     override fun characters(ch: CharArray?, start: Int, length: Int) {
         val text = String(ch!!, start, length)
-
-        if (text.trim().isNotEmpty()) {
-            when (val tag = tagStack.peek()) {
-                is EpubXhtmlTitle -> tag.text = EpubXhtmlString(value = text)
-                is EpubXhtmlBody -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH1 -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH2 -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH3 -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH4 -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH5 -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlH6 -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlP -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlSpan -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlDiv -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlA -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlStrong -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtml -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlBr -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlBlockquote -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlUl -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlOl -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlLi -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlTh -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlTd -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlCaption -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlNav -> tag.contents.add(EpubXhtmlString(value = text))
-                is EpubXhtmlText -> tag.text.add(EpubXhtmlTspan().apply {
-                    this.text = text
-                })
-                is EpubXhtmlTspan -> tag.text = text
-                is EpubXhtmlStyle -> tag.text.add(EpubXhtmlString(value = text))
-
-                else -> println("⚠️ Unknown character: $text")
-            }
-        }
+        textBuffer.append(text)
     }
 
     override fun endElement(uri: String?, localName: String?, qName: String?) {
+        flushTextBuffer()
         EpubXhtmlTagsContainer.enderTagElement[qName]?.invoke(tagStack)
             ?: println("⚠️ Unknown tag in endElement: $qName")
     }
