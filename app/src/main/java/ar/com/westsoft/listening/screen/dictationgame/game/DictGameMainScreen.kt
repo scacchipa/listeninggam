@@ -45,13 +45,18 @@ import ar.com.westsoft.listening.dictionary.source.WiktionaryItem
 import ar.com.westsoft.listening.screen.dictationgame.navigation.DictGameTopBar
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
 
-private val speedOptions = listOf(
-    Triple(SpeedLevelPreference.LOW_SPEED_LEVEL, "0.5x", Color.Green),
-    Triple(SpeedLevelPreference.MEDIUM_SPEED_LEVEL, "0.75x", Color.Yellow),
-    Triple(SpeedLevelPreference.NORMAL_SPEED_LEVEL, "1.0x", Color.Magenta),
-    Triple(SpeedLevelPreference.HIGH_SPEED_LEVEL, "1.25x", Color.Red),
-    Triple(SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL, "1.5x", Color.Cyan),
-    Triple(SpeedLevelPreference.MAX_SPEED_LEVEL, "2.0x", Color.Blue),
+private data class SpeedOption(
+    val label: String,
+    val color: Color
+)
+
+private val speedOptions = mapOf(
+    SpeedLevelPreference.LOW_SPEED_LEVEL to SpeedOption("0.5x", Color.Green),
+    SpeedLevelPreference.MEDIUM_SPEED_LEVEL to SpeedOption("0.75x", Color.Yellow),
+    SpeedLevelPreference.NORMAL_SPEED_LEVEL to SpeedOption("1.0x", Color.Magenta),
+    SpeedLevelPreference.HIGH_SPEED_LEVEL to SpeedOption("1.25x", Color.Red),
+    SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL to SpeedOption("1.5x", Color.Cyan),
+    SpeedLevelPreference.MAX_SPEED_LEVEL to SpeedOption("2.0x", Color.Blue),
 )
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -218,9 +223,9 @@ private fun DictGamePlayContent(
                     val speedLevel = viewModel.speedLevelState.collectAsState().value
                     val speedMenuExpanded by viewModel.isShowingSpeedMenu.collectAsState()
 
-                    val currentOption = speedOptions.find { it.first == speedLevel.value }
-                    val currentSpeedText = currentOption?.second ?: "1.0x"
-                    val currentSpeedColor = currentOption?.third ?: Color.White
+                    val currentOption = speedOptions[speedLevel.value]
+                    val currentSpeedText = currentOption?.label ?: "1.0x"
+                    val currentSpeedColor = currentOption?.color ?: Color.White
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -245,9 +250,9 @@ private fun DictGamePlayContent(
                                 onDismissRequest = { viewModel.onSpeedMenuToggle(false) },
                                 modifier = Modifier.background(Color.Black)
                             ) {
-                                speedOptions.forEach { (level, label, color) ->
+                                speedOptions.forEach { (level, option) ->
                                     DropdownMenuItem(
-                                        text = { Text(label, color = color, style = MaterialTheme.typography.titleMedium) },
+                                        text = { Text(option.label, color = option.color, style = MaterialTheme.typography.titleMedium) },
                                         onClick = {
                                             viewModel.onSpeedSpeechSelected(level)
                                         }
