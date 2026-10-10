@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun StandardKeyboard(
-    widthDp: Dp,
     modifier: Modifier = Modifier,
+    widthDp: Dp,
     action: (KeyEvent) -> Unit
 ) {
     val sideKey = widthDp / 12.5f
