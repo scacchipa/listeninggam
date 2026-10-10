@@ -97,9 +97,17 @@ class DictGameMainViewModel @Inject constructor(
         }
     }
 
-    fun setSpeedLevel(speedLevel: SpeedLevelPreference) {
+    private val isMutableShowingSpeedMenu = MutableStateFlow(false)
+    val isShowingSpeedMenu = isMutableShowingSpeedMenu.asStateFlow()
+
+    fun onSpeedMenuToggle(expanded: Boolean) {
+        isMutableShowingSpeedMenu.value = expanded
+    }
+
+    fun onSpeedSpeechSelected(speedLevel: SpeedLevelPreference) {
         viewModelScope.launch {
             storeSpeedLevelUseCase(speedLevel)
+            isMutableShowingSpeedMenu.value = false
         }
     }
 

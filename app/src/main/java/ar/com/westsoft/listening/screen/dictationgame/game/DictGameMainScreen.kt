@@ -45,6 +45,15 @@ import ar.com.westsoft.listening.dictionary.source.WiktionaryItem
 import ar.com.westsoft.listening.screen.dictationgame.navigation.DictGameTopBar
 import ar.com.westsoft.listening.screen.dictationgame.settings.DictGameSettingScreen
 
+private val speedOptions = listOf(
+    Triple(SpeedLevelPreference.LOW_SPEED_LEVEL, "0.5x", Color.Green),
+    Triple(SpeedLevelPreference.MEDIUM_SPEED_LEVEL, "0.75x", Color.Yellow),
+    Triple(SpeedLevelPreference.NORMAL_SPEED_LEVEL, "1.0x", Color.Magenta),
+    Triple(SpeedLevelPreference.HIGH_SPEED_LEVEL, "1.25x", Color.Red),
+    Triple(SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL, "1.5x", Color.Cyan),
+    Triple(SpeedLevelPreference.MAX_SPEED_LEVEL, "2.0x", Color.Blue),
+)
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DictGameMainScreen(
@@ -207,25 +216,11 @@ private fun DictGamePlayContent(
                 },
                 content = {
                     val speedLevel = viewModel.speedLevelState.collectAsState().value
-                    var speedMenuExpanded by remember { mutableStateOf(false) }
+                    val speedMenuExpanded by viewModel.isShowingSpeedMenu.collectAsState()
 
-                    val currentSpeedText = when (speedLevel.value) {
-                        SpeedLevelPreference.LOW_SPEED_LEVEL -> "0.5x"
-                        SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> "0.75x"
-                        SpeedLevelPreference.NORMAL_SPEED_LEVEL -> "1.0x"
-                        SpeedLevelPreference.HIGH_SPEED_LEVEL -> "1.25x"
-                        SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> "1.5x"
-                        SpeedLevelPreference.MAX_SPEED_LEVEL -> "2.0x"
-                    }
-
-                    val currentSpeedColor = when (speedLevel.value) {
-                        SpeedLevelPreference.LOW_SPEED_LEVEL -> Color.Green
-                        SpeedLevelPreference.MEDIUM_SPEED_LEVEL -> Color.Yellow
-                        SpeedLevelPreference.NORMAL_SPEED_LEVEL -> Color.Magenta
-                        SpeedLevelPreference.HIGH_SPEED_LEVEL -> Color.Red
-                        SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL -> Color.Cyan
-                        SpeedLevelPreference.MAX_SPEED_LEVEL -> Color.Blue
-                    }
+                    val currentOption = speedOptions.find { it.first == speedLevel.value }
+                    val currentSpeedText = currentOption?.second ?: "1.0x"
+                    val currentSpeedColor = currentOption?.third ?: Color.White
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -233,7 +228,7 @@ private fun DictGamePlayContent(
                     ) {
                         Box {
                             Button(
-                                onClick = { speedMenuExpanded = true },
+                                onClick = { viewModel.onSpeedMenuToggle(true) },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color.DarkGray
                                 )
@@ -244,53 +239,20 @@ private fun DictGamePlayContent(
                                     style = MaterialTheme.typography.titleMedium
                                 )
                             }
+
                             DropdownMenu(
                                 expanded = speedMenuExpanded,
-                                onDismissRequest = { speedMenuExpanded = false },
+                                onDismissRequest = { viewModel.onSpeedMenuToggle(false) },
                                 modifier = Modifier.background(Color.Black)
                             ) {
-                                DropdownMenuItem(
-                                    text = { Text("0.5x", color = Color.Green, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.LOW_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("0.75x", color = Color.Yellow, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.MEDIUM_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("1.0x", color = Color.Magenta, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.NORMAL_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("1.25x", color = Color.Red, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.HIGH_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("1.5x", color = Color.Cyan, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.VERY_HIGH_SPEED_LEVEL)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("2.0x", color = Color.Blue, style = MaterialTheme.typography.titleMedium) },
-                                    onClick = {
-                                        speedMenuExpanded = false
-                                        viewModel.setSpeedLevel(SpeedLevelPreference.MAX_SPEED_LEVEL)
-                                    }
-                                )
+                                speedOptions.forEach { (level, label, color) ->
+                                    DropdownMenuItem(
+                                        text = { Text(label, color = color, style = MaterialTheme.typography.titleMedium) },
+                                        onClick = {
+                                            viewModel.onSpeedSpeechSelected(level)
+                                        }
+                                    )
+                                }
                             }
                         }
 
